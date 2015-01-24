@@ -5,7 +5,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
 
-var gj_CONFIG = require('./public/gj_config.js');
+var gj_CONSTANTS = require('./public/gj_constants.js');
 var gj_JSON = require('./public/gj_json.js');
 
 app.use(express.static(__dirname + '/public'));
@@ -20,7 +20,7 @@ http.listen(port, function() {
 
 // Setup socket.io to manage connections with clients ########################
 
-var game = new Game;
+var game = new Game();
 var clients = [];
 
 function Client(socket) {
@@ -29,7 +29,7 @@ function Client(socket) {
     game.addPlayer (id);
 
     socket.on('msg input', this.receiveInput.bind(this));
-    socket.emit('msg state', game.state);
+    socket.emit('msg state', game.state.getState());
 
     console.log('Client connected with ID: ' + this.id);
 }
@@ -56,9 +56,9 @@ io.on('connection', function(socket) {
 // Update loop ###############################################################
 
 setInterval(function() {
-        var oldState = _.cloneDeep(game.state);
+        var oldState = _.cloneDeep(game.state.getState());
         game.step();
-        var newState = game.state;
+        var newState = game.state.getState();
 
         var diff = gj_JSON.diff(oldState, newState);
 
@@ -67,5 +67,5 @@ setInterval(function() {
             client.socket.emit('msg diff', diff);
         });
     },
-    CONFIG.deltaTime
+    gj_CONSTANTS.deltaTime
 );
