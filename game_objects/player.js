@@ -82,6 +82,10 @@ _.extend(
             this.collideWithMap(state.maps[state.era]);
         },
 
+        takeDamage: function() {
+            this.vy = -10;
+        },
+
         handleInput: function(input) {
             switch (input.type) {
                 case 'keydown':
