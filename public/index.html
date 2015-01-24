@@ -71,12 +71,9 @@
     {
         // Textures are loaded, so store them for later. This should become a larger set of maps
         textures = {
-            player: 'block1',
-            bullet: 'flower'
+            player: 'tile_49',
+            bullet: 'tile_33'
         };
-
-        playerUI.indicatorSpriteID = 1;
-        playerUI.indicatorSprite = new PIXI.Sprite.fromFrame('mushroom');
 
         // Perform socket setup to start the game
         initSocket();
@@ -100,7 +97,7 @@
                 if (!tiles[i][j]) continue;
 
                 // create a new Sprite using the texture
-                var tile = new PIXI.Sprite.fromFrame('tile_2');
+                var tile = new PIXI.Sprite.fromFrame('tile_'+tiles[i][j]);
 
                 // move the sprite into position
                 tile.position.x = j * 16;
@@ -137,7 +134,7 @@
 
                 if (object.id === socket.id)
                 {
-                    var pointer_sprite = new PIXI.Sprite.fromFrame('mushroom');
+                    var pointer_sprite = new PIXI.Sprite.fromFrame('tile_37');
 
                     pointer_sprite.anchor.x = 0.5;
                     pointer_sprite.anchor.y = 0.5;
