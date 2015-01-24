@@ -36,3 +36,10 @@ Game.prototype.removePlayer = function(id) {
         }
     }
 };
+
+Game.prototype.step = function() {
+    var state = this.state;
+    _.each(state.objects, function(object) {
+        object.update && object.update(state)
+    });
+};
