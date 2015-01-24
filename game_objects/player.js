@@ -68,7 +68,7 @@ _.extend(
                 } else {
                     this._standing--;
                 }
-            } else if (this._standing > -1) {
+            } else if (this._standing > -1 && state.era == constants.eras.FUTURE) {
                 if (this._keysDown[constants.keys.JUMP] && !this._prevKeysDown[constants.keys.JUMP]) {
                     this._standing--;
                     this.vy = -10;
