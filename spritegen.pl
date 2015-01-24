@@ -12,6 +12,7 @@ my $rows        =   8; # How many rows of blocks are there?
 my $tile_width  =  16; # How wide are the tiles?
 my $tile_height =  16;
 my $filepath    = 'public/assets/tiles.png';
+my $outfile     = 'public/assets/tiles.json';
 
 my $height = $rows * $tile_height;
 my $index = 1;
@@ -43,6 +44,7 @@ $json .= "\"size\": {\"w\":$width, \"h\":$height},";
 $json .= "\"scale\":1";
 $json .= "}}";
 
-print $json;
-
+open(my $fh, '>', $outfile);
+print $fh $json;
+close $fh;
 
