@@ -24,18 +24,24 @@
         });
 
         socket.on('msg diff', function(diff) {
-            latestState  = gj_JSON.applyDiff(latestState,diff);
+            console.log(diff);
+            latestState  = gj_JSON.applyDiff(latestState, diff);
             //document.body.innerHTML = '<p>'+JSON.stringify(latestState)+'</p>' + document.body.innerHTML;
             ctx.canvas.width = ctx.canvas.width;
             for (var i = 0; i < latestState.objects.length; ++i) {
                 var obj = latestState.objects[i];
+                ctx.rotate(obj.angle);
                 ctx.fillRect(obj.x,obj.y,10,10);
+                ctx.rotate(-obj.angle);
             }
         });
 
         window.onkeyup = function(e) {
-            socket.emit('msg input', e.keyCode);
-        }
+            socket.emit('msg input', { type: 'key', key: e.keyCode });
+        };
+        window.onmousemove = function(e) {
+            socket.emit('msg input', { type: 'mouse', x: e.x, y: e.y });
+        };
 
         var ctx = document.getElementById('c').getContext('2d');
     </script>

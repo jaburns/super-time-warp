@@ -35,9 +35,9 @@ function Client(socket) {
     console.log('Client connected with ID: ' + this.socket.id);
 }
 
-Client.prototype.receiveInput = function(msgInput) {
-    console.log('Received input "' + msgInput + '" from client ' + this.socket.id);
-    game.handleInput(this.socket.id, msgInput);
+Client.prototype.receiveInput = function(input) {
+    console.log('Received input "' + JSON.stringify(input) + '" from client ' + this.socket.id);
+    game.handleInput(this.socket.id, input);
 };
 
 Client.prototype.dispose = function() {
@@ -62,6 +62,7 @@ setInterval(function() {
         var newState = game.state.getState();
 
         var diff = gj_JSON.diff(oldState, newState);
+        console.log(JSON.stringify(diff));
 
         var state = 'Some game state ' + Math.random().toString().substr(2);
         _.each(clients, function(client) {
