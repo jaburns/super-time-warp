@@ -5,7 +5,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
 
-var gj_CONFIG = require('./public/gj_config.js');
+var gj_CONSTANTS = require('./public/gj_constants.js');
 var gj_JSON = require('./public/gj_json.js');
 
 app.use(express.static(__dirname + '/public'));
@@ -67,5 +67,5 @@ setInterval(function() {
             client.socket.emit('msg diff', diff);
         });
     },
-    CONFIG.deltaTime
+    gj_CONSTANTS.deltaTime
 );
