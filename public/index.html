@@ -140,11 +140,6 @@
 
     }
 
-    var crosshairs = new PIXI.Sprite(textures.bullet);
-    crosshairs.anchor.x = 0.5;
-    crosshairs.anchor.y = 0.5;
-    root_container.addChild(crosshairs);
-
     // Networking #################################################################
 
     (function() {
@@ -188,9 +183,6 @@
             crosshairs.position.y = pos.y;
             socket.emit('msg input', { type: 'mousemove', x: pos.x, y: pos.y });
         };
-//        window.onmousemove = function(e) {
-
-//        };
 
         window.onmousedown = function(e) {
             socket.emit('msg input', { type: 'mousedown' });
