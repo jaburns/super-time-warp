@@ -5,7 +5,6 @@
     <script src="/shared/gj_constants.js"></script>
     <script src="/shared/gj_json.js"></script>
     <script src="pixi.js"></script>
-    <script src="client.js"></script>
     <style>
         body {
             background: #000;
@@ -17,7 +16,7 @@
 </body>
 <script>
 
-    var socket = io();
+    var socket;
 
     // Drawing ####################################################################
 
@@ -45,16 +44,32 @@
     // add the renderer view element to the DOM
     document.body.appendChild(renderer.view);
 
-    // create a texture from an image path
-    var texture = PIXI.Texture.fromImage('assets/tile.png');
-
-    var textures = {
-        tile: PIXI.Texture.fromImage('assets/tile.png'),
-        player: PIXI.Texture.fromImage('assets/player.png'),
-        bullet: PIXI.Texture.fromImage('assets/bullet.png')
-    };
-
+    var textures = {};
     var sprites = {};
+
+    // This array holds filepaths to all json files with sprite information
+    var assetsToLoad = ["assets/jungle_tiles.json"];
+
+    loader = new PIXI.AssetLoader(assetsToLoad);
+
+    // The load is asynchronous, so wait for the go-ahead before starting
+    loader.onComplete = ready.bind(this);
+    loader.load();
+
+    // Make sure the world is ready before opening the socket.
+    function ready()
+    {
+        // Textures are loaded, so store them for later. This should become a larger set of maps
+        textures = {
+            tile: 'soilgrass1',
+            player: 'block1',
+            bullet: 'flower'
+        };
+
+        // Perform socket setup to start the game
+        initSocket();
+    }
+
     function initSprites(state) {
         var tiles = state.maps[state.era].tiles;
         for (var i = 0; i < tiles.length; i++) {
@@ -62,7 +77,7 @@
                 if (!tiles[i][j]) continue;
 
                 // create a new Sprite using the texture
-                var tile = new PIXI.Sprite(textures.tile);
+                var tile = new PIXI.Sprite.fromFrame(textures.tile);
 
                 // move the sprite into position
                 tile.position.x = j * 16;
@@ -86,7 +101,12 @@
             var sprite = sprites[object.id];
 
             if (!sprite) {
-                sprite = new PIXI.Sprite(textures[object.type]);
+                if(object.type == undefined)
+                {
+                    console.log("object has no type");
+                    console.log(object);
+                }
+                sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
 
                 // center the sprites anchor point
                 sprite.anchor.x = 0.5;
@@ -142,8 +162,9 @@
 
     // Networking #################################################################
 
-    (function() {
+    function initSocket() {
         var latestState;
+        socket = io();
 
         // Receiving state messages from the server -------------------
 
@@ -190,7 +211,7 @@
             socket.emit('msg input', { type: 'mouseup' });
         };
 
-    })();
+    }
 
 </script>
 </html>

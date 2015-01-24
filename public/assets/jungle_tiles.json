@@ -442,7 +442,7 @@
         }
     },
     "meta": {
-        "image": "assets/jungle_tiles.png",
+        "image": "jungle_tiles.png",
         "format": "RGBA8888",
         "size": {
             "w": 128,
