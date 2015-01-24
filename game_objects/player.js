@@ -79,9 +79,10 @@ _.extend(
                     bullet.x = this.x;
                     bullet.y = this.y - (this.h / 2);
 
-                    bullet.angle = Math.atan2((this.y - this._mousePos.y - (this.h / 2) - (bullet.h / 2)), (this.x - this._mousePos.x));
-                    bullet.vx = -Math.cos(bullet.angle) * 10;
-                    bullet.vy = -Math.sin(bullet.angle) * 10;
+                    var angle = Math.atan2((this.y - this._mousePos.y - (this.h / 2) - (bullet.h / 2)), (this.x - this._mousePos.x));
+                    bullet.angle = angle - 1.5;
+                    bullet.vx = -Math.cos(angle) * 10;
+                    bullet.vy = -Math.sin(angle) * 10;
 
                     state.addObject(bullet);
 
@@ -113,8 +114,8 @@ _.extend(
         },
 
         takeDamage: function(other) {
-            if (other.owner) {
-                other.owner.score ++;
+            if (other._owner) {
+                other._owner.score ++;
             }
             this.moveToSpawnPoint();
         },

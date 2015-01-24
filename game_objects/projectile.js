@@ -7,7 +7,7 @@ var Player = require('./player');
 var Projectile = function(owner) {
     Projectile.superclass.call(this);
 
-    this.owner = owner;
+    this._owner = owner;
     this.type = 'bullet';
     
     this.w = 4;
@@ -28,7 +28,7 @@ _.extend(
         },
 
         collideWithObject: function(object) {
-            if (object === this.owner) return;
+            if (object === this._owner) return;
             if (object.takeDamage) {
                 object.takeDamage(this);
                 this.alive = false;

@@ -63,7 +63,7 @@ io.on('connection', function(socket) {
 setInterval(function() {
         game.step();
 
-        var newState = _.cloneDeep(game.state.getState());
+        var newState = prune(_.cloneDeep(game.state.getState()));
         var diff = gj_JSON.diff(oldState, newState);
         oldState = newState;
 
@@ -81,3 +81,16 @@ setInterval(function() {
     },
     gj_CONSTANTS.DELTA_TIME
 );
+
+function prune(object) {
+
+    var keys = Object.keys(object);
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        if (key[0] == '_') delete object[key];
+        else if (Array.isArray(object[key])) object[key] = _.map(object[key], function(o) { return prune(o) });
+        else if (typeof(object[key]) == 'object') object[key] = prune(object[key]);
+    }
+    return object;
+
+}
