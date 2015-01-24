@@ -20,7 +20,7 @@ http.listen(port, function() {
 
 // Setup socket.io to manage connections with clients ########################
 
-var game = new Game;
+var game = new Game();
 var clients = [];
 
 function Client(socket) {
