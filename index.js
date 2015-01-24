@@ -5,8 +5,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
 
-var gj_CONSTANTS = require('./public/gj_constants.js');
-var gj_JSON = require('./public/gj_json.js');
+var gj_CONSTANTS = require('./public/shared/gj_constants.js');
+var gj_JSON = require('./public/shared/gj_json.js');
 
 app.use(express.static(__dirname + '/public'));
 
@@ -25,8 +25,8 @@ var clients = [];
 
 function Client(socket) {
     this.socket = socket;
-    this.id = Math.random().toString().substr(2);
-    game.addPlayer (id);
+    this.id = socket.id;
+    game.addPlayer(this.id);
 
     socket.on('msg input', this.receiveInput.bind(this));
     socket.emit('msg state', game.state.getState());
