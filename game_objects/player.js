@@ -95,8 +95,16 @@ _.extend(
         },
 
         moveToSpawnPoint: function(map) {
-            this.x = 24;
-            this.y = 32;
+            do {
+                this.x = constants.TILE_SIZE*map.getWidth()*Math.random();
+                this.y = constants.TILE_SIZE*map.getHeight()*Math.random();
+                if (map.sampleAtPixel(this.x, this.y)) continue;
+                if (map.sampleAtPixel(this.x, this.y - this.h)) continue;
+                if (map.sampleAtPixel(this.x - this.w/2, this.y - this.h/2)) continue;
+                if (map.sampleAtPixel(this.x + this.w/2, this.y - this.h/2)) continue;
+                break;
+            }
+            while (1);
         },
 
         takeDamage: function() {
@@ -130,15 +138,15 @@ _.extend(
                 this.vy = 0;
                 this._standing = 2;
             }
-            if (map.sampleAtPixel(this.x, this.y - constants.TILE_SIZE)) {
+            if (map.sampleAtPixel(this.x, this.y - this.h)) {
                 this.y = constants.TILE_SIZE * Math.ceil(this.y / constants.TILE_SIZE);
                 if (this.vy < 0) this.vy = 0;
             }
-            if (map.sampleAtPixel(this.x - constants.TILE_SIZE / 2, this.y - constants.TILE_SIZE / 2)) {
+            if (map.sampleAtPixel(this.x - this.w/2, this.y - this.h/2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
                 this.vx = 0;
             }
-            if (map.sampleAtPixel(this.x + constants.TILE_SIZE / 2, this.y - constants.TILE_SIZE / 2)) {
+            if (map.sampleAtPixel(this.x + this.w/2, this.y - this.h/2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
                 this.vx = 0;
             }
