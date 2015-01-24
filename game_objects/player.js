@@ -9,6 +9,8 @@ var Player = function(id) {
 
     Player.superclass.call(this, id);
 
+    this.type = 'player';
+
 };
 
 Player.superclass = GameObject;
@@ -24,7 +26,7 @@ _.extend(
         },
         handleInput: function(input) {
 
-            switch(input) {
+            switch (input) {
                 case constants.keys.SPACEBAR:
                     break;
                 case constants.keys.LEFT_ARROW:
