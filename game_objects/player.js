@@ -9,7 +9,14 @@ var Player = function(id) {
 
     Player.superclass.call(this, id);
 
+    this.x = 320;
+    this.y = 320;
+
     this.type = 'player';
+    this.x = 640*Math.random();
+    this.y = 480*Math.random();
+    this.w = 10;
+    this.h = 20;
 
 };
 
@@ -26,20 +33,33 @@ _.extend(
         },
         handleInput: function(input) {
 
-            switch (input) {
-                case constants.keys.SPACEBAR:
-                    break;
-                case constants.keys.LEFT_ARROW:
-                    break;
-                case constants.keys.UP_ARROW:
-                    break;
-                case constants.keys.RIGHT_ARROW:
-                    break;
-                case constants.keys.DOWN_ARROW:
-                    break;
+            if (input.type == 'key') {
+                switch (input) {
+                    case constants.keys.SPACEBAR:
+                        break;
+                    case constants.keys.LEFT_ARROW:
+                        break;
+                    case constants.keys.UP_ARROW:
+                        break;
+                    case constants.keys.RIGHT_ARROW:
+                        break;
+                    case constants.keys.DOWN_ARROW:
+                        break;
+                }
+            } else if (input.type == 'mouse') {
+
+                var x = this.x;
+                var y = this.y;
+                var mx = input.x;
+                var my = input.y;
+
+                this.angle = Math.tan(Math.abs(x - mx) / Math.abs(y - my));
+
             }
+
 
         }
     }
 );
 
+module.exports = Player;
