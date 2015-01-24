@@ -29,7 +29,9 @@
     // create a texture from an image path
     var texture = PIXI.Texture.fromImage('assets/tile.png');
 
-    var sprites = [];
+    var player_texture = PIXI.Texture.fromImage('assets/player.png');
+
+    var sprites = {};
     function initSprites(state) {
         var tiles = state.maps[state.era].tiles;
         for (var i = 0; i < tiles.length; i++) {
@@ -50,6 +52,26 @@
     }
 
     function renderState(state) {
+
+        for (var i = 0; i < state.objects.length; i++) {
+            var object = state.objects[i];
+            var sprite = sprites[object.id];
+            if (!sprite) {
+
+                sprite = new PIXI.Sprite(player_texture);
+
+                // center the sprites anchor point
+                sprite.anchor.x = 0.5;
+                sprite.anchor.y = 0.5;
+
+                sprites[object.id] = sprite;
+                stage.addChild(sprite);
+            }
+            sprite.position.x = object.x;
+            sprite.position.y = object.y;
+            sprite.rotation = (object.angle * Math.PI) / 180;
+        }
+
         // render the stage
         renderer.render(stage);
     }
