@@ -3,18 +3,7 @@ var State = require('./state');
 var Player = require('./game_objects/player');
 
 function Game() {
-    this.state = new State([
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 1, 1, 1, 1, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    ]);
+    this.state = new State();
 }
 
 Game.prototype.addPlayer = function(id) {
@@ -23,6 +12,14 @@ Game.prototype.addPlayer = function(id) {
 
 Game.prototype.removePlayer = function(id) {
     this.state.removeObjectById(id);
+};
+
+Game.prototype.handleInput = function(id, input) {
+    var state = this.state.getState();
+    var object = _.find(state.objects, function(object) {
+        return object.id == id;
+    });
+    if (object && object.handleInput) object.handleInput(input);
 };
 
 Game.prototype.step = function() {

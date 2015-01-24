@@ -1,8 +1,29 @@
 var _ = require('lodash');
+var constants = require('./public/shared/gj_constants');
 
-var State = function(map) {
+var Map = require('./map');
+
+var State = function() {
+
+    // map definitions
+    var maps = {};
+    maps[constants.eras.PRESENT] = new Map([
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 1, 1, 1, 1, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    ]);
+
+    // initial state
     this._state = {
-        map: map,
+        era: constants.eras.PRESENT,
+        maps: maps,
         objects: []
     };
 };

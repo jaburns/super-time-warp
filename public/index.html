@@ -2,16 +2,53 @@
 <html>
     <head>
         <script src="/socket.io/socket.io.js"></script>
-        <script>
-            var socket = io();
-            socket.on('msg state', function(msg) {
-                document.body.innerHTML = '<p>'+msg+'</p>' + document.body.innerHTML;
-            });
-            window.onkeyup = function(e) {
-                socket.emit('msg input', e.keyCode);
-            }
-        </script>
+        <script src="/shared/gj_json.js"></script>
+        <style>
+            body { background: #000; }
+            #c { background: #fff; }
+        </style>
     </head>
     <body>
+        <canvas width="640" height="480" id="c"></canvas>
     </body>
+    <script>
+
+    // Drawing ####################################################################
+
+        var ctx = document.getElementById('c').getContext('2d');
+
+        function renderState(state) {
+            ctx.canvas.width = ctx.canvas.width;
+            for (var i = 0; i < state.objects.length; ++i) {
+                var obj = state.objects[i];
+                ctx.fillStyle = '#000';
+                ctx.fillRect(obj.x,obj.y,obj.w,obj.h);
+            }
+        }
+    
+    // Networking #################################################################
+
+        (function(){
+            var socket = io();
+            var latestState;
+
+            socket.on('msg state', function(state) {
+                latestState = state;
+            });
+
+            socket.on('msg diff', function(diff) {
+                latestState = gj_JSON.applyDiff(latestState, diff);
+                renderState (latestState);
+            });
+
+            window.onkeyup = function(e) {
+                socket.emit('msg input', { type: 'key', key: e.keyCode });
+            };
+            
+            window.onmousemove = function(e) {
+                socket.emit('msg input', { type: 'mouse', x: e.x, y: e.y });
+            };
+        })();
+
+    </script>
 </html>

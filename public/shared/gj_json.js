@@ -68,5 +68,5 @@ var gj_JSON = {
     }
 };
 
-if (module) module.exports = gj_JSON;
+if (typeof(module) !== 'undefined') module.exports = gj_JSON;
 

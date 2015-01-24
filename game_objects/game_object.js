@@ -7,13 +7,14 @@ var GameObject = function(id) {
     this.x = null;
     this.y = null;
 
-    this.width = null;
-    this.height = null;
+    this.w = null;
+    this.h = null;
 
     this.vx = 0;
     this.vy = 0;
 
-    this.rotation = 0;
+    this.angle = 0;
+    this.va = 0;
 
 };
 
@@ -24,6 +25,8 @@ _.extend(
 
             this.x += this.vx;
             this.y += this.vy;
+
+            this.angle += this.va;
 
         }
     }
