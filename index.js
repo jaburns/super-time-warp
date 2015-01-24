@@ -56,9 +56,9 @@ io.on('connection', function(socket) {
 // Update loop ###############################################################
 
 setInterval(function() {
-        var oldState = _.cloneDeep(game.state);
+        var oldState = _.cloneDeep(game.state.getState());
         game.step();
-        var newState = game.state;
+        var newState = game.state.getState();
 
         var diff = gj_JSON.diff(oldState, newState);
 

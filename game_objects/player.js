@@ -9,6 +9,8 @@ var Player = function(id) {
 
     Player.superclass.call(this, id);
 
+    this.type = 'player';
+
 };
 
 Player.superclass = GameObject;

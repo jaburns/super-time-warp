@@ -1,44 +1,32 @@
 var _ = require('lodash');
+var State = require('state');
+var Player = require('game_objects/player');
 
 function Game() {
-    this.state = {
-        map: [
-            [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
-            [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-            [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-            [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-            [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-            [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-            [ 1, 0, 0, 1, 1, 1, 1, 0, 0, 1 ],
-            [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-            [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-            [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
-        ],
-        objects: []
-    };
+    this.state = new State([
+        [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+        [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
+        [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
+        [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
+        [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
+        [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
+        [ 1, 0, 0, 1, 1, 1, 1, 0, 0, 1 ],
+        [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
+        [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
+        [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+    ]);
 }
 
 Game.prototype.addPlayer = function(id) {
-    this.state.objects.push({
-        id: id,
-        x: 34,
-        y: 34,
-        type: 'player'
-    });
+    this.state.addObject(new Player(id));
 };
 
 Game.prototype.removePlayer = function(id) {
-    for (var i = 0; i < this.state.objects.length; i++) {
-        var object = this.state.objects[i];
-        if (object.id == id && object.type == 'player') {
-            this.state.objects.splice(i);
-            return;
-        }
-    }
+    this.state.removeObjectById(id);
 };
 
 Game.prototype.step = function() {
-    var state = this.state;
+    var state = this.state.getState();
     _.each(state.objects, function(object) {
         object.update && object.update(state)
     });
