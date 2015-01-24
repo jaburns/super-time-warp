@@ -60,7 +60,7 @@ _.extend(
                 if (!this._lastFireTime || (new Date().getTime() - this._lastFireTime) > this._fireDelay) {
 
                     this._lastFireTime = new Date().getTime();
-                    var bullet = new Projectile();
+                    var bullet = new Projectile (this);
 
                     bullet.x = this.x;
                     bullet.y = this.y - (this.h / 2);

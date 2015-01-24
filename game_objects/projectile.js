@@ -4,12 +4,11 @@ var constants = require('../public/shared/gj_constants');
 var GameObject = require('./game_object');
 var Player = require('./player');
 
-var Projectile = function(id) {
+var Projectile = function(owner) {
+    Projectile.superclass.call(this);
 
-    Projectile.superclass.call(this, id);
-
+    this.owner = owner;
     this.type = 'bullet';
-
 };
 
 Projectile.superclass = GameObject;
@@ -25,7 +24,8 @@ _.extend(
         },
 
         collideWithObject: function(object) {
-            if (object instanceof Player) {
+            if (object === this.owner) return;
+            if (object.takeDamage) {
                 object.takeDamage ();
                 this.alive = false;
             }
