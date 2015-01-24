@@ -70,6 +70,18 @@ _.extend(
                 this.vy = 0;
                 this._standing = 2;
             }
+            if (map.sampleAtPixel(this.x,this.y-constants.TILE_SIZE)) {
+                this.y = constants.TILE_SIZE * Math.ceil(this.y / constants.TILE_SIZE);
+                if (this.vy < 0) this.vy = 0;
+            }
+            if (map.sampleAtPixel(this.x-constants.TILE_SIZE/2,this.y-constants.TILE_SIZE/2)) {
+                this.x = constants.TILE_SIZE/2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
+                this.vx = 0;
+            }
+            if (map.sampleAtPixel(this.x+constants.TILE_SIZE/2,this.y-constants.TILE_SIZE/2)) {
+                this.x = constants.TILE_SIZE/2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
+                this.vx = 0;
+            }
         }
     }
 );
