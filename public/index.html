@@ -47,6 +47,7 @@
 
     var textures = {};
     var sprites = {};
+    var playerUI = {}; // object to hold local UI data
 
     // This array holds filepaths to all json files with sprite information
     var assetsToLoad = ["assets/jungle_tiles.json"];
@@ -66,6 +67,9 @@
             player: 'block1',
             bullet: 'flower'
         };
+
+        playerUI.indicatorSpriteID = 1;
+        playerUI.indicatorSprite = new PIXI.Sprite.fromFrame('mushroom');
 
         // Perform socket setup to start the game
         initSocket();
@@ -124,6 +128,9 @@
             // Center the camera around this client's player object.
             if (object.id === socket.id) {
                 centerCamera(object, state.maps[state.era].tiles[0].length, state.maps[state.era].tiles.length);
+
+                //playerUI.indicatorSprite.position.x = object.x;
+                //playerUI.indicatorSprite.position.y = object.y - object.h * 1.5;
             }
         }
 
