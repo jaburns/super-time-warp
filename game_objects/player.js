@@ -10,6 +10,10 @@ var Player = function(id) {
     Player.superclass.call(this, id);
 
     this.type = 'player';
+    this.x = 640*Math.random();
+    this.y = 480*Math.random();
+    this.w = 10;
+    this.h = 20;
 
 };
 
