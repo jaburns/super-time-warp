@@ -4,8 +4,8 @@ var gj_CONSTANTS = {
     TILE_SIZE: 16,
     keys: {
         JUMP: 32,
-        MOVE_LEFT: 37,
-        MOVE_RIGHT: 39
+        MOVE_LEFT: 65,
+        MOVE_RIGHT: 68
     },
     eras: {
         PAST: 1,
