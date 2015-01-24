@@ -5,7 +5,7 @@ var GameObject = require('./game_object');
 var MAX_VELOCITY = 1234;
 var DELTA_VELOCITY = 1234
 
-var GRAVITY = 0.05;
+var GRAVITY = 0.5;
 
 var Player = function(id) {
 
@@ -18,6 +18,7 @@ var Player = function(id) {
     this.h = 20;
 
     this._keysDown = {};
+    this._standing = 0; // When greater than zero, the player is on the ground.  Counts down every frame. Reset every time a ground collision is detected.
 };
 
 Player.superclass = GameObject;
@@ -28,16 +29,24 @@ _.extend(
     {
         update: function(state) {
 
-            // Integrate acceleration in to velocity.
             if (this._keysDown[constants.keys.LEFT_ARROW]) {
-                this.vx = -2;
+                this.vx += (-5 - this.vx) / 5;
             }
             else if (this._keysDown[constants.keys.RIGHT_ARROW]) {
-                this.vx = 2;
+                this.vx += (5 - this.vx) / 5;
             }
             else {
-                this.vx = 0;
+                this.vx *= 0.9;
             }
+            if (this._standing > 0) {
+                if (this._keysDown[constants.keys.SPACEBAR]) {
+                    this._standing = 0;
+                    this.vy = -10;
+                } else {
+                    this._standing--;
+                }
+            }
+
             this.vy += GRAVITY;
 
             // Integrate velocity in to position.
@@ -57,7 +66,9 @@ _.extend(
 
         collideWithMap: function(map) {
             if (map.sampleAtPixel(this.x,this.y)) {
-                this.vy = -1;
+                this.y = constants.TILE_SIZE * Math.floor(this.y / constants.TILE_SIZE);
+                this.vy = 0;
+                this._standing = 2;
             }
         }
     }
