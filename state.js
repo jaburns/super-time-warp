@@ -10,6 +10,7 @@ var State = function() {
     this.era = constants.eras.TUNDRA;
     this.maps = {};
     this.objects = [];
+    this.countDownToNextEra = 60;
 
     var self = this;
 

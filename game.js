@@ -1,6 +1,10 @@
 var _ = require('lodash');
 var State = require('./state');
 var Player = require('./game_objects/player');
+var constants = require('./public/shared/gj_constants');
+
+var ERA_FRAMECOUNT_MIN = 60;
+var ERA_FRAMECOUNT_MAX = 90;
 
 function Game() {
     this.state = new State();
@@ -24,8 +28,14 @@ Game.prototype.handleInput = function(id, input) {
 Game.prototype.step = function() {
     var self = this;
 
-    if (Math.random() < 0.01) {
-        this.state.era = Math.floor(Math.random()*3);
+    if (--this.state.countDownToNextEra <= 0) {
+        this.state.countDownToNextEra = ERA_FRAMECOUNT_MIN + (ERA_FRAMECOUNT_MAX-ERA_FRAMECOUNT_MIN)*Math.random();
+
+        var self = this;
+        this.state.era = _.chain(constants.eras)
+            .filter(function(era) { return era !== self.state.era; })
+            .sample()
+            .value();
     }
 
     _.each(this.state.objects, function(object) {
