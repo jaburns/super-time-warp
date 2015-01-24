@@ -22,6 +22,7 @@ var Player = function(id) {
     this._spawnCountdown = 30;
 
     this._keysDown = {};
+    this._prevKeysDown = {};
     this._mousePos = { x: null, y: null };
     this._mouseDown = false;
     this._standing = 0; // When greater than zero, the player is on the ground.  Counts down every frame. Reset every time a ground collision is detected.
@@ -67,6 +68,11 @@ _.extend(
                 } else {
                     this._standing--;
                 }
+            } else if (this._standing > -1) {
+                if (this._keysDown[constants.keys.JUMP] && !this._prevKeysDown[constants.keys.JUMP]) {
+                    this._standing--;
+                    this.vy = -10;
+                }
             }
 
             if (this._mouseDown) {
@@ -79,9 +85,10 @@ _.extend(
                     bullet.x = this.x;
                     bullet.y = this.y - (this.h / 2);
 
-                    bullet.angle = Math.atan2((this.y - this._mousePos.y - (this.h / 2) - (bullet.h / 2)), (this.x - this._mousePos.x));
-                    bullet.vx = -Math.cos(bullet.angle) * 10;
-                    bullet.vy = -Math.sin(bullet.angle) * 10;
+                    var angle = Math.atan2((this.y - this._mousePos.y - (this.h / 2) - (bullet.h / 2)), (this.x - this._mousePos.x));
+                    bullet.angle = angle - 1.5;
+                    bullet.vx = -Math.cos(angle) * 10;
+                    bullet.vy = -Math.sin(angle) * 10;
 
                     state.addObject(bullet);
 
@@ -96,6 +103,8 @@ _.extend(
 
             // Collide with the map.
             this.collideWithMap(state.maps[state.era]);
+
+            this._prevKeysDown = _.clone(this._keysDown);
         },
 
         moveToSpawnPoint: function() {
@@ -113,8 +122,8 @@ _.extend(
         },
 
         takeDamage: function(other) {
-            if (other.owner) {
-                other.owner.score ++;
+            if (other._owner) {
+                other._owner.score ++;
             }
             this.moveToSpawnPoint();
         },

@@ -8,9 +8,9 @@ var gj_CONSTANTS = {
         MOVE_RIGHT: 68
     },
     eras: {
-        JUNGLE: 1,
-        TUNDRA: 2,
-        FUTURE: 3
+        JUNGLE: 0,
+        TUNDRA: 1,
+        FUTURE: 2
     }
 };
 

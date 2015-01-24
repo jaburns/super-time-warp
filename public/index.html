@@ -33,8 +33,7 @@
     root_container.scale = SCALE;
     stage.addChild(root_container);
 
-    var tile_container = new PIXI.DisplayObjectContainer();
-    root_container.addChild(tile_container);
+    var tile_container = null;
 
     var object_container = new PIXI.DisplayObjectContainer();
     root_container.addChild(object_container);
@@ -42,6 +41,11 @@
     var scores = {};
     var scores_container = new PIXI.DisplayObjectContainer();
     stage.addChild(scores_container);
+
+    var crosshairs = new PIXI.Sprite(PIXI.Texture.fromImage('assets/crosshairs.png'));
+    crosshairs.anchor.x = 0.5;
+    crosshairs.anchor.y = 0.5;
+    root_container.addChild(crosshairs);
 
     // create a renderer instance
     var renderer = PIXI.autoDetectRenderer(VIEWPORT.w, VIEWPORT.h);
@@ -54,7 +58,7 @@
     var playerUI = {}; // object to hold local UI data
 
     // This array holds filepaths to all json files with sprite information
-    var assetsToLoad = ['assets/jungle_tiles.json'];
+    var assetsToLoad = ['assets/tiles.json'];
 
     loader = new PIXI.AssetLoader(assetsToLoad);
 
@@ -67,28 +71,33 @@
     {
         // Textures are loaded, so store them for later. This should become a larger set of maps
         textures = {
-            tile: 'soilgrass1',
-            player: 'block1',
-            bullet: 'flower'
+            player: 'tile_49',
+            bullet: 'tile_33'
         };
-
-        playerUI.indicatorSpriteID = 1;
-        playerUI.indicatorSprite = new PIXI.Sprite.fromFrame('mushroom');
 
         // Perform socket setup to start the game
         initSocket();
     }
 
-    var crosshairs;
     function initSprites(state) {
 
-        var tiles = state.maps[state.era].tiles;
+    }
+
+    // Creates the tile_container and adds it to the root_container.  Cleans up old one if it exists.
+    function initMap(map) {
+        if (tile_container) {
+            root_container.removeChild(tile_container);
+        }
+        tile_container = new PIXI.DisplayObjectContainer();
+        root_container.addChildAt(tile_container, 0);
+
+        var tiles = map.tiles;
         for (var i = 0; i < tiles.length; i++) {
             for (var j = 0; j < tiles[i].length; j++) {
                 if (!tiles[i][j]) continue;
 
                 // create a new Sprite using the texture
-                var tile = new PIXI.Sprite.fromFrame(textures.tile);
+                var tile = new PIXI.Sprite.fromFrame('tile_'+tiles[i][j]);
 
                 // move the sprite into position
                 tile.position.x = j * 16;
@@ -97,11 +106,6 @@
                 tile_container.addChild(tile);
             }
         }
-
-        crosshairs = new PIXI.Sprite(PIXI.Texture.fromImage('assets/crosshairs.png'));
-        crosshairs.anchor.x = 0.5;
-        crosshairs.anchor.y = 0.5;
-        root_container.addChild(crosshairs);
     }
 
     function renderState(state) {
@@ -128,8 +132,9 @@
                 sprite.addChild(child_sprite);
                 child_sprite.y = -object.h / 2;
 
-                if (object.id === socket.id) {
-                    var pointer_sprite = new PIXI.Sprite.fromFrame('mushroom');
+                if (object.id === socket.id)
+                {
+                    var pointer_sprite = new PIXI.Sprite.fromFrame('tile_37');
 
                     pointer_sprite.anchor.x = 0.5;
                     pointer_sprite.anchor.y = 0.5;
@@ -158,7 +163,6 @@
                     score.position.y = 16 * (Object.keys(scores).length);
                     scores_container.addChild(score);
                     scores[object.id] = score;
-                    console.log('created score');
                 } else if (object.score != score.score) {
                     score.setText(object.id + ':' + object.score);
                     score.score = object.score;
@@ -230,10 +234,8 @@
     }
 
     function onMouseMove(pos) {
-        if (crosshairs) {
-            crosshairs.x = pos.x;
-            crosshairs.y = pos.y;
-        }
+        crosshairs.x = pos.x;
+        crosshairs.y = pos.y;
         socket.emit('msg input', { type: 'mousemove', x: pos.x, y: pos.y });
     }
 
@@ -248,11 +250,16 @@
         socket.on('msg state', function(state) {
             latestState = state;
             initSprites(latestState);
+            initMap(latestState.maps[latestState.era]);
             renderState(latestState);
         });
 
         socket.on('msg diff', function(diff) {
-            latestState = gj_JSON.applyDiff(latestState, diff);
+            var newState = gj_JSON.applyDiff(latestState, diff);
+            if (newState.era !== latestState.era) {
+                initMap(newState.maps[newState.era]);
+            }
+            latestState = newState;
             renderState(latestState);
         });
 
