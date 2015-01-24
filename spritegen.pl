@@ -21,7 +21,6 @@ for(my $row = 0; $row < $rows; $row++)
 {
     for(my $column = 0; $column < $width / $tile_width; $column++)
     {
-        $index++;
         my $x = $column * $tile_width;
         my $y = $row * $tile_width;
 
@@ -31,6 +30,8 @@ for(my $row = 0; $row < $rows; $row++)
         $json .= "\"spriteSourceSize\": {\"x\": 0, \"y\":0, \"w\":$tile_width, \"h\":$tile_width},";
         $json .= "\"sourceSize\": {\"w\":$tile_width, \"h\":$tile_width}";
         $json .= "},";
+
+        $index++;
     }
 }
 
