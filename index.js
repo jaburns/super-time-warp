@@ -25,6 +25,8 @@ http.listen(port, function() {
 var game = new Game();
 var oldState = {};
 var clients = [];
+var gameRunning = false;
+var gameInterval = -1;
 var someClientJustDied = false;
 
 function Client(socket) {
@@ -52,38 +54,47 @@ Client.prototype.dispose = function() {
 io.on('connection', function(socket) {
     var client = new Client(socket);
     clients.push(client);
-    socket.on('disconnect', function() {
-        clients.splice(clients.indexOf(client), 1);
-        client.dispose();
-    });
+    socket.on('disconnect', client.dispose.bind(client));
+    setGameRunning (true);
 });
 
-// Update loop ###############################################################
+function setGameRunning(running) {
+    if (gameRunning === running) return;
+    gameRunning = running;
+    if (gameRunning) {
+        console.log ("STARTING GAME SESSION");
+        gameInterval = setInterval (mainLoop, gj_CONSTANTS.DELTA_TIME);
+    } else {
+        console.log ("ENDING GAME SESSION");
+        clearInterval (gameInterval);
+    }
+}
 
-setInterval(function() {
-        game.step();
+function mainLoop() {
+    game.step();
 
-        var newState = prune(_.cloneDeep(game.state.getState()));
-        var diff = gj_JSON.diff(oldState, newState);
-        oldState = newState;
+    var newState = prune(_.cloneDeep(game.state.getState()));
+    var diff = gj_JSON.diff(oldState, newState);
+    oldState = newState;
 
-        var state = 'Some game state ' + Math.random().toString().substr(2);
-        _.each(clients, function(client) {
-            client.socket.emit('msg diff', diff);
+    var state = 'Some game state ' + Math.random().toString().substr(2);
+    _.each(clients, function(client) {
+        client.socket.emit('msg diff', diff);
+    });
+
+    if (someClientJustDied) {
+        clients = _.filter(clients, function(client) {
+            return client.alive;
         });
+        someClientJustDied = false;
 
-        if (someClientJustDied) {
-            clients = _.filter(clients, function(client) {
-                return client.alive;
-            });
-            someClientJustDied = false;
+        if (clients.length < 1) {
+            setGameRunning (false);
         }
-    },
-    gj_CONSTANTS.DELTA_TIME
-);
+    }
+}
 
 function prune(object) {
-
     var keys = Object.keys(object);
     for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
@@ -92,5 +103,4 @@ function prune(object) {
         else if (typeof(object[key]) == 'object') object[key] = prune(object[key]);
     }
     return object;
-
 }

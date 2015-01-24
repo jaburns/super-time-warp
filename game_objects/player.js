@@ -22,6 +22,7 @@ var Player = function(id) {
     this._spawnCountdown = 30;
 
     this._keysDown = {};
+    this._prevKeysDown = {};
     this._mousePos = { x: null, y: null };
     this._mouseDown = false;
     this._standing = 0; // When greater than zero, the player is on the ground.  Counts down every frame. Reset every time a ground collision is detected.
@@ -67,6 +68,11 @@ _.extend(
                 } else {
                     this._standing--;
                 }
+            } else if (this._standing > -1 && state.era == constants.eras.FUTURE) {
+                if (this._keysDown[constants.keys.JUMP] && !this._prevKeysDown[constants.keys.JUMP]) {
+                    this._standing--;
+                    this.vy = -10;
+                }
             }
 
             if (this._mouseDown) {
@@ -97,6 +103,8 @@ _.extend(
 
             // Collide with the map.
             this.collideWithMap(state.maps[state.era]);
+
+            this._prevKeysDown = _.clone(this._keysDown);
         },
 
         moveToSpawnPoint: function() {
