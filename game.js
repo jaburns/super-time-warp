@@ -43,3 +43,5 @@ Game.prototype.step = function() {
         object.update && object.update(state)
     });
 };
+
+module.exports = Game;
