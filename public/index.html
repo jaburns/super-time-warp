@@ -39,6 +39,10 @@
     var object_container = new PIXI.DisplayObjectContainer();
     root_container.addChild(object_container);
 
+    var scores = {};
+    var scores_container = new PIXI.DisplayObjectContainer();
+    stage.addChild(scores_container);
+
     // create a renderer instance
     var renderer = PIXI.autoDetectRenderer(VIEWPORT.w, VIEWPORT.h);
 
@@ -49,7 +53,7 @@
     var sprites = {};
 
     // This array holds filepaths to all json files with sprite information
-    var assetsToLoad = ["assets/jungle_tiles.json"];
+    var assetsToLoad = ['assets/jungle_tiles.json'];
 
     loader = new PIXI.AssetLoader(assetsToLoad);
 
@@ -71,7 +75,9 @@
         initSocket();
     }
 
+    var crosshairs;
     function initSprites(state) {
+
         var tiles = state.maps[state.era].tiles;
         for (var i = 0; i < tiles.length; i++) {
             for (var j = 0; j < tiles[i].length; j++) {
@@ -87,6 +93,11 @@
                 tile_container.addChild(tile);
             }
         }
+
+        crosshairs = new PIXI.Sprite.fromFrame(textures.bullet);
+        crosshairs.anchor.x = 0.5;
+        crosshairs.anchor.y = 0.5;
+        root_container.addChild(crosshairs);
     }
 
     function renderState(state) {
@@ -98,7 +109,7 @@
             // TODO: figure out why objects are null
             if (!object) continue;
 
-            liveIds.push (object.id);
+            liveIds.push(object.id);
             var sprite = sprites[object.id];
 
             if (!sprite) {
@@ -111,7 +122,7 @@
 
                 sprite = new PIXI.DisplayObjectContainer();
                 sprite.addChild(child_sprite);
-                child_sprite.y = - object.h / 2;
+                child_sprite.y = -object.h / 2;
 
                 sprites[object.id] = sprite;
                 object_container.addChild(sprite);
@@ -121,6 +132,23 @@
             sprite.position.x = object.x;
             sprite.getChildAt(0).rotation = object.angle;
 
+            if (object.type == 'player') {
+                var score = scores[object.id];
+                if (!score) {
+                    var fill = object.id == socket.id ? 'white' : 'black';
+                    score = new PIXI.Text(object.id + ':' + object.score, { font: '16px Arial', fill: fill, align: 'left' });
+                    score.score = object.score;
+                    score.position.x = 0;
+                    score.position.y = 16 * (Object.keys(scores).length);
+                    scores_container.addChild(score);
+                    scores[object.id] = score;
+                    console.log('created score');
+                } else {
+                    score.setText(object.id + ':' + object.score);
+                    score.score = object.score;
+                }
+            }
+
             // Center the camera around this client's player object.
             if (object.id === socket.id) {
                 centerCamera(object, state.maps[state.era].tiles[0].length, state.maps[state.era].tiles.length);
@@ -129,9 +157,21 @@
 
         // Remove all the sprites which are tied to object IDs which are now missing.
         for (var k in sprites) {
-            if (liveIds.indexOf (k) < 0) {
+            if (liveIds.indexOf(k) < 0) {
                 object_container.removeChild(sprites[k]);
                 delete sprites[k];
+            }
+        }
+
+        // Remove scores of players that have left
+        var _offset = 0;
+        for (var k in scores) {
+            if (liveIds.indexOf(k) < 0) {
+                scores_container.removeChild(scores[k]);
+                delete scores[k];
+                _offset++;
+            } else if (_offset) {
+                scores[k].position.y -= (16 * _offset);
             }
         }
 
@@ -174,15 +214,12 @@
     }
 
     function onMouseMove(pos) {
-        crosshairs.x = pos.x;
-        crosshairs.y = pos.y;
+        if (crosshairs) {
+            crosshairs.x = pos.x;
+            crosshairs.y = pos.y;
+        }
         socket.emit('msg input', { type: 'mousemove', x: pos.x, y: pos.y });
     }
-
-    var crosshairs = new PIXI.Sprite(textures.bullet);
-    crosshairs.anchor.x = 0.5;
-    crosshairs.anchor.y = 0.5;
-    root_container.addChild(crosshairs);
 
     // Networking #################################################################
 

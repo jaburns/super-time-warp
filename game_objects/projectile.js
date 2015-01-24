@@ -30,7 +30,7 @@ _.extend(
         collideWithObject: function(object) {
             if (object === this.owner) return;
             if (object.takeDamage) {
-                object.takeDamage ();
+                object.takeDamage(this);
                 this.alive = false;
             }
         },

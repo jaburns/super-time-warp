@@ -17,6 +17,8 @@ var Player = function(id) {
     this.h = 16;
     this.d = 1;
 
+    this.score = 0;
+
     this._spawnCountdown = 30;
 
     this._keysDown = {};
@@ -110,7 +112,10 @@ _.extend(
             while (1);
         },
 
-        takeDamage: function() {
+        takeDamage: function(other) {
+            if (other.owner) {
+                other.owner.score ++;
+            }
             this.moveToSpawnPoint();
         },
 
