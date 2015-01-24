@@ -33,8 +33,7 @@
     root_container.scale = SCALE;
     stage.addChild(root_container);
 
-    var tile_container = new PIXI.DisplayObjectContainer();
-    root_container.addChild(tile_container);
+    var tile_container = null;
 
     var object_container = new PIXI.DisplayObjectContainer();
     root_container.addChild(object_container);
@@ -42,6 +41,8 @@
     var scores = {};
     var scores_container = new PIXI.DisplayObjectContainer();
     stage.addChild(scores_container);
+
+    var crosshairs;
 
     // create a renderer instance
     var renderer = PIXI.autoDetectRenderer(VIEWPORT.w, VIEWPORT.h);
@@ -79,10 +80,22 @@
         initSocket();
     }
 
-    var crosshairs;
     function initSprites(state) {
+        crosshairs = new PIXI.Sprite(PIXI.Texture.fromImage('assets/crosshairs.png'));
+        crosshairs.anchor.x = 0.5;
+        crosshairs.anchor.y = 0.5;
+        root_container.addChild(crosshairs);
+    }
 
-        var tiles = state.maps[state.era].tiles;
+    // Creates the tile_container and adds it to the root_container.  Cleans up old one if it exists.
+    function initMap(map) {
+        if (tile_container) {
+            root_container.removeChild(tile_container);
+        }
+        tile_container = new PIXI.DisplayObjectContainer();
+        root_container.addChild(tile_container);
+
+        var tiles = map.tiles;
         for (var i = 0; i < tiles.length; i++) {
             for (var j = 0; j < tiles[i].length; j++) {
                 if (!tiles[i][j]) continue;
@@ -97,11 +110,6 @@
                 tile_container.addChild(tile);
             }
         }
-
-        crosshairs = new PIXI.Sprite(PIXI.Texture.fromImage('assets/crosshairs.png'));
-        crosshairs.anchor.x = 0.5;
-        crosshairs.anchor.y = 0.5;
-        root_container.addChild(crosshairs);
     }
 
     function renderState(state) {
@@ -117,7 +125,7 @@
             var sprite = sprites[object.id];
 
             if (!sprite) {
-                
+
                 var child_sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
 
                 // center the sprites anchor point
@@ -249,11 +257,16 @@
         socket.on('msg state', function(state) {
             latestState = state;
             initSprites(latestState);
+            initMap(latestState.maps[latestState.era]);
             renderState(latestState);
         });
 
         socket.on('msg diff', function(diff) {
-            latestState = gj_JSON.applyDiff(latestState, diff);
+            var newState = gj_JSON.applyDiff(latestState, diff);
+            if (newState.era !== latestState.era) {
+                initMap(newState.maps[newState.era]);
+            }
+            latestState = newState;
             renderState(latestState);
         });
 

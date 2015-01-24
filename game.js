@@ -24,6 +24,10 @@ Game.prototype.handleInput = function(id, input) {
 Game.prototype.step = function() {
     var self = this;
 
+    if (Math.random() < 0.01) {
+        this.state.era = Math.floor(Math.random()*3);
+    }
+
     _.each(this.state.objects, function(object) {
         object.update && object.update(self.state)
     });
