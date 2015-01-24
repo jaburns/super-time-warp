@@ -55,14 +55,14 @@ var gj_JSON = {
             var k = k0.substr(1);
             switch (pre) {
                 case '+':
-                ret[k] = diff[k0];
-                break;
+                    ret[k] = diff[k0];
+                    break;
                 case '-':
-                if (typeof ret[k] !== 'undefined') delete ret[k];
-                break;
+                    if (typeof ret[k] !== 'undefined') delete ret[k];
+                    break;
                 case '*':
-                ret[k] = json.applyDiff (a[k], diff[k0]);
-                break;
+                    ret[k] = json.applyDiff (a[k], diff[k0]);
+                    break;
             }
         }
         return ret;
