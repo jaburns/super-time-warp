@@ -94,7 +94,7 @@
             }
         }
 
-        crosshairs = new PIXI.Sprite.fromFrame(textures.bullet);
+        crosshairs = new PIXI.Sprite(PIXI.Texture.fromImage('assets/crosshairs.png'));
         crosshairs.anchor.x = 0.5;
         crosshairs.anchor.y = 0.5;
         root_container.addChild(crosshairs);
@@ -143,7 +143,7 @@
                     scores_container.addChild(score);
                     scores[object.id] = score;
                     console.log('created score');
-                } else {
+                } else if (object.score != score.score) {
                     score.setText(object.id + ':' + object.score);
                     score.score = object.score;
                 }
