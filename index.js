@@ -24,7 +24,7 @@ function Client(socket) {
     this.socket = socket;
     this.id = Math.random().toString().substr(2);
 
-    socket.on('msg input', this.receiveInput);
+    socket.on('msg input', this.receiveInput.bind(this));
 
     console.log('Client connected with ID: '+this.id);
 }
