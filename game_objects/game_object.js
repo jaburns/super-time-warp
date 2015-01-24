@@ -1,11 +1,15 @@
 var _ = require('lodash');
 
-var GameObject = function() {
+var GameObject = function(id) {
+
+    this.id = id;
+
     this.x = null;
     this.y = null;
 
     this.xVelocity = 0;
     this.yVelocity = 0;
+
 };
 
 _.extend(

@@ -1,9 +1,9 @@
 var _ = require('lodash');
 var GameObject = require('./game_object');
 
-var Projectile = function() {
+var Projectile = function(id) {
 
-    Projectile.superclass.call(this);
+    Projectile.superclass.call(this, id);
 
 };
 
