@@ -7,8 +7,13 @@ var GameObject = function(id) {
     this.x = null;
     this.y = null;
 
+    this.width = null;
+    this.height = null;
+
     this.xVelocity = 0;
     this.yVelocity = 0;
+
+    this.rotation = 0;
 
 };
 
