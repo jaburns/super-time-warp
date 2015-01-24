@@ -10,8 +10,8 @@ var GameObject = function(id) {
     this.width = null;
     this.height = null;
 
-    this.xVelocity = 0;
-    this.yVelocity = 0;
+    this.vx = 0;
+    this.vy = 0;
 
     this.rotation = 0;
 
@@ -22,8 +22,8 @@ _.extend(
     {
         update: function(state) {
 
-            this.x += this.xVelocity;
-            this.y += this.yVelocity;
+            this.x += this.vx;
+            this.y += this.vy;
 
         }
     }
