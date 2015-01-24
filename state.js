@@ -2,30 +2,21 @@ var _ = require('lodash');
 var constants = require('./public/shared/gj_constants');
 
 var Map = require('./map');
+var loadTMX = require('./loadTMX');
 
 var State = function() {
-
-    // map definitions
-    var maps = {};
-    maps[constants.eras.PRESENT] = new Map([
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 1, 1, 1, 1, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    ]);
-
     // initial state
     this._state = {
         era: constants.eras.PRESENT,
-        maps: maps,
+        maps: {},
         objects: []
     };
+
+    var that = this;
+    loadTMX('./maps/present.tmx',function(data) {
+        console.log (JSON.stringify(data));
+        that._state.maps[constants.eras.PRESENT] = new Map(data);
+    })
 };
 
 _.extend(
