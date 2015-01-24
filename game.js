@@ -28,10 +28,22 @@ Game.prototype.step = function() {
         object.update && object.update(self.state)
     });
 
+    for (var i = 0; i < this.state.objects.length-1; ++i) {
+        for (var j = i+1; j < this.state.objects.length; ++j) {
+            _checkOverlapAndCollide (this.state.objects[i], this.state.objects[j]);
+        }
+    }
+
     this.state.objects = _.filter(this.state.objects, function(object) {
         return object.alive;
     });
-
 };
+
+function _checkOverlapAndCollide(obj0, obj1) {
+    if (Math.abs(obj0.x-obj1.x) > (obj0.w+obj1.w)/2) return;
+    if (Math.abs(obj0.y-obj1.y) > (obj0.h+obj1.h)/2) return;
+    obj0.collideWithObject && obj0.collideWithObject(obj1);
+    obj1.collideWithObject && obj1.collideWithObject(obj0);
+}
 
 module.exports = Game;
