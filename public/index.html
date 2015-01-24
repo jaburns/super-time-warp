@@ -5,7 +5,6 @@
     <script src="/shared/gj_constants.js"></script>
     <script src="/shared/gj_json.js"></script>
     <script src="pixi.js"></script>
-    <script src="client.js"></script>
     <style>
         body {
             background: #000;
@@ -18,7 +17,7 @@
 </body>
 <script>
 
-    var socket = io();
+    var socket;
 
     // Drawing ####################################################################
 
@@ -40,30 +39,56 @@
     var object_container = new PIXI.DisplayObjectContainer();
     root_container.addChild(object_container);
 
+    var scores = {};
+    var scores_container = new PIXI.DisplayObjectContainer();
+    stage.addChild(scores_container);
+
     // create a renderer instance
     var renderer = PIXI.autoDetectRenderer(VIEWPORT.w, VIEWPORT.h);
 
     // add the renderer view element to the DOM
     document.body.appendChild(renderer.view);
 
-    // create a texture from an image path
-    var texture = PIXI.Texture.fromImage('assets/tile.png');
-
-    var textures = {
-        tile: PIXI.Texture.fromImage('assets/tile.png'),
-        player: PIXI.Texture.fromImage('assets/player.png'),
-        bullet: PIXI.Texture.fromImage('assets/bullet.png')
-    };
-
+    var textures = {};
     var sprites = {};
+    var playerUI = {}; // object to hold local UI data
+
+    // This array holds filepaths to all json files with sprite information
+    var assetsToLoad = ['assets/jungle_tiles.json'];
+
+    loader = new PIXI.AssetLoader(assetsToLoad);
+
+    // The load is asynchronous, so wait for the go-ahead before starting
+    loader.onComplete = ready.bind(this);
+    loader.load();
+
+    // Make sure the world is ready before opening the socket.
+    function ready()
+    {
+        // Textures are loaded, so store them for later. This should become a larger set of maps
+        textures = {
+            tile: 'soilgrass1',
+            player: 'block1',
+            bullet: 'flower'
+        };
+
+        playerUI.indicatorSpriteID = 1;
+        playerUI.indicatorSprite = new PIXI.Sprite.fromFrame('mushroom');
+
+        // Perform socket setup to start the game
+        initSocket();
+    }
+
+    var crosshairs;
     function initSprites(state) {
+
         var tiles = state.maps[state.era].tiles;
         for (var i = 0; i < tiles.length; i++) {
             for (var j = 0; j < tiles[i].length; j++) {
                 if (!tiles[i][j]) continue;
 
                 // create a new Sprite using the texture
-                var tile = new PIXI.Sprite(textures.tile);
+                var tile = new PIXI.Sprite.fromFrame(textures.tile);
 
                 // move the sprite into position
                 tile.position.x = j * 16;
@@ -72,6 +97,11 @@
                 tile_container.addChild(tile);
             }
         }
+
+        crosshairs = new PIXI.Sprite(PIXI.Texture.fromImage('assets/crosshairs.png'));
+        crosshairs.anchor.x = 0.5;
+        crosshairs.anchor.y = 0.5;
+        root_container.addChild(crosshairs);
     }
 
     function renderState(state) {
@@ -83,11 +113,12 @@
             // TODO: figure out why objects are null
             if (!object) continue;
 
-            liveIds.push (object.id);
+            liveIds.push(object.id);
             var sprite = sprites[object.id];
 
             if (!sprite) {
-                var child_sprite = new PIXI.Sprite(textures[object.type]);
+                
+                var child_sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
 
                 // center the sprites anchor point
                 child_sprite.anchor.x = 0.5;
@@ -95,7 +126,7 @@
 
                 sprite = new PIXI.DisplayObjectContainer();
                 sprite.addChild(child_sprite);
-                child_sprite.y = - object.h / 2;
+                child_sprite.y = -object.h / 2;
 
                 sprites[object.id] = sprite;
                 object_container.addChild(sprite);
@@ -105,17 +136,49 @@
             sprite.position.x = object.x;
             sprite.getChildAt(0).rotation = object.angle;
 
+            if (object.type == 'player') {
+                var score = scores[object.id];
+                if (!score) {
+                    var fill = object.id == socket.id ? 'white' : 'black';
+                    score = new PIXI.Text(object.id + ':' + object.score, { font: '16px Arial', fill: fill, align: 'left' });
+                    score.score = object.score;
+                    score.position.x = 0;
+                    score.position.y = 16 * (Object.keys(scores).length);
+                    scores_container.addChild(score);
+                    scores[object.id] = score;
+                    console.log('created score');
+                } else if (object.score != score.score) {
+                    score.setText(object.id + ':' + object.score);
+                    score.score = object.score;
+                }
+            }
+
             // Center the camera around this client's player object.
             if (object.id === socket.id) {
                 centerCamera(object, state.maps[state.era].tiles[0].length, state.maps[state.era].tiles.length);
+
+                //playerUI.indicatorSprite.position.x = object.x;
+                //playerUI.indicatorSprite.position.y = object.y - object.h * 1.5;
             }
         }
 
         // Remove all the sprites which are tied to object IDs which are now missing.
         for (var k in sprites) {
-            if (liveIds.indexOf (k) < 0) {
+            if (liveIds.indexOf(k) < 0) {
                 object_container.removeChild(sprites[k]);
                 delete sprites[k];
+            }
+        }
+
+        // Remove scores of players that have left
+        var _offset = 0;
+        for (var k in scores) {
+            if (liveIds.indexOf(k) < 0) {
+                scores_container.removeChild(scores[k]);
+                delete scores[k];
+                _offset++;
+            } else if (_offset) {
+                scores[k].position.y -= (16 * _offset);
             }
         }
 
@@ -127,8 +190,11 @@
     var worldPos = { x: 0, y: 0 };
 
     function centerCamera(point, mapWidth, mapHeight) {
-        root_container.x = -point.x * SCALE_FACTOR + VIEWPORT.w / 2;
-        root_container.y = -point.y * SCALE_FACTOR + VIEWPORT.h / 2;
+        var cx = -point.x * SCALE_FACTOR + VIEWPORT.w / 2;
+        var cy = -point.y * SCALE_FACTOR + VIEWPORT.h / 2;
+
+        root_container.x += (cx - root_container.x) / 3;
+        root_container.y += (cy - root_container.y) / 3;
 
         // Stop the camera at the boundaries
         if (root_container.x > 0) root_container.x = 0;
@@ -155,20 +221,18 @@
     }
 
     function onMouseMove(pos) {
-        crosshairs.x = pos.x;
-        crosshairs.y = pos.y;
+        if (crosshairs) {
+            crosshairs.x = pos.x;
+            crosshairs.y = pos.y;
+        }
         socket.emit('msg input', { type: 'mousemove', x: pos.x, y: pos.y });
     }
 
-    var crosshairs = new PIXI.Sprite(textures.bullet);
-    crosshairs.anchor.x = 0.5;
-    crosshairs.anchor.y = 0.5;
-    root_container.addChild(crosshairs);
-
     // Networking #################################################################
 
-    (function() {
+    function initSocket() {
         var latestState;
+        socket = io();
 
         // Receiving state messages from the server -------------------
 
@@ -216,7 +280,7 @@
             socket.emit('msg input', { type: 'mouseup' });
         };
 
-    })();
+    }
 
 </script>
 </html>

@@ -6,6 +6,15 @@
 
 var world_initialized = false;
 
+
+function initializeAssets()
+{
+    var assetsToLoad = ["resources/wall.json"];
+    loader = new PIXI.AssetLoader(assetsToLoad);
+    loader.onComplete = initializeCanvas.bind(this);
+    loader.load();
+}
+
 function initializeCanvas()
 {
     // You can use either PIXI.WebGLRenderer or PIXI.CanvasRenderer
@@ -14,6 +23,11 @@ function initializeCanvas()
     document.body.appendChild(renderer.view);
 
     var stage = new PIXI.Stage;
+
+    var assetsToLoad = ["assets/jungle_tiles.json"];
+    loader = new PIXI.AssetLoader(assetsToLoad);
+    loader.onComplete = this.spriteSheetLoaded.bind(this);
+    loader.load();
 
     var playerTexture = PIXI.Texture.fromImage("bunny.png", new Rectangle(0, 0, 16, 16));
     var bunny = new PIXI.Sprite(playerTexture);

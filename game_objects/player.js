@@ -17,6 +17,8 @@ var Player = function(id) {
     this.h = 16;
     this.d = 1;
 
+    this.score = 0;
+
     this._spawnCountdown = 30;
 
     this._keysDown = {};
@@ -24,6 +26,7 @@ var Player = function(id) {
     this._mouseDown = false;
     this._standing = 0; // When greater than zero, the player is on the ground.  Counts down every frame. Reset every time a ground collision is detected.
 
+    this._cachedMap = null;
     this._fireDelay = 500;
     this._lastFireTime = null;
 };
@@ -35,10 +38,11 @@ _.extend(
     GameObject.prototype,
     {
         update: function(state) {
+            this._cachedMap = state.maps[state.era];
 
             if (this._spawnCountdown > 0) {
                 if (--this._spawnCountdown <= 0) {
-                    this.moveToSpawnPoint(state.maps[state.era]);
+                    this.moveToSpawnPoint();
                 } else return;
             }
 
@@ -94,7 +98,8 @@ _.extend(
             this.collideWithMap(state.maps[state.era]);
         },
 
-        moveToSpawnPoint: function(map) {
+        moveToSpawnPoint: function() {
+            var map = this._cachedMap;
             do {
                 this.x = constants.TILE_SIZE*map.getWidth()*Math.random();
                 this.y = constants.TILE_SIZE*map.getHeight()*Math.random();
@@ -107,8 +112,11 @@ _.extend(
             while (1);
         },
 
-        takeDamage: function() {
-            this.vy = -10;
+        takeDamage: function(other) {
+            if (other.owner) {
+                other.owner.score ++;
+            }
+            this.moveToSpawnPoint();
         },
 
         handleInput: function(input) {
