@@ -2,7 +2,10 @@
 <html>
     <head>
         <script src="/socket.io/socket.io.js"></script>
+        <script src="pixi.dev.js"></script>
+        <script src="client.js"></script>
         <script src="/shared/gj_json.js"></script>
+        
         <style>
             body { background: #000; }
             #c { background: #fff; }
@@ -25,7 +28,7 @@
                 ctx.fillRect(obj.x,obj.y,obj.w,obj.h);
             }
         }
-    
+
     // Networking #################################################################
 
         (function(){

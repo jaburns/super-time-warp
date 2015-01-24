@@ -23,6 +23,7 @@ http.listen(port, function() {
 // Setup socket.io to manage connections with clients ########################
 
 var game = new Game();
+var oldState = {};
 var clients = [];
 
 function Client(socket) {
@@ -57,20 +58,16 @@ io.on('connection', function(socket) {
 // Update loop ###############################################################
 
 setInterval(function() {
-        var oldState = _.cloneDeep(game.state.getState());
         game.step();
-        var newState = game.state.getState();
 
+        var newState = _.cloneDeep(game.state.getState());
         var diff = gj_JSON.diff(oldState, newState);
-        console.log(JSON.stringify(diff));
+        oldState = newState;
 
         var state = 'Some game state ' + Math.random().toString().substr(2);
         _.each(clients, function(client) {
             client.socket.emit('msg diff', diff);
         });
-
-        console.log (newState);
     },
-    2000
-    //gj_CONSTANTS.deltaTime
+    gj_CONSTANTS.deltaTime
 );
