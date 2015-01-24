@@ -21,3 +21,4 @@ _.extend(
     }
 );
 
+module.exports = Projectile;

@@ -43,3 +43,4 @@ _.extend(
     }
 );
 
+module.exports = Player;

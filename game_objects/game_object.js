@@ -28,3 +28,5 @@ _.extend(
         }
     }
 );
+
+module.exports = GameObject;
