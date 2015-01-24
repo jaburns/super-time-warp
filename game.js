@@ -1,6 +1,6 @@
 var _ = require('lodash');
-var State = require('state');
-var Player = require('game_objects/player');
+var State = require('./state');
+var Player = require('./game_objects/player');
 
 function Game() {
     this.state = new State([

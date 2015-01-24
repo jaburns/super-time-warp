@@ -5,6 +5,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
 
+var Game = require('./game');
 var gj_CONSTANTS = require('./public/shared/gj_constants.js');
 var gj_JSON = require('./public/shared/gj_json.js');
 

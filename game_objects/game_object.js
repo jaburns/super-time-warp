@@ -2,7 +2,7 @@ var _ = require('lodash');
 
 var GameObject = function(id) {
 
-    this.id = id;
+    this.id = id || Math.random().toString().substr(2);
 
     this.x = null;
     this.y = null;

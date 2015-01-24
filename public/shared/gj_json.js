@@ -17,7 +17,7 @@ var gj_JSON = {
             if (typeof a[k] === 'number' && typeof b[k] === 'number') {
                 ret[k] = a[k] + t * (b[k] - a[k]);
             } else if (typeof a[k] === 'object' && typeof b[k] === 'object') {
-                ret[k] = json.lerp (a[k], b[k], t);
+                ret[k] = gj_JSON.lerp (a[k], b[k], t);
             } else {
                 ret[k] = a[k];
             }
@@ -37,8 +37,8 @@ var gj_JSON = {
                 ret['-'+k] = 0;
             }
             else if (typeof a[k] === 'object' && typeof b[k] === 'object') {
-                if (!json.equal (a[k], b[k])) {
-                ret['*'+k] = json.diff (a[k],b[k]);
+                if (!gj_JSON.equal (a[k], b[k])) {
+                ret['*'+k] = gj_JSON.diff (a[k],b[k]);
                 }
             }
             else if (a[k] !== b[k]) {
@@ -49,7 +49,7 @@ var gj_JSON = {
     },
 
     applyDiff: function (a,diff) {
-        var ret = json.clone(a);
+        var ret = gj_JSON.clone(a);
         for (var k0 in diff) {
             var pre = k0[0];
             var k = k0.substr(1);
@@ -61,7 +61,7 @@ var gj_JSON = {
                 if (typeof ret[k] !== 'undefined') delete ret[k];
                 break;
                 case '*':
-                ret[k] = json.applyDiff (a[k], diff[k0]);
+                ret[k] = gj_JSON.applyDiff (a[k], diff[k0]);
                 break;
             }
         }
