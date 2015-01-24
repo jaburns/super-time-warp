@@ -16,4 +16,4 @@ var gj_CONSTANTS = {
     }
 };
 
-if (module) module.exports = gj_CONSTANTS;
+if (typeof(module) !== 'undefined') module.exports = gj_CONSTANTS;

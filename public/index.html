@@ -2,6 +2,7 @@
 <html>
     <head>
         <script src="/socket.io/socket.io.js"></script>
+        <script src="/shared/gj_constants.js"></script>
         <script src="/shared/gj_json.js"></script>
         <script src="pixi.js"></script>
         <script src="client.js"></script>
@@ -105,13 +106,35 @@
                 renderState(latestState);
             });
 
+            var keys = [];
+            for (var key in gj_CONSTANTS.keys) {
+                keys.push(gj_CONSTANTS.keys[key]);
+            }
+
             window.onkeyup = function(e) {
-                socket.emit('msg input', { type: 'keyup', key: e.keyCode });
+                if (keys.indexOf(e.keyCode) > -1) {
+                    socket.emit('msg input', { type: 'keyup', key: e.keyCode });
+                }
             };
 
             window.onkeydown = function(e) {
-                socket.emit('msg input', { type: 'keydown', key: e.keyCode });
+                if (keys.indexOf(e.keyCode) > -1) {
+                    socket.emit('msg input', { type: 'keydown', key: e.keyCode });
+                }
             };
+
+            window.onmousemove = function(e) {
+                socket.emit('msg input', { type: 'mousemove', x: e.x, y: e.y });
+            };
+
+            window.onmousedown = function(e) {
+                socket.emit('msg input', { type: 'mousedown' });
+            };
+
+            window.onmouseup = function(e) {
+                socket.emit('msg input', { type: 'mouseup' });
+            };
+
         })();
 
     </script>
