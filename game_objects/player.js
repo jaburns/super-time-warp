@@ -33,10 +33,10 @@ _.extend(
                 this.vx = -2;
             }
             else if (this._keysDown[constants.keys.RIGHT_ARROW]) {
-                this.vx = -2;
+                this.vx = 2;
             }
             else {
-                this.vx = 1;
+                this.vx = 0;
             }
             this.vy += GRAVITY;
 
@@ -57,7 +57,7 @@ _.extend(
 
         collideWithMap: function(map) {
             if (map.sampleAtPixel(this.x,this.y)) {
-                this.vy = -10;
+                this.vy = -1;
             }
         }
     }
