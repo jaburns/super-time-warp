@@ -63,10 +63,10 @@ function setGameRunning(running) {
     gameRunning = running;
     if (gameRunning) {
         console.log ("STARTING GAME SESSION");
-        clearInterval (gameInterval);
+        gameInterval = setInterval (mainLoop, gj_CONSTANTS.DELTA_TIME);
     } else {
         console.log ("ENDING GAME SESSION");
-        gameInterval = setInterval (mainLoop, gj_CONSTANTS.DELTA_TIME);
+        clearInterval (gameInterval);
     }
 }
 
