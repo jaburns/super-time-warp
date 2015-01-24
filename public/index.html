@@ -1,24 +1,29 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <script src="/socket.io/socket.io.js"></script>
-        <script src="/shared/gj_constants.js"></script>
-        <script src="/shared/gj_json.js"></script>
-        <script src="pixi.js"></script>
-        <script src="client.js"></script>
-        <style>
-            body { background: #000; }
-            #c { background: #fff; }
-        </style>
-    </head>
-    <body>
+<head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/shared/gj_constants.js"></script>
+    <script src="/shared/gj_json.js"></script>
+    <script src="pixi.js"></script>
+    <script src="client.js"></script>
+    <style>
+        body {
+            background: #000;
+        }
+    </style>
+</head>
+<body>
 
-    </body>
-    <script>
+</body>
+<script>
+
+    var socket = io();
 
     // Drawing ####################################################################
 
-    var SCALE_FACTOR = 1;
+    var SCALE_FACTOR = 3;
+    var VIEWPORT = { w: 800, h: 608 };
+
     var SCALE = new PIXI.Point(SCALE_FACTOR, SCALE_FACTOR);
     PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
 
@@ -35,7 +40,7 @@
     root_container.addChild(object_container);
 
     // create a renderer instance
-    var renderer = PIXI.autoDetectRenderer(640, 480);
+    var renderer = PIXI.autoDetectRenderer(VIEWPORT.w, VIEWPORT.h);
 
     // add the renderer view element to the DOM
     document.body.appendChild(renderer.view);
@@ -43,7 +48,11 @@
     // create a texture from an image path
     var texture = PIXI.Texture.fromImage('assets/tile.png');
 
-    var player_texture = PIXI.Texture.fromImage('assets/player.png');
+    var textures = {
+        tile: PIXI.Texture.fromImage('assets/tile.png'),
+        player: PIXI.Texture.fromImage('assets/player.png'),
+        bullet: PIXI.Texture.fromImage('assets/bullet.png')
+    };
 
     var sprites = {};
     function initSprites(state) {
@@ -53,7 +62,7 @@
                 if (!tiles[i][j]) continue;
 
                 // create a new Sprite using the texture
-                var tile = new PIXI.Sprite(texture);
+                var tile = new PIXI.Sprite(textures.tile);
 
                 // move the sprite into position
                 tile.position.x = j * 16;
@@ -65,13 +74,19 @@
     }
 
     function renderState(state) {
+        var liveIds = [];
 
         for (var i = 0; i < state.objects.length; i++) {
             var object = state.objects[i];
-            var sprite = sprites[object.id];
-            if (!sprite) {
 
-                sprite = new PIXI.Sprite(player_texture);
+            // TODO: figure out why objects are null
+            if (!object) continue;
+
+            liveIds.push (object.id);
+            var sprite = sprites[object.id];
+
+            if (!sprite) {
+                sprite = new PIXI.Sprite(textures[object.type]);
 
                 // center the sprites anchor point
                 sprite.anchor.x = 0.5;
@@ -80,62 +95,102 @@
                 sprites[object.id] = sprite;
                 object_container.addChild(sprite);
             }
+
             sprite.position.y = object.y;
             sprite.position.x = object.x;
-            sprite.rotation = (object.angle * Math.PI) / 180;
+            sprite.rotation = object.angle;
+
+            // Center the camera around this client's player object.
+            if (object.id === socket.id) {
+                centerCamera(object, state.maps[state.era].tiles[0].length, state.maps[state.era].tiles.length);
+            }
+        }
+
+        // Remove all the sprites which are tied to object IDs which are now missing.
+        for (var k in sprites) {
+            if (liveIds.indexOf (k) < 0) {
+                object_container.removeChild(sprites[k]);
+                delete sprites[k];
+            }
         }
 
         // render the stage
         renderer.render(stage);
     }
 
+    function centerCamera(point, mapWidth, mapHeight) {
+        root_container.x = -point.x * SCALE_FACTOR + VIEWPORT.w / 2;
+        root_container.y = -point.y * SCALE_FACTOR + VIEWPORT.h / 2;
+
+        // Stop the camera at the boundaries
+        if (root_container.x > 0) root_container.x = 0;
+        if (root_container.y > 0) root_container.y = 0;
+        var minx = -SCALE_FACTOR * mapWidth * gj_CONSTANTS.TILE_SIZE + VIEWPORT.w;
+        var miny = -SCALE_FACTOR * mapHeight * gj_CONSTANTS.TILE_SIZE + VIEWPORT.h;
+        if (root_container.x < minx) root_container.x = minx;
+        if (root_container.y < miny) root_container.y = miny;
+    }
+
+    function screenPosToWorldCoordinates(pos) {
+
+        pos.x = (pos.x - root_container.x) / SCALE_FACTOR;
+        pos.y = (pos.y - root_container.y) / SCALE_FACTOR;
+
+        return pos;
+
+    }
+
     // Networking #################################################################
 
-        (function(){
-            var socket = io();
-            var latestState;
+    (function() {
+        var latestState;
 
-            socket.on('msg state', function(state) {
-                latestState = state;
-                initSprites(latestState);
-                renderState(latestState);
-            });
+        // Receiving state messages from the server -------------------
 
-            socket.on('msg diff', function(diff) {
-                latestState = gj_JSON.applyDiff(latestState, diff);
-                renderState(latestState);
-            });
+        socket.on('msg state', function(state) {
+            latestState = state;
+            initSprites(latestState);
+            renderState(latestState);
+        });
 
-            var keys = [];
-            for (var key in gj_CONSTANTS.keys) {
-                keys.push(gj_CONSTANTS.keys[key]);
+        socket.on('msg diff', function(diff) {
+            latestState = gj_JSON.applyDiff(latestState, diff);
+            renderState(latestState);
+        });
+
+        // Handling inputs and sending them to the server -------------
+
+        var keys = [];
+        for (var key in gj_CONSTANTS.keys) {
+            keys.push(gj_CONSTANTS.keys[key]);
+        }
+
+        window.onkeyup = function(e) {
+            if (keys.indexOf(e.keyCode) > -1) {
+                socket.emit('msg input', { type: 'keyup', key: e.keyCode });
             }
+        };
 
-            window.onkeyup = function(e) {
-                if (keys.indexOf(e.keyCode) > -1) {
-                    socket.emit('msg input', { type: 'keyup', key: e.keyCode });
-                }
-            };
+        window.onkeydown = function(e) {
+            if (keys.indexOf(e.keyCode) > -1) {
+                socket.emit('msg input', { type: 'keydown', key: e.keyCode });
+            }
+        };
 
-            window.onkeydown = function(e) {
-                if (keys.indexOf(e.keyCode) > -1) {
-                    socket.emit('msg input', { type: 'keydown', key: e.keyCode });
-                }
-            };
+        renderer.view.onmousemove = function(e) {
+            var pos = screenPosToWorldCoordinates({ x: e.layerX, y: e.layerY });
+            socket.emit('msg input', { type: 'mousemove', x: pos.x, y: pos.y });
+        };
 
-            window.onmousemove = function(e) {
-                socket.emit('msg input', { type: 'mousemove', x: e.x, y: e.y });
-            };
+        window.onmousedown = function(e) {
+            socket.emit('msg input', { type: 'mousedown' });
+        };
 
-            window.onmousedown = function(e) {
-                socket.emit('msg input', { type: 'mousedown' });
-            };
+        window.onmouseup = function(e) {
+            socket.emit('msg input', { type: 'mouseup' });
+        };
 
-            window.onmouseup = function(e) {
-                socket.emit('msg input', { type: 'mouseup' });
-            };
+    })();
 
-        })();
-
-    </script>
+</script>
 </html>

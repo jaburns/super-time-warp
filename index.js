@@ -25,9 +25,11 @@ http.listen(port, function() {
 var game = new Game();
 var oldState = {};
 var clients = [];
+var someClientJustDied = false;
 
 function Client(socket) {
     this.socket = socket;
+    this.alive = true;
     game.addPlayer(this.socket.id);
 
     socket.on('msg input', this.receiveInput.bind(this));
@@ -44,6 +46,8 @@ Client.prototype.receiveInput = function(input) {
 Client.prototype.dispose = function() {
     console.log('Client disconnected with ID: ' + this.socket.id);
     game.removePlayer(this.socket.id);
+    someClientJustDied = true;
+    this.alive = false;
 };
 
 io.on('connection', function(socket) {
@@ -68,6 +72,13 @@ setInterval(function() {
         _.each(clients, function(client) {
             client.socket.emit('msg diff', diff);
         });
+
+        if (someClientJustDied) {
+            clients = _.filter(clients, function(client) {
+                return client.alive;
+            });
+            someClientJustDied = false;
+        }
     },
     gj_CONSTANTS.DELTA_TIME
 );
