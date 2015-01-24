@@ -1,6 +1,7 @@
 
 var gj_CONSTANTS = {
-    deltaTime: 35,
+    DELTA_TIME: 35,
+    TILE_SIZE: 16,
     keys: {
         SPACEBAR: 32,
         LEFT_ARROW: 37,

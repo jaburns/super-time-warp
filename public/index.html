@@ -43,7 +43,7 @@
 
                 // move the sprite into position
                 tile.position.x = j * 16;
-                tile.position.y = i * 16;
+                tile.position.y = i * 17;
 
                 stage.addChild(tile);
             }
@@ -93,11 +93,11 @@
             });
 
             window.onkeyup = function(e) {
-                socket.emit('msg input', { type: 'key', key: e.keyCode });
+                socket.emit('msg input', { type: 'keyup', key: e.keyCode });
             };
 
-            window.onmousemove = function(e) {
-                socket.emit('msg input', { type: 'mouse', x: e.x, y: e.y });
+            window.onkeydown = function(e) {
+                socket.emit('msg input', { type: 'keydown', key: e.keyCode });
             };
         })();
 

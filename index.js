@@ -69,5 +69,5 @@ setInterval(function() {
             client.socket.emit('msg diff', diff);
         });
     },
-    gj_CONSTANTS.deltaTime
+    gj_CONSTANTS.DELTA_TIME
 );
