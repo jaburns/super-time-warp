@@ -21,7 +21,7 @@
     var stage = new PIXI.Stage(0x66FF99);
 
     // create a renderer instance
-    var renderer = PIXI.autoDetectRenderer(160, 160);
+    var renderer = PIXI.autoDetectRenderer(640, 480);
 
     // add the renderer view element to the DOM
     document.body.appendChild(renderer.view);
@@ -36,8 +36,7 @@
         var tiles = state.maps[state.era].tiles;
         for (var i = 0; i < tiles.length; i++) {
             for (var j = 0; j < tiles[i].length; j++) {
-
-                if (!tiles[j][i]) continue;
+                if (!tiles[i][j]) continue;
 
                 // create a new Sprite using the texture
                 var tile = new PIXI.Sprite(texture);
@@ -62,7 +61,7 @@
 
                 // center the sprites anchor point
                 sprite.anchor.x = 0.5;
-                sprite.anchor.y = 0.5;
+                sprite.anchor.y = 1;
 
                 sprites[object.id] = sprite;
                 stage.addChild(sprite);
@@ -75,7 +74,7 @@
         // render the stage
         renderer.render(stage);
     }
-    
+
     // Networking #################################################################
 
         (function(){
@@ -96,7 +95,7 @@
             window.onkeyup = function(e) {
                 socket.emit('msg input', { type: 'key', key: e.keyCode });
             };
-            
+
             window.onmousemove = function(e) {
                 socket.emit('msg input', { type: 'mouse', x: e.x, y: e.y });
             };
