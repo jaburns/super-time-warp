@@ -19,9 +19,19 @@
 
     var SCALE_FACTOR = 1;
     var SCALE = new PIXI.Point(SCALE_FACTOR, SCALE_FACTOR);
+    PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
 
     // create an new instance of a pixi stage
     var stage = new PIXI.Stage(0x66FF99);
+    var root_container = new PIXI.DisplayObjectContainer();
+    root_container.scale = SCALE;
+    stage.addChild(root_container);
+
+    var tile_container = new PIXI.DisplayObjectContainer();
+    root_container.addChild(tile_container);
+
+    var object_container = new PIXI.DisplayObjectContainer();
+    root_container.addChild(object_container);
 
     // create a renderer instance
     var renderer = PIXI.autoDetectRenderer(640, 480);
@@ -43,13 +53,12 @@
 
                 // create a new Sprite using the texture
                 var tile = new PIXI.Sprite(texture);
-                tile.scale = SCALE;
 
                 // move the sprite into position
-                tile.position.x = j * 16 * SCALE_FACTOR;
-                tile.position.y = i * 16 * SCALE_FACTOR;
+                tile.position.x = j * 16;
+                tile.position.y = i * 16;
 
-                stage.addChild(tile);
+                tile_container.addChild(tile);
             }
         }
     }
@@ -62,17 +71,16 @@
             if (!sprite) {
 
                 sprite = new PIXI.Sprite(player_texture);
-                sprite.scale = SCALE;
 
                 // center the sprites anchor point
                 sprite.anchor.x = 0.5;
                 sprite.anchor.y = 1;
 
                 sprites[object.id] = sprite;
-                stage.addChild(sprite);
+                object_container.addChild(sprite);
             }
-            sprite.position.x = object.x * SCALE_FACTOR;
-            sprite.position.y = object.y * SCALE_FACTOR;
+            sprite.position.y = object.y;
+            sprite.position.x = object.x;
             sprite.rotation = (object.angle * Math.PI) / 180;
         }
 
