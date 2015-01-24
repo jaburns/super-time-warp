@@ -117,7 +117,7 @@
             var sprite = sprites[object.id];
 
             if (!sprite) {
-                
+
                 var child_sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
 
                 // center the sprites anchor point
@@ -128,8 +128,7 @@
                 sprite.addChild(child_sprite);
                 child_sprite.y = -object.h / 2;
 
-                if (object.id === socket.id)
-                {
+                if (object.id === socket.id) {
                     var pointer_sprite = new PIXI.Sprite.fromFrame('mushroom');
 
                     pointer_sprite.anchor.x = 0.5;
