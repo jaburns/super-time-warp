@@ -179,8 +179,6 @@
 
         renderer.view.onmousemove = function(e) {
             var pos = screenPosToWorldCoordinates({ x: e.layerX, y: e.layerY });
-            crosshairs.position.x = pos.x;
-            crosshairs.position.y = pos.y;
             socket.emit('msg input', { type: 'mousemove', x: pos.x, y: pos.y });
         };
 
