@@ -14,11 +14,11 @@ var State = function() {
 
     var self = this;
 
-    _.each([['jungle',constants.eras.JUNGLE],
-            ['tundra',constants.eras.TUNDRA],
-            ['future',constants.eras.FUTURE]],
+    _.each([['jungle', constants.eras.JUNGLE],
+            ['tundra', constants.eras.TUNDRA],
+            ['future', constants.eras.FUTURE]],
         function(a) {
-            loadTMX('./maps/'+a[0]+'.tmx',function(data) {
+            loadTMX('./maps/' + a[0] + '.tmx', function(data) {
                 self.maps[a[1]] = new Map(data);
             });
         }

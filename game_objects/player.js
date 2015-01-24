@@ -114,8 +114,8 @@ _.extend(
         },
 
         takeDamage: function(other) {
-            if (other.owner) {
-                other.owner.score ++;
+            if (other._owner) {
+                other._owner.score ++;
             }
             this.moveToSpawnPoint();
         },

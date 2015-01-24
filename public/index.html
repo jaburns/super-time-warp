@@ -259,6 +259,7 @@
         });
 
         socket.on('msg diff', function(diff) {
+            console.log(JSON.stringify(diff));
             var newState = gj_JSON.applyDiff(latestState, diff);
             if (newState.era !== latestState.era) {
                 initMap(newState.maps[newState.era]);
