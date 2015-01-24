@@ -8,7 +8,6 @@
         <script src="client.js"></script>
         <style>
             body { background: #000; }
-            #c { background: #fff; }
         </style>
     </head>
     <body>
@@ -47,7 +46,11 @@
     // create a texture from an image path
     var texture = PIXI.Texture.fromImage('assets/tile.png');
 
-    var player_texture = PIXI.Texture.fromImage('assets/player.png');
+    var textures = {
+        tile: PIXI.Texture.fromImage('assets/tile.png'),
+        player: PIXI.Texture.fromImage('assets/player.png'),
+        bullet: PIXI.Texture.fromImage('assets/bullet.png')
+    };
 
     var sprites = {};
     function initSprites(state) {
@@ -57,7 +60,7 @@
                 if (!tiles[i][j]) continue;
 
                 // create a new Sprite using the texture
-                var tile = new PIXI.Sprite(texture);
+                var tile = new PIXI.Sprite(textures.tile);
 
                 // move the sprite into position
                 tile.position.x = j * 16;
@@ -71,10 +74,14 @@
     function renderState(state) {
         for (var i = 0; i < state.objects.length; i++) {
             var object = state.objects[i];
+
+            // TODO: figure out why objects are null
+            if (!object) return;
+
             var sprite = sprites[object.id];
 
             if (!sprite) {
-                sprite = new PIXI.Sprite(player_texture);
+                sprite = new PIXI.Sprite(textures[object.type]);
 
                 // center the sprites anchor point
                 sprite.anchor.x = 0.5;
@@ -88,7 +95,7 @@
 
             sprite.position.y = object.y;
             sprite.position.x = object.x;
-            sprite.rotation = (object.angle * Math.PI) / 180;
+            sprite.rotation = object.angle;
 
             // Center the camera around this client's player object.
             if (object.id === socket.id) {

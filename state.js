@@ -6,40 +6,44 @@ var loadTMX = require('./loadTMX');
 
 var State = function() {
     // initial state
-    this._state = {
-        era: constants.eras.PRESENT,
-        maps: {},
-        objects: []
-    };
 
-    var that = this;
+    this.era = constants.eras.PRESENT;
+    this.maps = {};
+    this.objects = [];
+
+    var self = this;
     loadTMX('./maps/present.tmx',function(data) {
-        console.log (JSON.stringify(data));
-        that._state.maps[constants.eras.PRESENT] = new Map(data);
-    })
+        self.maps[constants.eras.PRESENT] = new Map(data);
+    });
 };
 
 _.extend(
     State.prototype,
     {
         getState: function() {
-            return this._state;
+            return {
+                era: this.era,
+                maps: this.maps,
+                objects: this.objects
+            }
         },
 
         addObject: function(object) {
-            this._state.objects.push(object);
+            this.objects.push(object);
         },
 
         removeObject: function(object) {
-            var index = this._state.objects.indexOf(object);
-            if (index > -1) this._state.objects.splice(index, 1);
+            var index = this.objects.indexOf(object);
+            if (index > -1) this.objects.splice(index, 1);
+            object.dispose();
         },
 
         removeObjectById: function(id) {
-            for (var i = 0; i < this._state.objects.length; i++) {
-                var object = this._state.objects[i];
+            for (var i = 0; i < this.objects.length; i++) {
+                var object = this.objects[i];
                 if (object.id == id) {
-                    this._state.objects.splice(i, 1);
+                    this.objects.splice(i, 1);
+                    object.dispose();
                     return;
                 }
             }

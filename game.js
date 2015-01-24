@@ -15,18 +15,23 @@ Game.prototype.removePlayer = function(id) {
 };
 
 Game.prototype.handleInput = function(id, input) {
-    var state = this.state.getState();
-    var object = _.find(state.objects, function(object) {
+    var object = _.find(this.state.objects, function(object) {
         return object.id == id;
     });
     if (object && object.handleInput) object.handleInput(input);
 };
 
 Game.prototype.step = function() {
-    var state = this.state.getState();
-    _.each(state.objects, function(object) {
-        object.update && object.update(state)
+    var self = this;
+
+    _.each(this.state.objects, function(object) {
+        object.update && object.update(self.state)
     });
+
+    this.state.objects = _.filter(this.state.objects, function(object) {
+        return object.alive;
+    });
+
 };
 
 module.exports = Game;
