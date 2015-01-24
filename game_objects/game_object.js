@@ -4,8 +4,6 @@ var constants = require('../public/shared/gj_constants');
 var MAX_VELOCITY = 1234;
 var DELTA_VELOCITY = 1234;
 
-var GRAVITY = 0.5;
-
 var GameObject = function(id) {
 
     this.id = id || Math.random().toString().substr(2);
@@ -32,8 +30,6 @@ _.extend(
         update: function(state) {
 
             if (!this.alive) return;
-
-            this.vy += GRAVITY;
 
             this.x += this.vx;
             this.y += this.vy;

@@ -4,16 +4,20 @@ var constants = require('../public/shared/gj_constants');
 var GameObject = require('./game_object');
 var Projectile = require('./projectile');
 
+var GRAVITY = 0.5;
+
 var Player = function(id) {
 
     Player.superclass.call(this, id);
 
     this.type = 'player';
-    this.x = 160 * Math.random();
-    this.y = 160 * Math.random();
-    this.w = 10;
-    this.h = 20;
+    this.x = 0;
+    this.y = 0;
+    this.w = 16;
+    this.h = 16;
     this.d = 1;
+
+    this._spawnCountdown = 30;
 
     this._keysDown = {};
     this._mousePos = { x: null, y: null };
@@ -31,6 +35,12 @@ _.extend(
     GameObject.prototype,
     {
         update: function(state) {
+
+            if (this._spawnCountdown > 0) {
+                if (--this._spawnCountdown <= 0) {
+                    this.moveToSpawnPoint(state.maps[state.era]);
+                } else return;
+            }
 
             if (this._keysDown[constants.keys.MOVE_LEFT]) {
                 this.vx += (-5 - this.vx) / 5;
@@ -60,12 +70,12 @@ _.extend(
                 if (!this._lastFireTime || (new Date().getTime() - this._lastFireTime) > this._fireDelay) {
 
                     this._lastFireTime = new Date().getTime();
-                    var bullet = new Projectile();
+                    var bullet = new Projectile (this);
 
                     bullet.x = this.x;
                     bullet.y = this.y - (this.h / 2);
 
-                    bullet.angle = Math.atan2((this.y - this._mousePos.y), (this.x - this._mousePos.x));
+                    bullet.angle = Math.atan2((this.y - this._mousePos.y - (this.h / 2) - (bullet.h / 2)), (this.x - this._mousePos.x));
                     bullet.vx = -Math.cos(bullet.angle) * 10;
                     bullet.vy = -Math.sin(bullet.angle) * 10;
 
@@ -75,11 +85,30 @@ _.extend(
 
             }
 
+            this.vy += GRAVITY;
+
             // Integrate velocity in to position.
             Player.superclass.prototype.update.call(this, state);
 
             // Collide with the map.
             this.collideWithMap(state.maps[state.era]);
+        },
+
+        moveToSpawnPoint: function(map) {
+            do {
+                this.x = constants.TILE_SIZE*map.getWidth()*Math.random();
+                this.y = constants.TILE_SIZE*map.getHeight()*Math.random();
+                if (map.sampleAtPixel(this.x, this.y)) continue;
+                if (map.sampleAtPixel(this.x, this.y - this.h)) continue;
+                if (map.sampleAtPixel(this.x - this.w/2, this.y - this.h/2)) continue;
+                if (map.sampleAtPixel(this.x + this.w/2, this.y - this.h/2)) continue;
+                break;
+            }
+            while (1);
+        },
+
+        takeDamage: function() {
+            this.vy = -10;
         },
 
         handleInput: function(input) {
@@ -109,15 +138,15 @@ _.extend(
                 this.vy = 0;
                 this._standing = 2;
             }
-            if (map.sampleAtPixel(this.x, this.y - constants.TILE_SIZE)) {
+            if (map.sampleAtPixel(this.x, this.y - this.h)) {
                 this.y = constants.TILE_SIZE * Math.ceil(this.y / constants.TILE_SIZE);
                 if (this.vy < 0) this.vy = 0;
             }
-            if (map.sampleAtPixel(this.x - constants.TILE_SIZE / 2, this.y - constants.TILE_SIZE / 2)) {
+            if (map.sampleAtPixel(this.x - this.w/2, this.y - this.h/2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
                 this.vx = 0;
             }
-            if (map.sampleAtPixel(this.x + constants.TILE_SIZE / 2, this.y - constants.TILE_SIZE / 2)) {
+            if (map.sampleAtPixel(this.x + this.w/2, this.y - this.h/2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
                 this.vx = 0;
             }

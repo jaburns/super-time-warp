@@ -8,6 +8,7 @@
     <style>
         body {
             background: #000;
+            cursor: none !important;
         }
     </style>
 </head>
@@ -101,16 +102,16 @@
             var sprite = sprites[object.id];
 
             if (!sprite) {
-                if(object.type == undefined)
-                {
-                    console.log("object has no type");
-                    console.log(object);
-                }
-                sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
+                
+                var child_sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
 
                 // center the sprites anchor point
-                sprite.anchor.x = 0.5;
-                sprite.anchor.y = 1;
+                child_sprite.anchor.x = 0.5;
+                child_sprite.anchor.y = 0.5;
+
+                sprite = new PIXI.DisplayObjectContainer();
+                sprite.addChild(child_sprite);
+                child_sprite.y = - object.h / 2;
 
                 sprites[object.id] = sprite;
                 object_container.addChild(sprite);
@@ -118,7 +119,7 @@
 
             sprite.position.y = object.y;
             sprite.position.x = object.x;
-            sprite.rotation = object.angle;
+            sprite.getChildAt(0).rotation = object.angle;
 
             // Center the camera around this client's player object.
             if (object.id === socket.id) {
@@ -138,6 +139,9 @@
         renderer.render(stage);
     }
 
+    var mousePos = { x: 0, y: 0 };
+    var worldPos = { x: 0, y: 0 };
+
     function centerCamera(point, mapWidth, mapHeight) {
         root_container.x = -point.x * SCALE_FACTOR + VIEWPORT.w / 2;
         root_container.y = -point.y * SCALE_FACTOR + VIEWPORT.h / 2;
@@ -149,16 +153,33 @@
         var miny = -SCALE_FACTOR * mapHeight * gj_CONSTANTS.TILE_SIZE + VIEWPORT.h;
         if (root_container.x < minx) root_container.x = minx;
         if (root_container.y < miny) root_container.y = miny;
+
+        var pos = screenPosToWorldCoordinates(mousePos);
+        if (pos.x != worldPos.x || pos.y != worldPos.y) {
+            worldPos = pos;
+            onMouseMove(worldPos);
+        }
     }
 
     function screenPosToWorldCoordinates(pos) {
 
-        pos.x = (pos.x - root_container.x) / SCALE_FACTOR;
-        pos.y = (pos.y - root_container.y) / SCALE_FACTOR;
+        var x = (pos.x - root_container.x) / SCALE_FACTOR;
+        var y = (pos.y - root_container.y) / SCALE_FACTOR;
 
-        return pos;
+        return { x: x, y: y };
 
     }
+
+    function onMouseMove(pos) {
+        crosshairs.x = pos.x;
+        crosshairs.y = pos.y;
+        socket.emit('msg input', { type: 'mousemove', x: pos.x, y: pos.y });
+    }
+
+    var crosshairs = new PIXI.Sprite(textures.bullet);
+    crosshairs.anchor.x = 0.5;
+    crosshairs.anchor.y = 0.5;
+    root_container.addChild(crosshairs);
 
     // Networking #################################################################
 
@@ -199,8 +220,9 @@
         };
 
         renderer.view.onmousemove = function(e) {
-            var pos = screenPosToWorldCoordinates({ x: e.layerX, y: e.layerY });
-            socket.emit('msg input', { type: 'mousemove', x: pos.x, y: pos.y });
+            mousePos = { x: e.layerX, y: e.layerY };
+            worldPos = screenPosToWorldCoordinates(mousePos);
+            onMouseMove(worldPos);
         };
 
         window.onmousedown = function(e) {

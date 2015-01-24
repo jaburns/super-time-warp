@@ -39,7 +39,6 @@ function Client(socket) {
 }
 
 Client.prototype.receiveInput = function(input) {
-    console.log('Received input "' + JSON.stringify(input) + '" from client ' + this.socket.id);
     game.handleInput(this.socket.id, input);
 };
 
