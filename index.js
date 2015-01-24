@@ -1,4 +1,3 @@
-
 var _ = require('lodash');
 var express = require('express');
 var app = express();
@@ -10,12 +9,12 @@ var CONFIG = require('./public/config.js');
 
 app.use(express.static(__dirname + '/public'));
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
     res.sendFile(__dirname + '/public/index.html');
 });
 
-http.listen(port, function(){
-    console.log('listening on '+port);
+http.listen(port, function() {
+    console.log('listening on ' + port);
 });
 
 // Setup socket.io to manage connections with clients ########################
@@ -28,18 +27,18 @@ function Client(socket) {
 
     socket.on('msg input', this.receiveInput.bind(this));
 
-    console.log('Client connected with ID: '+this.id);
+    console.log('Client connected with ID: ' + this.id);
 }
 
 Client.prototype.receiveInput = function(msgInput) {
-    console.log('Received input "'+msgInput+'" from client '+this.id);
-}
+    console.log('Received input "' + msgInput + '" from client ' + this.id);
+};
 
 Client.prototype.dispose = function() {
-    console.log('Client disconnected with ID: '+this.id);
-}
+    console.log('Client disconnected with ID: ' + this.id);
+};
 
-io.on('connection',function(socket) {
+io.on('connection', function(socket) {
     var client = new Client(socket);
     clients.push(client);
     socket.on('disconnect', function() {
@@ -51,10 +50,14 @@ io.on('connection',function(socket) {
 // Update loop ###############################################################
 
 setInterval(function() {
-    var state = 'Some game state '+Math.random().toString().substr(2);
-    _.each(clients,function(client) {
-        client.socket.volatile.emit('msg state', state);
-    });
-},
+        var state = _.cloneDeep(_state);
+
+
+
+        var state = 'Some game state ' + Math.random().toString().substr(2);
+        _.each(clients, function(client) {
+            client.socket.emit('msg state', state);
+        });
+    },
     CONFIG.deltaTime
 );
