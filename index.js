@@ -6,6 +6,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
 
+var CONFIG = require('./public/config.js');
+
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', function(req, res){
@@ -54,5 +56,5 @@ setInterval(function() {
         client.socket.volatile.emit('msg state', state);
     });
 },
-    500
+    CONFIG.deltaTime
 );
