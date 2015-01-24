@@ -5,6 +5,8 @@ var GameObject = require('./game_object');
 var MAX_VELOCITY = 1234;
 var DELTA_VELOCITY = 1234
 
+var GRAVITY = 0.05;
+
 var Player = function(id) {
 
     Player.superclass.call(this, id);
@@ -25,6 +27,7 @@ _.extend(
     {
         update: function(state) {
 
+            this.vy += GRAVITY;
             Player.superclass.prototype.update.call(this, state);
 
         },
