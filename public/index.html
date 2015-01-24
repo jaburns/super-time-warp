@@ -71,7 +71,6 @@
     {
         // Textures are loaded, so store them for later. This should become a larger set of maps
         textures = {
-            tile: 'soilgrass1',
             player: 'block1',
             bullet: 'flower'
         };
@@ -101,7 +100,7 @@
                 if (!tiles[i][j]) continue;
 
                 // create a new Sprite using the texture
-                var tile = new PIXI.Sprite.fromFrame(textures.tile);
+                var tile = new PIXI.Sprite.fromFrame('tile_2');
 
                 // move the sprite into position
                 tile.position.x = j * 16;
