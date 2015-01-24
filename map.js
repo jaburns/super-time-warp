@@ -9,6 +9,9 @@ function Map(tiles) {
 _.extend(
     Map.prototype,
     {
+        getWidth: function() { return this.tiles[0].length; },
+        getHeight: function() { return this.tiles.length; },
+
         sampleAtPixel: function(px, py) {
             var x = Math.floor(px/TILE_SIZE);
             var y = Math.floor(py/TILE_SIZE);

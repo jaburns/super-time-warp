@@ -3,9 +3,9 @@ var gj_CONSTANTS = {
     DELTA_TIME: 35,
     TILE_SIZE: 16,
     keys: {
-        JUMP: 32,
-        MOVE_LEFT: 37,
-        MOVE_RIGHT: 39
+        JUMP: 87,
+        MOVE_LEFT: 65,
+        MOVE_RIGHT: 68
     },
     eras: {
         PAST: 1,

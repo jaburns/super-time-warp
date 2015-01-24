@@ -2,12 +2,16 @@ var _ = require('lodash');
 var constants = require('../public/shared/gj_constants');
 
 var GameObject = require('./game_object');
+var Player = require('./player');
 
-var Projectile = function(id) {
+var Projectile = function(owner) {
+    Projectile.superclass.call(this);
 
-    Projectile.superclass.call(this, id);
-
+    this.owner = owner;
     this.type = 'bullet';
+    
+    this.w = 4;
+    this.h = 4;
 
 };
 
@@ -18,24 +22,22 @@ _.extend(
     GameObject.prototype,
     {
         update: function(state) {
-
             Projectile.superclass.prototype.update.call(this, state);
 
-            var self = this;
-            this.collideWithMap(state.maps[state.era], function() {
-                self.alive = false;
-            });
-
+            this.collideWithMap(state.maps[state.era]);
         },
 
-        collideWithMap: function(map, onCollision) {
-            if (map.sampleAtPixel(this.x, this.y)
-                || map.sampleAtPixel(this.x, this.y - constants.TILE_SIZE)
-                || map.sampleAtPixel(this.x - constants.TILE_SIZE / 2, this.y - constants.TILE_SIZE / 2)
-                || map.sampleAtPixel(this.x + constants.TILE_SIZE / 2, this.y - constants.TILE_SIZE / 2)) {
+        collideWithObject: function(object) {
+            if (object === this.owner) return;
+            if (object.takeDamage) {
+                object.takeDamage ();
+                this.alive = false;
+            }
+        },
 
-                onCollision && onCollision();
-
+        collideWithMap: function(map) {
+            if (map.sampleAtPixel(this.x, this.y - this.h/2)) {
+                this.alive = false;
             }
         }
     }
