@@ -72,12 +72,15 @@
     }
 
     function renderState(state) {
+        var liveIds = [];
+
         for (var i = 0; i < state.objects.length; i++) {
             var object = state.objects[i];
 
             // TODO: figure out why objects are null
-            if (!object) return;
+            if (!object) continue;
 
+            liveIds.push (object.id);
             var sprite = sprites[object.id];
 
             if (!sprite) {
@@ -91,8 +94,6 @@
                 object_container.addChild(sprite);
             }
 
-            // TODO delete sprites for objects that are missing
-
             sprite.position.y = object.y;
             sprite.position.x = object.x;
             sprite.rotation = object.angle;
@@ -100,6 +101,14 @@
             // Center the camera around this client's player object.
             if (object.id === socket.id) {
                 centerCamera (object, state.maps[state.era].tiles[0].length, state.maps[state.era].tiles.length);
+            }
+        }
+
+        // Remove all the sprites which are tied to object IDs which are now missing.
+        for (var k in sprites) {
+            if (liveIds.indexOf (k) < 0) {
+                object_container.removeChild(sprites[k]);
+                delete sprites[k];
             }
         }
 
