@@ -5,7 +5,7 @@ var GameObject = require('./game_object');
 var MAX_VELOCITY = 1234;
 var DELTA_VELOCITY = 1234
 
-var GRAVITY = 0.05;
+var GRAVITY = 0.5;
 
 var Player = function(id) {
 
@@ -17,6 +17,8 @@ var Player = function(id) {
     this.w = 10;
     this.h = 20;
 
+    this._keysDown = {};
+    this._standing = 0; // When greater than zero, the player is on the ground.  Counts down every frame. Reset every time a ground collision is detected.
 };
 
 Player.superclass = GameObject;
@@ -27,37 +29,59 @@ _.extend(
     {
         update: function(state) {
 
-            this.vy += GRAVITY;
-            Player.superclass.prototype.update.call(this, state);
-
-        },
-        handleInput: function(input) {
-
-            if (input.type == 'key') {
-                switch (input) {
-                    case constants.keys.SPACEBAR:
-                        break;
-                    case constants.keys.LEFT_ARROW:
-                        break;
-                    case constants.keys.UP_ARROW:
-                        break;
-                    case constants.keys.RIGHT_ARROW:
-                        break;
-                    case constants.keys.DOWN_ARROW:
-                        break;
+            if (this._keysDown[constants.keys.LEFT_ARROW]) {
+                this.vx += (-5 - this.vx) / 5;
+            }
+            else if (this._keysDown[constants.keys.RIGHT_ARROW]) {
+                this.vx += (5 - this.vx) / 5;
+            }
+            else {
+                this.vx *= 0.9;
+            }
+            if (this._standing > 0) {
+                if (this._keysDown[constants.keys.SPACEBAR]) {
+                    this._standing = 0;
+                    this.vy = -10;
+                } else {
+                    this._standing--;
                 }
-            } else if (input.type == 'mouse') {
-
-                var x = this.x;
-                var y = this.y;
-                var mx = input.x;
-                var my = input.y;
-
-                this.angle = Math.tan(Math.abs(x - mx) / Math.abs(y - my));
-
             }
 
+            this.vy += GRAVITY;
 
+            // Integrate velocity in to position.
+            Player.superclass.prototype.update.call(this, state);
+
+            // Collide with the map.
+            this.collideWithMap (state.maps[state.era]);
+        },
+
+        handleInput: function(input) {
+            if (input.type == 'keydown') {
+                this._keysDown[input.key] = true;
+            } else if (input.type == 'keyup') {
+                delete this._keysDown[input.key];
+            }
+        },
+
+        collideWithMap: function(map) {
+            if (map.sampleAtPixel(this.x,this.y)) {
+                this.y = constants.TILE_SIZE * Math.floor(this.y / constants.TILE_SIZE);
+                this.vy = 0;
+                this._standing = 2;
+            }
+            if (map.sampleAtPixel(this.x,this.y-constants.TILE_SIZE)) {
+                this.y = constants.TILE_SIZE * Math.ceil(this.y / constants.TILE_SIZE);
+                if (this.vy < 0) this.vy = 0;
+            }
+            if (map.sampleAtPixel(this.x-constants.TILE_SIZE/2,this.y-constants.TILE_SIZE/2)) {
+                this.x = constants.TILE_SIZE/2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
+                this.vx = 0;
+            }
+            if (map.sampleAtPixel(this.x+constants.TILE_SIZE/2,this.y-constants.TILE_SIZE/2)) {
+                this.x = constants.TILE_SIZE/2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
+                this.vx = 0;
+            }
         }
     }
 );
