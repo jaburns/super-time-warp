@@ -7,14 +7,21 @@ var loadTMX = require('./loadTMX');
 var State = function() {
     // initial state
 
-    this.era = constants.eras.PRESENT;
+    this.era = constants.eras.TUNDRA;
     this.maps = {};
     this.objects = [];
 
     var self = this;
-    loadTMX('./maps/present.tmx',function(data) {
-        self.maps[constants.eras.PRESENT] = new Map(data);
-    });
+
+    _.each([['jungle',constants.eras.JUNGLE],
+            ['tundra',constants.eras.TUNDRA],
+            ['future',constants.eras.FUTURE]],
+        function(a) {
+            loadTMX('./maps/'+a[0]+'.tmx',function(data) {
+                self.maps[a[1]] = new Map(data);
+            });
+        }
+    );
 };
 
 _.extend(
