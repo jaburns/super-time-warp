@@ -42,7 +42,10 @@
     var scores_container = new PIXI.DisplayObjectContainer();
     stage.addChild(scores_container);
 
-    var crosshairs;
+    var crosshairs = new PIXI.Sprite(PIXI.Texture.fromImage('assets/crosshairs.png'));
+    crosshairs.anchor.x = 0.5;
+    crosshairs.anchor.y = 0.5;
+    root_container.addChild(crosshairs);
 
     // create a renderer instance
     var renderer = PIXI.autoDetectRenderer(VIEWPORT.w, VIEWPORT.h);
@@ -81,10 +84,7 @@
     }
 
     function initSprites(state) {
-        crosshairs = new PIXI.Sprite(PIXI.Texture.fromImage('assets/crosshairs.png'));
-        crosshairs.anchor.x = 0.5;
-        crosshairs.anchor.y = 0.5;
-        root_container.addChild(crosshairs);
+
     }
 
     // Creates the tile_container and adds it to the root_container.  Cleans up old one if it exists.
@@ -93,7 +93,7 @@
             root_container.removeChild(tile_container);
         }
         tile_container = new PIXI.DisplayObjectContainer();
-        root_container.addChild(tile_container);
+        root_container.addChildAt(tile_container, 0);
 
         var tiles = map.tiles;
         for (var i = 0; i < tiles.length; i++) {
@@ -167,7 +167,6 @@
                     score.position.y = 16 * (Object.keys(scores).length);
                     scores_container.addChild(score);
                     scores[object.id] = score;
-                    console.log('created score');
                 } else if (object.score != score.score) {
                     score.setText(object.id + ':' + object.score);
                     score.score = object.score;
@@ -239,10 +238,8 @@
     }
 
     function onMouseMove(pos) {
-        if (crosshairs) {
-            crosshairs.x = pos.x;
-            crosshairs.y = pos.y;
-        }
+        crosshairs.x = pos.x;
+        crosshairs.y = pos.y;
         socket.emit('msg input', { type: 'mousemove', x: pos.x, y: pos.y });
     }
 
