@@ -130,6 +130,15 @@
 
                 sprites[object.id] = sprite;
                 object_container.addChild(sprite);
+
+                if (object.type == 'player') {
+                    var arrow = PIXI.Sprite.fromFrame(textures.bullet);
+                    arrow.anchor.x = 0.5;
+                    arrow.anchor.y = 0.5;
+                    arrow.scale = new PIXI.Point(0.5, 0.5);
+                    arrow.position.y = -object.h;
+                    sprite.addChild(arrow);
+                }
             }
 
             sprite.position.y = object.y;
@@ -137,6 +146,7 @@
             sprite.getChildAt(0).rotation = object.angle;
 
             if (object.type == 'player') {
+
                 var score = scores[object.id];
                 if (!score) {
                     var fill = object.id == socket.id ? 'white' : 'black';
