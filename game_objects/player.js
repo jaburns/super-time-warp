@@ -108,7 +108,7 @@ _.extend(
         },
 
         takeDamage: function() {
-            this.vy = -10;
+            this.moveToSpawnPoint();
         },
 
         handleInput: function(input) {
