@@ -15,7 +15,7 @@ _.extend(
         },
 
         addObject: function(object) {
-            this.object.push(object);
+            this._state.objects.push(object);
         },
 
         removeObject: function(object) {
