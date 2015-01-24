@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 use strict;
 use warnings;
 use diagnostics;
@@ -30,19 +32,19 @@ for(my $row = 0; $row < $rows; $row++)
         #print "Enter index for tile at row $row and column $column or nothing to break\n";
         #my $name = <>;
         #chomp $name;
-        
+
         #last if $name eq "";
-        
+
         my $x = $column * $tile_width;
         my $y = $row * $tile_width;
-        
+
         $json .= "\"tile_$index\": {";
         $json .= "\"frame\": {\"x\": $x, \"y\":$y, \"w\":$tile_width, \"h\":$tile_width},";
         $json .= "\"rotated\": false, \"trimmed\": false,";
         $json .= "\"spriteSourceSize\": {\"x\": 0, \"y\":0, \"w\":$tile_width, \"h\":$tile_width},";
         $json .= "\"sourceSize\": {\"w\":$tile_width, \"h\":$tile_width}";
         $json .= "},";
-    }    
+    }
 }
 
 chop($json);
