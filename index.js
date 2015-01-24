@@ -6,6 +6,7 @@ var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
 
 var Game = require('./game');
+var Player = require('./game_objects/player.js');
 var gj_CONSTANTS = require('./public/shared/gj_constants.js');
 var gj_JSON = require('./public/shared/gj_json.js');
 
@@ -66,6 +67,9 @@ setInterval(function() {
         _.each(clients, function(client) {
             client.socket.emit('msg diff', diff);
         });
+
+        console.log (newState);
     },
-    gj_CONSTANTS.deltaTime
+    2000
+    //gj_CONSTANTS.deltaTime
 );

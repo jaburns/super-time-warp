@@ -14,6 +14,10 @@ Game.prototype.removePlayer = function(id) {
     this.state.removeObjectById(id);
 };
 
+Game.prototype.handleInput = function(id, msgInput) {
+    // todo lol
+};
+
 Game.prototype.step = function() {
     var state = this.state.getState();
     _.each(state.objects, function(object) {
