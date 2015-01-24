@@ -21,7 +21,7 @@ var Player = function(id) {
     this._standing = 0; // When greater than zero, the player is on the ground.  Counts down every frame. Reset every time a ground collision is detected.
 
     this._fireDelay = 500;
-    this._lastFireTime;
+    this._lastFireTime = null;
 };
 
 Player.superclass = GameObject;
@@ -55,21 +55,23 @@ _.extend(
                 }
             }
 
-            //this.angle = Math.atan2((this.y - this._mousePos.y), (this.x - this._mousePos.x));
-
             if (this._mouseDown) {
-                if (this._lastFireTime && (new Date().getTime - this._lastFireTime) < this._fireDelay) return;
-                this._lastFireTime = new Date().getTime();
-                var bullet = new Projectile();
 
-                bullet.x = this.x;
-                bullet.y = this.y - (this.h / 2);
+                if (!this._lastFireTime || (new Date().getTime() - this._lastFireTime) > this._fireDelay) {
 
-                bullet.angle = this.angle;
-                bullet.vx = Math.cos(bullet.angle) * 10;
-                bullet.vy = Math.sin(bullet.angle) * 10;
+                    this._lastFireTime = new Date().getTime();
+                    var bullet = new Projectile();
 
-                state.addObject(bullet);
+                    bullet.x = this.x;
+                    bullet.y = this.y - (this.h / 2);
+
+                    bullet.angle = Math.atan2((this.y - this._mousePos.y), (this.x - this._mousePos.x));
+                    bullet.vx = -Math.cos(bullet.angle) * 10;
+                    bullet.vy = -Math.sin(bullet.angle) * 10;
+
+                    state.addObject(bullet);
+
+                }
 
             }
 
