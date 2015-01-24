@@ -4,7 +4,7 @@
         <script src="/socket.io/socket.io.js"></script>
         <script src="/shared/gj_json.js"></script>
         <style>
-            body { background: #bbb; }
+            body { background: #000; }
             #c { background: #fff; }
         </style>
     </head>
@@ -13,30 +13,38 @@
     </body>
     <script>
 
-// Networking #################################################################
-
-        var socket = io();
-        var latestState;
-
-        socket.on('msg state', function(state) {
-            latestState = state;
-            //document.body.innerHTML = '<p>'+JSON.stringify(latestState)+'</p>' + document.body.innerHTML;
-        });
-
-        socket.on('msg diff', function(diff) {
-            latestState  = gj_JSON.applyDiff(latestState,diff);
-            //document.body.innerHTML = '<p>'+JSON.stringify(latestState)+'</p>' + document.body.innerHTML;
-            ctx.canvas.width = ctx.canvas.width;
-            for (var i = 0; i < latestState.objects.length; ++i) {
-                var obj = latestState.objects[i];
-                ctx.fillRect(obj.x,obj.y,10,10);
-            }
-        });
-
-        window.onkeyup = function(e) {
-            socket.emit('msg input', e.keyCode);
-        }
+    // Drawing ####################################################################
 
         var ctx = document.getElementById('c').getContext('2d');
+
+        function renderState(state) {
+            ctx.canvas.width = ctx.canvas.width;
+            for (var i = 0; i < state.objects.length; ++i) {
+                var obj = state.objects[i];
+                ctx.fillStyle = '#000';
+                ctx.fillRect(obj.x,obj.y,obj.w,obj.h);
+            }
+        }
+
+    // Networking #################################################################
+
+        (function(){
+            var socket = io();
+            var latestState;
+
+            socket.on('msg state', function(state) {
+                latestState = state;
+            });
+
+            socket.on('msg diff', function(diff) {
+                latestState = gj_JSON.applyDiff(latestState, diff);
+                renderState (latestState);
+            });
+
+            window.onkeyup = function(e) {
+                socket.emit('msg input', e.keyCode);
+            }
+        })();
+
     </script>
 </html>
