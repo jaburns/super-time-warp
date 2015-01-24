@@ -127,8 +127,11 @@
     var worldPos = { x: 0, y: 0 };
 
     function centerCamera(point, mapWidth, mapHeight) {
-        root_container.x = -point.x * SCALE_FACTOR + VIEWPORT.w / 2;
-        root_container.y = -point.y * SCALE_FACTOR + VIEWPORT.h / 2;
+        var cx = -point.x * SCALE_FACTOR + VIEWPORT.w / 2;
+        var cy = -point.y * SCALE_FACTOR + VIEWPORT.h / 2;
+
+        root_container.x += (cx - root_container.x) / 3;
+        root_container.y += (cy - root_container.y) / 3;
 
         // Stop the camera at the boundaries
         if (root_container.x > 0) root_container.x = 0;
