@@ -3,7 +3,7 @@ var gj_CONSTANTS = {
     DELTA_TIME: 35,
     TILE_SIZE: 16,
     keys: {
-        JUMP: 87,
+        JUMP: 32,
         MOVE_LEFT: 65,
         MOVE_RIGHT: 68
     },
