@@ -128,6 +128,18 @@
                 sprite.addChild(child_sprite);
                 child_sprite.y = -object.h / 2;
 
+                if (object.id === socket.id)
+                {
+                    var pointer_sprite = new PIXI.Sprite.fromFrame('mushroom');
+
+                    pointer_sprite.anchor.x = 0.5;
+                    pointer_sprite.anchor.y = 0.5;
+
+                    sprite.addChild(pointer_sprite);
+                    pointer_sprite.x = object.x;
+                    pointer_sprite.y = object.y - object.h * 1.5;
+                }
+
                 sprites[object.id] = sprite;
                 object_container.addChild(sprite);
             }
@@ -156,9 +168,6 @@
             // Center the camera around this client's player object.
             if (object.id === socket.id) {
                 centerCamera(object, state.maps[state.era].tiles[0].length, state.maps[state.era].tiles.length);
-
-                //playerUI.indicatorSprite.position.x = object.x;
-                //playerUI.indicatorSprite.position.y = object.y - object.h * 1.5;
             }
         }
 
