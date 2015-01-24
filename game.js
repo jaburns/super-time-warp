@@ -41,7 +41,8 @@ Game.prototype.step = function() {
 
 function _checkOverlapAndCollide(obj0, obj1) {
     if (Math.abs(obj0.x-obj1.x) > (obj0.w+obj1.w)/2) return;
-    if (Math.abs(obj0.y-obj1.y) > (obj0.h+obj1.h)/2) return;
+    if (obj0.y-obj0.h > obj1.y) return;
+    if (obj1.y-obj1.h > obj0.y) return;
     obj0.collideWithObject && obj0.collideWithObject(obj1);
     obj1.collideWithObject && obj1.collideWithObject(obj0);
 }
