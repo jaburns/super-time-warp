@@ -2,33 +2,58 @@
 <html>
     <head>
         <script src="/socket.io/socket.io.js"></script>
-        <script src="pixi.dev.js"></script>
-        <script src="client.js"></script>
         <script src="/shared/gj_json.js"></script>
-        
+        <script src="pixi.js"></script>
+        <script src="client.js"></script>
         <style>
             body { background: #000; }
             #c { background: #fff; }
         </style>
     </head>
     <body>
-        <canvas width="640" height="480" id="c"></canvas>
+
     </body>
     <script>
 
     // Drawing ####################################################################
 
-        var ctx = document.getElementById('c').getContext('2d');
+    // create an new instance of a pixi stage
+    var stage = new PIXI.Stage(0x66FF99);
 
-        function renderState(state) {
-            ctx.canvas.width = ctx.canvas.width;
-            for (var i = 0; i < state.objects.length; ++i) {
-                var obj = state.objects[i];
-                ctx.fillStyle = '#000';
-                ctx.fillRect(obj.x,obj.y,obj.w,obj.h);
+    // create a renderer instance
+    var renderer = PIXI.autoDetectRenderer(160, 160);
+
+    // add the renderer view element to the DOM
+    document.body.appendChild(renderer.view);
+
+    // create a texture from an image path
+    var texture = PIXI.Texture.fromImage('assets/tile.png');
+
+    var sprites = [];
+    function initSprites(state) {
+        var tiles = state.maps[state.era].tiles;
+        for (var i = 0; i < tiles.length; i++) {
+            for (var j = 0; j < tiles[i].length; j++) {
+
+                if (!tiles[j][i]) continue;
+
+                // create a new Sprite using the texture
+                var tile = new PIXI.Sprite(texture);
+
+                // move the sprite into position
+                tile.position.x = i * 16;
+                tile.position.y = j * 16;
+
+                stage.addChild(tile);
             }
         }
+    }
 
+    function renderState(state) {
+        // render the stage
+        renderer.render(stage);
+    }
+    
     // Networking #################################################################
 
         (function(){
@@ -37,11 +62,13 @@
 
             socket.on('msg state', function(state) {
                 latestState = state;
+                initSprites(latestState);
+                renderState(latestState);
             });
 
             socket.on('msg diff', function(diff) {
                 latestState = gj_JSON.applyDiff(latestState, diff);
-                renderState (latestState);
+                renderState(latestState);
             });
 
             window.onkeyup = function(e) {
