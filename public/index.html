@@ -135,22 +135,13 @@
                     pointer_sprite.anchor.x = 0.5;
                     pointer_sprite.anchor.y = 0.5;
 
+                    pointer_sprite.position.y = -object.h * 1.5;
                     sprite.addChild(pointer_sprite);
-                    pointer_sprite.x = object.x;
-                    pointer_sprite.y = object.y - object.h * 1.5;
                 }
 
                 sprites[object.id] = sprite;
                 object_container.addChild(sprite);
 
-                if (object.type == 'player') {
-                    var arrow = PIXI.Sprite.fromFrame(textures.bullet);
-                    arrow.anchor.x = 0.5;
-                    arrow.anchor.y = 0.5;
-                    arrow.scale = new PIXI.Point(0.5, 0.5);
-                    arrow.position.y = -object.h;
-                    sprite.addChild(arrow);
-                }
             }
 
             sprite.position.y = object.y;
