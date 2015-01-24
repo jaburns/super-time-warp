@@ -11,11 +11,13 @@ var Player = function(id) {
     Player.superclass.call(this, id);
 
     this.type = 'player';
-    this.x = 160 * Math.random();
-    this.y = 160 * Math.random();
+    this.x = 0;
+    this.y = 0;
     this.w = 16;
     this.h = 16;
     this.d = 1;
+
+    this._spawnCountdown = 30;
 
     this._keysDown = {};
     this._mousePos = { x: null, y: null };
@@ -33,6 +35,12 @@ _.extend(
     GameObject.prototype,
     {
         update: function(state) {
+
+            if (this._spawnCountdown > 0) {
+                if (--this._spawnCountdown <= 0) {
+                    this.moveToSpawnPoint(state.maps[state.era]);
+                } else return;
+            }
 
             if (this._keysDown[constants.keys.MOVE_LEFT]) {
                 this.vx += (-5 - this.vx) / 5;
@@ -84,6 +92,11 @@ _.extend(
 
             // Collide with the map.
             this.collideWithMap(state.maps[state.era]);
+        },
+
+        moveToSpawnPoint: function(map) {
+            this.x = 24;
+            this.y = 32;
         },
 
         takeDamage: function() {
