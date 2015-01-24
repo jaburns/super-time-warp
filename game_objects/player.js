@@ -4,6 +4,8 @@ var constants = require('../public/shared/gj_constants');
 var GameObject = require('./game_object');
 var Projectile = require('./projectile');
 
+var GRAVITY = 0.5;
+
 var Player = function(id) {
 
     Player.superclass.call(this, id);
@@ -11,8 +13,8 @@ var Player = function(id) {
     this.type = 'player';
     this.x = 160 * Math.random();
     this.y = 160 * Math.random();
-    this.w = 10;
-    this.h = 20;
+    this.w = 16;
+    this.h = 16;
     this.d = 1;
 
     this._keysDown = {};
@@ -74,6 +76,8 @@ _.extend(
                 }
 
             }
+
+            this.vy += GRAVITY;
 
             // Integrate velocity in to position.
             Player.superclass.prototype.update.call(this, state);

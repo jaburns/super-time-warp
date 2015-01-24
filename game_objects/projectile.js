@@ -9,6 +9,10 @@ var Projectile = function(owner) {
 
     this.owner = owner;
     this.type = 'bullet';
+    
+    this.w = 4;
+    this.h = 4;
+
 };
 
 Projectile.superclass = GameObject;
@@ -31,7 +35,7 @@ _.extend(
             }
         },
 
-        collideWithMap: function(map, onCollision) {
+        collideWithMap: function(map) {
             if (map.sampleAtPixel(this.x, this.y - this.h/2)) {
                 this.alive = false;
             }
