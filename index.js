@@ -29,7 +29,7 @@ function Client(socket) {
     game.addPlayer (id);
 
     socket.on('msg input', this.receiveInput.bind(this));
-    socket.emit('msg state', game.state);
+    socket.emit('msg state', game.state.getState());
 
     console.log('Client connected with ID: ' + this.id);
 }
