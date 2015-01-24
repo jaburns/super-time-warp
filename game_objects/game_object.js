@@ -2,13 +2,18 @@ var _ = require('lodash');
 
 var GameObject = function(id) {
 
-    this.id = id;
+    this.id = id || Math.random().toString().substr(2);
 
     this.x = null;
     this.y = null;
 
-    this.xVelocity = 0;
-    this.yVelocity = 0;
+    this.width = null;
+    this.height = null;
+
+    this.vx = 0;
+    this.vy = 0;
+
+    this.rotation = 0;
 
 };
 
@@ -17,9 +22,11 @@ _.extend(
     {
         update: function(state) {
 
-            this.x += this.xVelocity;
-            this.y += this.yVelocity;
+            this.x += this.vx;
+            this.y += this.vy;
 
         }
     }
 );
+
+module.exports = GameObject;

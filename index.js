@@ -5,8 +5,9 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
 
-var gj_CONSTANTS = require('./public/gj_constants.js');
-var gj_JSON = require('./public/gj_json.js');
+var Game = require('./game');
+var gj_CONSTANTS = require('./public/shared/gj_constants.js');
+var gj_JSON = require('./public/shared/gj_json.js');
 
 app.use(express.static(__dirname + '/public'));
 
@@ -25,23 +26,22 @@ var clients = [];
 
 function Client(socket) {
     this.socket = socket;
-    this.id = Math.random().toString().substr(2);
-    game.addPlayer (id);
+    game.addPlayer(this.socket.id);
 
     socket.on('msg input', this.receiveInput.bind(this));
     socket.emit('msg state', game.state.getState());
 
-    console.log('Client connected with ID: ' + this.id);
+    console.log('Client connected with ID: ' + this.socket.id);
 }
 
 Client.prototype.receiveInput = function(msgInput) {
-    console.log('Received input "' + msgInput + '" from client ' + this.id);
-    game.handleInput(this.id, msgInput);
+    console.log('Received input "' + msgInput + '" from client ' + this.socket.id);
+    game.handleInput(this.socket.id, msgInput);
 };
 
 Client.prototype.dispose = function() {
-    console.log('Client disconnected with ID: ' + this.id);
-    game.removePlayer(this.id);
+    console.log('Client disconnected with ID: ' + this.socket.id);
+    game.removePlayer(this.socket.id);
 };
 
 io.on('connection', function(socket) {

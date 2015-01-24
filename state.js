@@ -1,8 +1,10 @@
 var _ = require('lodash');
 
 var State = function(map) {
-    this.map = map;
-    this.objects = [];
+    this._state = {
+        map: map,
+        objects: []
+    };
 };
 
 _.extend(
@@ -13,19 +15,19 @@ _.extend(
         },
 
         addObject: function(object) {
-            this.object.push(object);
+            this._state.objects.push(object);
         },
 
         removeObject: function(object) {
-            var index = this.objects.indexOf(object);
-            if (index > -1) this.objects.splice(index, 1);
+            var index = this._state.objects.indexOf(object);
+            if (index > -1) this._state.objects.splice(index, 1);
         },
 
         removeObjectById: function(id) {
-            for (var i = 0; i < this.objects.length; i++) {
-                var object = this.objects[i];
+            for (var i = 0; i < this._state.objects.length; i++) {
+                var object = this._state.objects[i];
                 if (object.id == id) {
-                    this.objects.splice(i, 1);
+                    this._state.objects.splice(i, 1);
                     return;
                 }
             }

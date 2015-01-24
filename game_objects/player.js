@@ -26,7 +26,7 @@ _.extend(
         },
         handleInput: function(input) {
 
-            switch(input) {
+            switch (input) {
                 case constants.keys.SPACEBAR:
                     break;
                 case constants.keys.LEFT_ARROW:
@@ -43,3 +43,4 @@ _.extend(
     }
 );
 
+module.exports = Player;
