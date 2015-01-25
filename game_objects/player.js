@@ -25,7 +25,10 @@ var Player = function(id, color) {
     this.facex = 1;
 
     this.dead = false;
+
+    // Sound hooks
     this.jumped = false;
+    this.justDied = false;
 
     this.spawnCountdown = SPAWN_COUNTDOWN;
     this.invulnerableCountdown = INVULNERABLE_COUNTDOWN;
@@ -38,7 +41,6 @@ var Player = function(id, color) {
     this._standing = 0; // When greater than zero, the player is on the ground.  Counts down every frame. Reset every time a ground collision is detected.
     this._roofing = 0; // same as standing but for roof
     this._droppingKick = false;
-    this._justDied = false;
 
     this._cachedMap = null;
     this._fireDelay = 400;
@@ -56,10 +58,10 @@ _.extend(
 
             this.jumped = false;
 
-            if (this._justDied) {
+            if (this.justDied) {
                 var emitter = new Bloodsplosion(this.x, this.y - this.h / 2);
                 state.addObject(emitter);
-                this._justDied = false;
+                this.justDied = false;
                 this.dead = true;
                 this.vx = this.vy = 0;
                 this.spawnCountdown = SPAWN_COUNTDOWN;
@@ -253,12 +255,12 @@ _.extend(
         },
 
         takeDamage: function(other) {
-            if (this._justDied || this.dead) return;
+            if (this.justDied || this.dead) return;
             if (other && other._owner) {
                 other._owner.kills++;
             }
             this.deaths++;
-            this._justDied = true;
+            this.justDied = true;
         },
 
         handleInput: function(input) {
