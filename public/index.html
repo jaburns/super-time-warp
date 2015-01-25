@@ -131,7 +131,7 @@
             opacity: 0;
         }
 
-        .title {
+        .title-container > div {
             width: 621px;
             height: 221px;
             position: absolute;
@@ -139,14 +139,55 @@
             left: 50%;
             margin-left: -310px;
             margin-top: -110px;
+        }
+
+        .title {
             background-image: url('assets/title.png');
         }
+
+        .time-warp {
+            background-image: url('assets/titles/header_time_warp.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .time-warp-5 {
+            background-image: url('assets/titles/time_warp_5.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .time-warp-4 {
+            background-image: url('assets/titles/time_warp_4.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .time-warp-3 {
+            background-image: url('assets/titles/time_warp_3.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .time-warp-2 {
+            background-image: url('assets/titles/time_warp_2.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .time-warp-1 {
+            background-image: url('assets/titles/time_warp_1.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
     </style>
 </head>
 <body>
 <div class="container">
     <div id="canvas-container">
         <div id="title" class="title-container"><div class="title"></div></div>
+        <div id="time-warp" class="title-container out"><div class="time-warp"></div></div>
     </div>
     <div id="scores-container">
         <ul id="scores-list"></ul>
@@ -159,6 +200,8 @@
 
     var scores = {};
     var scores_list = document.getElementById('scores-list');
+
+    var time_warp = document.getElementById('time-warp');
 
     // Drawing ####################################################################
 
@@ -283,6 +326,28 @@
         }
     }
 
+    var isTimeWarp = false;
+    var time_warp_sprites = [
+        new PIXI.Sprite(new PIXI.Texture.fromImage('/assets/titles/header_time_warp.png')),
+        new PIXI.Sprite(new PIXI.Texture.fromImage('/assets/titles/time_warp_1.png')),
+        new PIXI.Sprite(new PIXI.Texture.fromImage('/assets/titles/time_warp_2.png')),
+        new PIXI.Sprite(new PIXI.Texture.fromImage('/assets/titles/time_warp_3.png')),
+        new PIXI.Sprite(new PIXI.Texture.fromImage('/assets/titles/time_warp_4.png')),
+        new PIXI.Sprite(new PIXI.Texture.fromImage('/assets/titles/time_warp_5.png'))
+    ];
+
+    for (var i = 0; i < time_warp_sprites.length; i++) {
+        var sprite = time_warp_sprites[i];
+        sprite.anchor.x = sprite.anchor.y = 0.5;
+        if (i == 0) {
+            sprite.scale = SCALE;
+            sprite.position.x = VIEWPORT.w / 2;
+            sprite.position.y = VIEWPORT.h / 2;
+        } else {
+            sprite.position.x = VIEWPORT.w / 2;
+            sprite.position.y = 64;
+        }
+    }
 
     function renderState(state) {
         var liveIds = [];
@@ -303,8 +368,7 @@
                     child_sprite = new AnimatedSprite(textures[object.type]);
                     child_sprite.setAnimation('right', ['tile_4', 'tile_5', 'tile_6']);
                     child_sprite.setAnimation('left', ['tile_1', 'tile_15', 'tile_10']);
-                }
-                else {
+                } else {
                     child_sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
                 }
 
@@ -389,6 +453,35 @@
                 scores_list.removeChild(scores[k]);
                 delete scores[k];
             }
+        }
+
+        // check if we're about to TIME WARP!!1!
+        if (state.timeToTimeWarp < 5) {
+            isTimeWarp = true;
+            var seconds = Math.ceil(state.timeToTimeWarp);
+            var sprite = time_warp_sprites[seconds];
+
+            var prev_sprite = time_warp_sprites[seconds + 1] || {};
+            if (prev_sprite.parent) prev_sprite.parent.removeChild(prev_sprite);
+
+            if (!sprite.parent) stage.addChild(sprite);
+
+            var scale = (SCALE_FACTOR * 2) - ((seconds - state.timeToTimeWarp) * 3);
+            console.log(scale);
+            sprite.scale = { x: scale, y: scale };
+
+        } else if (isTimeWarp) {
+
+            isTimeWarp = false;
+
+            var sprite = time_warp_sprites[1];
+            sprite.parent.removeChild(sprite);
+            sprite = time_warp_sprites[0];
+            stage.addChild(sprite);
+            setTimeout(function() {
+                sprite.parent.removeChild(sprite);
+            }, 500)
+
         }
 
         // render the stage
