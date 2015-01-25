@@ -50,13 +50,15 @@ module.exports = {
     44: tile_types.NO_COLLISION,
     45: tile_types.NO_COLLISION,
     46: tile_types.ONE_WAY,
-    47: tile_types.NO_COLLISION,
-    48: tile_types.NO_COLLISION,
+    47: tile_types.SOLID,
+    48: tile_types.SOLID,
 
     49: tile_types.NO_COLLISION,
     50: tile_types.FATAL,
+    51: tile_types.FATAL,
     57: tile_types.NO_COLLISION,
     58: tile_types.FATAL,
+    59: tile_types.FATAL,
 
     65: tile_types.SOLID,
     66: tile_types.SOLID,
@@ -87,6 +89,7 @@ module.exports = {
     104: tile_types.SOLID,
 
     113: tile_types.SOLID,
-    114: tile_types.FATAL
+    114: tile_types.FATAL,
+    115: tile_types.FATAL
 };
 
