@@ -209,6 +209,7 @@ _.extend(
             }
             this.vx = 15 * Math.cos (theta);
             this.vy = 15 * Math.sin (theta);
+            this.facex = this.vx > 0 ? 1 : -1 ;
         },
 
         moveSelf_jungle: function(state) {
@@ -305,6 +306,7 @@ _.extend(
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
                 if (this._droppingKick) {
                     this._droppingKick = false;
+                    this.endedPound = true;
                     this.vx = -Math.abs(this.vx)/2;
                 } else {
                     this.vx = 0;
