@@ -10,7 +10,9 @@ var Axe = function(owner, target) {
 
     this.type = 'axe';
 
-    target.y -= 32;
+    var dx = Math.abs(target.x - owner.x) / 104;
+    target.y -= 32 * dx * dx;//(32 * (dx / 104));
+    //target.y -= 32;
 
     Axe.superclass.call(this, owner, target);
 
