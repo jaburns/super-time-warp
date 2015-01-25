@@ -82,6 +82,7 @@ _.extend(
                 if (--this.spawnCountdown <= 0) {
                     this.dead = false;
                     this.moveToSpawnPoint();
+                    this.droppingKick = false;
                 } else return;
             }
 
