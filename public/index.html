@@ -49,7 +49,7 @@
     root_container.scale = SCALE;
     stage.addChild(root_container);
 
-    var tile_container = null;
+    var tile_container = null, bg_container = null;
 
     var object_container = new PIXI.DisplayObjectContainer();
     root_container.addChild(object_container);
@@ -70,7 +70,7 @@
     var playerUI = {}; // object to hold local UI data
 
     // This array holds filepaths to all json files with sprite information
-    var assetsToLoad = ['assets/tiles.json', 'assets/ui.json'];
+    var assetsToLoad = ['assets/tiles.json', 'assets/ui.json', 'assets/bg_jungle.png'];
 
     loader = new PIXI.AssetLoader(assetsToLoad);
 
@@ -91,17 +91,18 @@
         initSocket();
     }
 
-    function initSprites(state) {
-
-    }
-
     // Creates the tile_container and adds it to the root_container.  Cleans up old one if it exists.
     function initMap(map) {
         if (tile_container) {
             root_container.removeChild(tile_container);
         }
+
         tile_container = new PIXI.DisplayObjectContainer();
         root_container.addChildAt(tile_container, 0);
+
+        var bg = new PIXI.Sprite(PIXI.Texture.fromImage('assets/bg_jungle.png'));
+        bg.scale = SCALE;
+        stage.addChildAt(bg, 0);
 
         var tiles = map.tiles;
         for (var i = 0; i < tiles.length; i++) {
@@ -257,7 +258,6 @@
 
         socket.on('msg state', function(state) {
             latestState = state;
-            initSprites(latestState);
             initMap(latestState.maps[latestState.era]);
             renderState(latestState);
         });
