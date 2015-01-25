@@ -38,9 +38,9 @@ var Player = function(id, color) {
     this._standing = 0; // When greater than zero, the player is on the ground.  Counts down every frame. Reset every time a ground collision is detected.
     this._roofing = 0; // same as standing but for roof
     this._droppingKick = false;
+    this._justDied = false;
 
     this._cachedMap = null;
-    this._cachedState = null;
     this._fireDelay = 400;
     this._lastFireTime = null;
 };
@@ -52,10 +52,20 @@ _.extend(
     GameObject.prototype,
     {
         update: function(state) {
-            this._cachedState = state;
             this._cachedMap = state.maps[state.era];
 
             this.jumped = false;
+
+            if (this._justDied) {
+                var emitter = new Bloodsplosion(this.x, this.y - this.h / 2);
+                state.addObject(emitter);
+                this._justDied = false;
+                this.dead = true;
+                this.vx = this.vy = 0;
+                this.spawnCountdown = SPAWN_COUNTDOWN;
+                this.invulnerableCountdown = INVULNERABLE_COUNTDOWN;
+                return;
+            }
 
             if (this.spawnCountdown > 0) {
                 if (--this.spawnCountdown <= 0) {
@@ -99,10 +109,10 @@ _.extend(
             // Integrate velocity in to position and collide with the map.
             this.x += this.vx/2;
             this.y += this.vy/2;
-            this.collideWithMap(state.maps[state.era], this.takeDamage.bind(this,null,state));
+            this.collideWithMap(state.maps[state.era], this.takeDamage.bind(this,null));
             this.x += this.vx/2;
             this.y += this.vy/2;
-            this.collideWithMap(state.maps[state.era], this.takeDamage.bind(this,null,state));
+            this.collideWithMap(state.maps[state.era], this.takeDamage.bind(this,null));
 
             this._prevKeysDown = _.clone(this._keysDown);
         },
@@ -110,7 +120,7 @@ _.extend(
         collideWithObject: function(other) {
             if (this._droppingKick && other.takeDamage) {
                 if (this.y > other.y || !other._droppingKick) {
-                    other.takeDamage(this,this._cachedState);
+//                    other.takeDamage(this,this._cachedState);
                 }
             }
         },
@@ -242,19 +252,13 @@ _.extend(
             this.y = constants.TILE_SIZE * spawnPoint[1];
         },
 
-        takeDamage: function(other, state) {
+        takeDamage: function(other) {
+            if (this._justDied || this.dead) return;
             if (other && other._owner) {
                 other._owner.kills++;
             }
             this.deaths++;
-
-            var emitter = new Bloodsplosion(this.x, this.y - this.h / 2);
-            state.addObject(emitter);
-
-            this.dead = true;
-            this.vx = this.vy = 0;
-            this.spawnCountdown = SPAWN_COUNTDOWN;
-            this.invulnerableCountdown = INVULNERABLE_COUNTDOWN;
+            this._justDied = true;
         },
 
         handleInput: function(input) {

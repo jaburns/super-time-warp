@@ -45,7 +45,7 @@ _.extend(
         collideWithObject: function(object, state) {
             if (object === this._owner) return;
             if (object.takeDamage) {
-                object.takeDamage(this, state);
+                object.takeDamage(this);
                 this.alive = false;
             }
         },
