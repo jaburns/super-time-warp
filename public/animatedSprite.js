@@ -2,15 +2,15 @@
  * Created by jordan on 23/01/15.
  */
 
-function AnimatedSprite(idleFrame, animationSpeed) {
+// Requires the idle animation to be passed in to instantiate the sprite, but speed is optional
+function AnimatedSprite(idleAnimation, animationSpeed) {
     console.log("new animated sprite");
-    var texture = PIXI.Texture.fromFrame(idleFrame);
+    var texture = PIXI.Texture.fromFrame(idleAnimation[0]);
     PIXI.Sprite.call(this, texture, 34, 32);
 
-    this.animations = {'idle': [idleFrame]};
+    this.animations = {'idle': idleAnimation};
     this.currentAnimation = 'idle';
-    this.playing = false;
-    this.speed = animationSpeed || 3;
+    this.speed = animationSpeed || 2;
     this.delay = this.speed;
     this.animationIndex = 0;
     this.invulnerable = false;
@@ -27,11 +27,6 @@ AnimatedSprite.prototype.setAnimation = function(name, frames)
 AnimatedSprite.prototype.clearAnimation = function()
 {
     this.switchAnimation('idle');
-    //var texture = PIXI.Texture.fromFrame(this.animations['idle']);
-    //this.setTexture(texture);
-    //this.currentAnimation = 'idle';
-    //this.playing = false;
-    //this.delay = this.speed;
 };
 
 AnimatedSprite.prototype.switchAnimation = function(name)
@@ -48,18 +43,12 @@ AnimatedSprite.prototype.switchAnimation = function(name)
     }
 
     this.currentAnimation = name;
-    this.playing = true;
     this.animationIndex = 0;
     this.delay = 0;
 };
 
 AnimatedSprite.prototype.animate = function()
 {
-    if(!this.playing)
-    {
-        return;
-    }
-
     if(this.delay > 0)
     {
         this.delay--;

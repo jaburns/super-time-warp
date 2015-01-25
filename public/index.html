@@ -6,6 +6,7 @@
     <script src="/shared/gj_json.js"></script>
     <script src="pixi.js"></script>
     <script src="animatedSprite.js"></script>
+    <script src="soundManager.js"></script>
     <style>
         html, body {
             overflow: hidden;
@@ -145,6 +146,48 @@
             background-image: url('assets/title.png');
         }
 
+        .time-warp {
+            background-image: url('assets/titles/header_time_warp.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .time-warp-5 {
+            background-image: url('assets/titles/time_warp_5.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .time-warp-4 {
+            background-image: url('assets/titles/time_warp_4.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .time-warp-3 {
+            background-image: url('assets/titles/time_warp_3.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .time-warp-2 {
+            background-image: url('assets/titles/time_warp_2.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .time-warp-1 {
+            background-image: url('assets/titles/time_warp_1.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        #audio-container {
+            position:absolute;
+            left:-9001px;
+            top:-9001px;
+        }
+
     </style>
 </head>
 <body>
@@ -154,6 +197,20 @@
     </div>
     <div id="scores-container">
         <ul id="scores-list"></ul>
+    </div>
+    <div id="audio-container">
+        <audio id="sound-dash" src="assets/wav/dash.wav" preload="auto"></audio>
+        <audio id="sound-die" src="assets/wav/die.wav" preload="auto"></audio>
+        <audio id="sound-double-jump" src="assets/wav/double_jump.wav" preload="auto"></audio>
+        <audio id="sound-hit" src="assets/wav/hit.wav" preload="auto"></audio>
+        <audio id="sound-jump" src="assets/wav/jump.wav" preload="auto"></audio>
+        <audio id="sound-kill-point" src="assets/wav/kill_point.wav" preload="auto"></audio>
+        <audio id="sound-low-hp" src="assets/wav/low_hp.wav" preload="auto"></audio>
+        <audio id="sound-ping" src="assets/wav/ping.wav" preload="auto"></audio>
+        <audio id="sound-ping-deep" src="assets/wav/ping_deep.wav" preload="auto"></audio>
+        <audio id="sound-shoot" src="assets/wav/shoot.wav" preload="auto"></audio>
+        <audio id="sound-slam" src="assets/wav/slam.wav" preload="auto"></audio>
+        <audio id="sound-throw" src="assets/wav/throw.wav" preload="auto"></audio>
     </div>
 </div>
 </body>
@@ -225,6 +282,9 @@
 
         // Perform socket setup to start the game
         initSocket();
+
+        var sm = soundManager.getInstance();
+        sm.playSound('sound-kill-point');
 
         // hide title
         setTimeout(function() {
@@ -353,15 +413,12 @@
 
                 var child_sprite;
                 if (object.type == 'player') {
-                    child_sprite = new AnimatedSprite(textures[object.type]);
-                    child_sprite.setAnimation('idle', ['viking_1', 'viking_2', 'viking_3', 'viking_4', 'viking_5', 'viking_6', 'viking_7', 'viking_8', 'viking_9', 'viking_10', 'viking_11'])
-                    //child_sprite.setAnimation('right', ['tile_4', 'tile_5', 'tile_6']);
+                    child_sprite = new AnimatedSprite(['viking_1', 'viking_2', 'viking_3', 'viking_4', 'viking_5', 'viking_6', 'viking_7', 'viking_8', 'viking_9', 'viking_10', 'viking_11']);
                     child_sprite.setAnimation('walk', ['viking_13', 'viking_14','viking_15','viking_16','viking_17','viking_18']);
-                    child_sprite.setAnimation('attack', ['viking1']);
                     child_sprite.setAnimation('jump', ['viking_20']);
                     child_sprite.setAnimation('fall', ['viking_22']);
-                    child_sprite.setAnimation('damage', ['viking_24', 'viking_25', 'viking_26', 'viking_27', 'viking_28', 'viking_29', 'viking_30', 'viking_31'])
                 } else {
+
                     child_sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
                 }
 
@@ -461,6 +518,7 @@
             if (!sprite.parent) stage.addChild(sprite);
 
             var scale = (SCALE_FACTOR * 2) - ((seconds - state.timeToTimeWarp) * 3);
+
             sprite.scale = { x: scale, y: scale };
 
         } else if (isTimeWarp) {
@@ -545,14 +603,6 @@
         if (object.facex) {
             sprite.scale.x = object.facex > 0 ? -1 : 1;
         }
-
-//        object.attack = Math.random() > 0.9;
-//
-//        if(object.attack)
-//        {
-//            sprite.switchanimation('attack');
-//            return;
-//        }
 
         if(object.vy == 0) {
             if(Math.abs(object.vx) > 0.01) {
