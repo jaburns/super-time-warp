@@ -226,14 +226,11 @@ _.extend(
         _startKick: function() {
             this.droppingKick = true;
             this.startedPound = true;
-            var theta = Math.atan2(this._mousePos.y - (this.y - this.h / 2), this._mousePos.x - this.x);
-            if (theta > 0) {
-                if (theta < Math.PI / 4) theta = Math.PI / 4;
-                else if (theta > 3 * Math.PI / 4) theta = 3 * Math.PI / 4;
-            } else {
-                if (theta > -Math.PI / 2) theta = Math.PI / 4;
-                else                    theta = 3 * Math.PI / 4;
-            }
+
+            var theta = this._mousePos.x > this.x
+                ?   Math.PI/4
+                : 3*Math.PI/4;
+
             this.vx = 15 * Math.cos(theta);
             this.vy = 15 * Math.sin(theta);
             this.facex = this.vx > 0 ? 1 : -1;
