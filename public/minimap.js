@@ -111,7 +111,7 @@ var MiniMap = (function() {
             case 'green': return '#67c01f';
             case 'cyan': return '#59cde6';
             case 'blue': return '#6098ff';
-            case 'purple': return '#773f8c';
+            case 'purple': return '#aa3fac';
             case 'pink': return '#d979bb';
         }
     }
