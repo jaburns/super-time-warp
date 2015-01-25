@@ -649,9 +649,9 @@ function runClient() {
                 if (Math.abs(object.vx) > 2 && object.vy == 0) { // Math.abs(object.vy) < 1e-9) {
                     if (!(--object.puffDelay > 0)) {
                         object.puffDelay = (Math.random() + 10);
-                        var count = Math.ceil(Math.random() * 3);
+                        var puffCount = Math.ceil(Math.random() * 3);
                         var d = -(object.vx / Math.abs(object.vx));
-                        for (var j = 0; j < count; j++) {
+                        for (var j = 0; j < puffCount; j++) {
                             var b = Math.round(Math.random());
                             var puff_sprite = new PIXI.Sprite.fromFrame(b ? 'smoke_large' : 'smoke_small');
                             puff_sprite.anchor.x = puff_sprite.anchor.y = 0.5;
