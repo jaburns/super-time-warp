@@ -227,7 +227,7 @@ _.extend(
             this.droppingKick = true;
             this.startedPound = true;
 
-            var theta = this._mousePos.x > this.x
+            var theta = this.facex > 0
                 ?   Math.PI/4
                 : 3*Math.PI/4;
 
