@@ -203,11 +203,9 @@
         <audio id="loop-main" src="assets/loop.ogg" preload="auto"></audio>
         <audio id="sound-dash" src="assets/wav/dash.wav" preload="auto"></audio>
         <audio id="sound-die" src="assets/wav/die.wav" preload="auto"></audio>
-        <audio id="sound-double-jump" src="assets/wav/double_jump.wav" preload="auto"></audio>
         <audio id="sound-hit" src="assets/wav/hit.wav" preload="auto"></audio>
         <audio id="sound-jump" src="assets/wav/jump.wav" preload="auto"></audio>
         <audio id="sound-kill-point" src="assets/wav/kill_point.wav" preload="auto"></audio>
-        <audio id="sound-low-hp" src="assets/wav/low_hp.wav" preload="auto"></audio>
         <audio id="sound-ping" src="assets/wav/ping.wav" preload="auto"></audio>
         <audio id="sound-ping-deep" src="assets/wav/ping_deep.wav" preload="auto"></audio>
         <audio id="sound-shoot" src="assets/wav/shoot.wav" preload="auto"></audio>
@@ -266,6 +264,7 @@
     var playerUI = {}; // object to hold local UI data
     var miniMapEl = document.getElementById('minimap');
     var miniMap = new MiniMap(50, 40, miniMapEl);
+    var sm = null;
 
     // This array holds filepaths to all json files with sprite information
     var assetsToLoad = [
@@ -294,8 +293,7 @@
         // Perform socket setup to start the game
         initSocket();
 
-        var sm = soundManager.getInstance();
-        sm.playSound('sound-kill-point');
+        sm = soundManager.getInstance();
         if(window.location.hash !== '#no-music') {
             sm.playLoop('loop-main');
         }
@@ -473,6 +471,11 @@
                     child_sprite.setAnimation('fall', ['viking_22']);
                 } else {
                     child_sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
+
+                    switch(object.type) {
+                        case 'lazer': sm.playSound('sound-shoot'); break;
+                        case 'axe': sm.playSound('sound-throw'); break;
+                    }
                 }
 
 
@@ -536,6 +539,18 @@
                 } else if (score != li.score) {
                     li.innerHTML = '<span>' + object.color + '</span>' + '<span>' + score + '</span>';
                     li.score = score;
+                }
+
+                // Play player sounds
+                if(object.id == socket.id) {
+                    if(object) sm.playSound('sound-die');
+                    if(object) sm.playSound('sound-dash');
+                    if(object) sm.playSound('sound-jump');
+                    if(object) sm.playSound('sound-slam');
+                    if(object) sm.playSound('sound-kill-point');
+                }
+                else {
+                    if(object) sm.playSound('sound-hit');
                 }
             }
 
