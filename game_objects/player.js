@@ -35,7 +35,7 @@ var Player = function(id, color) {
     this._roofing = 0; // same as standing but for roof
 
     this._cachedMap = null;
-    this._fireDelay = 500;
+    this._fireDelay = 400;
     this._lastFireTime = null;
 };
 
