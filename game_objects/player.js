@@ -16,7 +16,7 @@ var Player = function(id, color) {
     this.x = 0;
     this.y = 0;
     this.w = 16;
-    this.h = 16;
+    this.h = 24;
 
     this.kills = 0;
     this.deaths = 0;
