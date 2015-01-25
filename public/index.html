@@ -18,13 +18,13 @@
         }
         .container {
             margin: 0 auto;
-            width: 1000px;
-            height: 608px;
+            width: 1200px;
+            height: 600px;
             overflow: hidden;
         }
         #canvas-container {
             cursor: none !important;
-            width: 800px;
+            width: 1000px;
             float: left;
         }
         canvas {
@@ -36,7 +36,7 @@
             float: left;
             background-color: #222034;
             width: 200px;
-            height: 608px;
+            height: 600px;
             border-radius: 0 7px 7px 0;
         }
         #scores-container ul {
@@ -99,7 +99,7 @@
     // Drawing ####################################################################
 
     var SCALE_FACTOR = 3;
-    var VIEWPORT = { w: 800, h: 608 };
+    var VIEWPORT = { w: 1000, h: 600 };
 
     var SCALE = new PIXI.Point(SCALE_FACTOR, SCALE_FACTOR);
     PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
