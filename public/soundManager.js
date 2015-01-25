@@ -10,6 +10,13 @@ var soundManager = (function () {
         this.audioChannels = [];
         this.nextChannel = 0;
 
+        this.loopChannel = new Audio();
+        this.loopChannel.addEventListener('ended', function() {
+            this.currentTime = 0;
+            this.play();
+        }, false);
+        this.loopChannel.play();
+
         for (var a = 0; a < this.channel_max; a++) {
             this.audioChannels[a] = new Audio();					// expected end time for this channel
         }
@@ -30,7 +37,13 @@ var soundManager = (function () {
             for (var a = 0; a < this.audioChannels.length;a++) {
                 this.audioChannels[a]['channel'].stop();
             }
-        }
+        };
+
+        _soundManager.playLoop = function(sound) {
+            this.loopChannel.src = document.getElementById(sound).src;
+            this.loopChannel.load();
+            this.loopChannel.play();
+        };
 
         return _soundManager;
     }
