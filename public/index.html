@@ -164,7 +164,7 @@
             var ret = [];
             for (var i = 0; i < 8; ++i) {
                 var x = new PIXI.Sprite(PIXI.Texture.fromImage('assets/Jungle_000'+i+'.png'));
-                x.scale = SCALE;
+                x.scale = new PIXI.Point(SCALE_FACTOR*(10/8), SCALE_FACTOR);
                 ret.push(x);
             }
             return ret;
