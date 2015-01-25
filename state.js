@@ -4,19 +4,24 @@ var constants = require('./public/shared/gj_constants');
 var Map = require('./map');
 var loadTMX = require('./loadTMX');
 
+var ERA_FRAMECOUNT_MIN = 200;
+var ERA_FRAMECOUNT_MAX = 200;
+
 var State = function() {
     // initial state
 
-    this.era = constants.eras.TUNDRA;
+    this.era = constants.eras.FUTURE;
     this.maps = {};
     this.objects = [];
-    this.countDownToNextEra = 60;
+    this.countDownToNextEra = ERA_FRAMECOUNT_MIN + (ERA_FRAMECOUNT_MAX - ERA_FRAMECOUNT_MIN) * Math.random();
 
     var self = this;
 
-    _.each([['jungle', constants.eras.JUNGLE],
+    _.each([
+            ['jungle', constants.eras.JUNGLE],
             ['tundra', constants.eras.TUNDRA],
-            ['future', constants.eras.FUTURE]],
+            ['future', constants.eras.FUTURE]
+        ],
         function(a) {
             loadTMX('./maps/' + a[0] + '.tmx', function(data) {
                 self.maps[a[1]] = new Map(data);
@@ -28,8 +33,21 @@ var State = function() {
 _.extend(
     State.prototype,
     {
+        step: function() {
+            if (--this.countDownToNextEra <= 0) {
+                this.countDownToNextEra = ERA_FRAMECOUNT_MIN + (ERA_FRAMECOUNT_MAX-ERA_FRAMECOUNT_MIN)*Math.random();
+
+                var self = this;
+                this.era = _.chain(constants.eras)
+                    .filter(function(era) { return era !== self.era; })
+                    .sample()
+                    .value();
+            }
+        },
+
         getState: function() {
             return {
+                timeToTimeWarp: this.countDownToNextEra * constants.DELTA_TIME / 1000,
                 era: this.era,
                 maps: this.maps,
                 objects: this.objects

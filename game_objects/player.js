@@ -5,7 +5,6 @@ var GameObject = require('./game_object');
 var Axe = require('./axe');
 var Lazer = require('./lazer');
 
-var GRAVITY = 0.5;
 
 var Player = function(id, color) {
 
@@ -17,7 +16,6 @@ var Player = function(id, color) {
     this.y = 0;
     this.w = 34;
     this.h = 32;
-    this.d = 1;
 
     this.kills = 0;
     this.deaths = 0;
@@ -29,6 +27,7 @@ var Player = function(id, color) {
     this._mousePos = { x: null, y: null };
     this._mouseDown = false;
     this._standing = 0; // When greater than zero, the player is on the ground.  Counts down every frame. Reset every time a ground collision is detected.
+    this._roofing = 0; // same as standing but for roof
 
     this._cachedMap = null;
     this._fireDelay = 500;
@@ -49,6 +48,9 @@ _.extend(
                     this.moveToSpawnPoint();
                 } else return;
             }
+
+            if (this._standing > 0) this._standing--;
+            if (this._roofing > 0) this._roofing--;
 
             switch (state.era) {
                 case constants.eras.JUNGLE:
@@ -87,31 +89,60 @@ _.extend(
                 this.vx *= 0.9;
             }
 
-            if (this.vx > 0) {
-                this.d = 1;
-            } else if (this.vx < 0) {
-                this.d = -1;
+            if (this._standing > 0 && this._keysDown[constants.keys.JUMP]) {
+                this._standing = 0;
+                this.vy = -10;
             }
 
-            if (this._standing > 0) {
-                if (this._keysDown[constants.keys.JUMP]) {
-                    this._standing = 0;
-                    this.vy = -10;
-                } else {
-                    this._standing--;
-                }
-            } else if (this._standing > -1 && state.era == constants.eras.FUTURE) {
-                if (this._keysDown[constants.keys.JUMP] && !this._prevKeysDown[constants.keys.JUMP]) {
-                    this._standing--;
-                    this.vy = -10;
-                }
-            }
+            this.vy += 0.5;
 
-            this.vy += GRAVITY;
+            if (this.vy > 15) {
+                this.vy = 15;
+            }
+        },
+
+        _moveX: function (turnx, accx, decayx, maxx) {
+            if (this._keysDown[constants.keys.MOVE_LEFT]) {
+                this.vx += this.vx > 0 ? -turnx : -accx;
+            } else if (this._keysDown[constants.keys.MOVE_RIGHT]) {
+                this.vx += this.vx < 0 ? turnx : accx;
+            } else {
+                this.vx *= decayx;
+            }
+            if (this.vx > maxx) {
+                this.vx = maxx;
+            } else if (this.vx < -maxx) {
+                this.vx = -maxx;
+            }
         },
 
         moveSelf_future: function(state) {
-            this.moveSelf_jungle(state);
+            var JET_UP = 1.2;
+            var JET_SAVE = 1.6;
+
+            if (this._standing) {
+                this._moveX( 2, 0.5, 0.8, 4 );// Ground
+            } else {
+                this._moveX( 0.5, 0.3, 1, 6 );// Air
+            }
+
+            if (this._keysDown[constants.keys.JUMP]) {
+                this._standing = 0;
+                this.vy -= this.vy >= 0 ? JET_SAVE : JET_UP;
+                this.vy -= 0.3;
+            }
+            this.vy += 0.8;
+
+            if (this._roofing > 0) {
+                this.vy = 4;
+            }
+
+            if (this.vy > 12) {
+                this.vy = 12;
+            }
+            else if (this.vy < -6) {
+                this.vy = -6;
+            }
         },
 
         moveSelf_tundra: function(state) {
@@ -131,22 +162,7 @@ _.extend(
             }
 
             if (projectile) {
-                projectile = new projectile(this);
-
-                projectile.x = this.x + this.vx;
-                projectile.y = this.y - (this.h / 2) + (projectile.h / 2) + this.vy;
-
-                var angle = Math.atan2((this.y - this._mousePos.y - (this.h / 2) - (projectile.h / 2)), (this.x - this._mousePos.x));
-                projectile.angle = angle + (Math.PI / 2);
-
-                var cos = Math.cos(angle);
-                var sin = Math.sin(angle);
-
-                projectile.vx = -cos * 10;
-                projectile.vy = -sin * 10;
-
-                projectile.x -= cos * this.w;
-                projectile.y -= sin * this.w;
+                projectile = new projectile(this, { x: this._mousePos.x, y: this._mousePos.y  });
 
                 state.addObject(projectile);
             }
@@ -204,6 +220,7 @@ _.extend(
             if (map.sampleAtPixel(this.x, this.y - this.h)) {
                 this.y = constants.TILE_SIZE * Math.ceil(this.y / constants.TILE_SIZE);
                 if (this.vy < 0) this.vy = 0;
+                this._roofing = 2;
             }
             if (map.sampleAtPixel(this.x - this.w / 2, this.y - this.h / 2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);

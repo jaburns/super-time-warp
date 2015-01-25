@@ -3,11 +3,17 @@ var constants = require('../public/shared/gj_constants');
 
 var Projectile = require('./projectile');
 
-var Lazer = function(owner) {
-    Lazer.superclass.call(this, owner);
+var Lazer = function(owner, target) {
 
     this.type = 'lazer';
-    this.width = 8;
+    this.w = 8;
+    this.h = 8;
+
+    this.MAX_V = 15;
+
+    target.y -= 5;
+
+    Lazer.superclass.call(this, owner, target);
 
 };
 
