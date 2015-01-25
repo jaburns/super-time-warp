@@ -37,17 +37,8 @@ _.extend(
     GameObject.prototype,
     {
         update: function(state) {
-            if (!this.alive) return;
-            this.angle += this.va;
-
-            this.x += this.vx / 2;
-            this.y += this.vy / 2;
+            Projectile.superclass.prototype.update.call(this, state);
             this.collideWithMap(state.maps[state.era]);
-            if (this.alive) {
-                this.x += this.vx / 2;
-                this.y += this.vy / 2;
-                this.collideWithMap(state.maps[state.era]);
-            }
         },
 
         collideWithObject: function(object, state) {
