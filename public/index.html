@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Super Time Warp Battle Force | #ggj2015</title>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;">
+    <meta name="description" content="8 player arena shooter made in 48 hours for Global Game Jam 2015.">
+
     <script src="/socket.io/socket.io.js"></script>
     <script src="/shared/gj_constants.js"></script>
     <script src="/shared/gj_json.js"></script>
@@ -47,6 +53,9 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+
+            padding: 0;
+            margin: 0;
         }
 
         body {
@@ -318,6 +327,28 @@
             display: block;
         }
 
+        @media only screen
+        and (max-width : 480px) {
+            body {
+                padding: 0;
+            }
+            *:not(.click-to-skip) {
+                border-radius: 0 !important;
+            }
+            #canvas-container {
+                width: 480px;
+                height: 320px;
+            }
+            #scores-container {
+                display: none;
+            }
+            #canvas-container canvas,
+            video {
+                width: 480px !important;
+                height: 320px !important;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -354,6 +385,8 @@
 </body>
 <script src="minimap.js"></script>
 <script>
+
+var isMobile = navigator.userAgent.match(/iPhone/i) != null;
 
 function runClient() {
     var socket;
@@ -565,7 +598,7 @@ function runClient() {
     function renderState(state) {
         var liveIds = [];
 
-        if (spectating) {
+        if (spectating || isMobile) {
             var step = 20;
             var x = root_container.position.x;
             var y = root_container.position.y;
@@ -1067,7 +1100,7 @@ function runClient() {
         }
 
         window.onkeyup = function (e) {
-            if (spectating) {
+            if (spectating || mobile) {
                 delete _keys[e.keyCode];
             } else if (keys.indexOf(e.keyCode) > -1) {
                 socket.emit('msg input', { type: 'keyup', key: e.keyCode });
@@ -1075,7 +1108,7 @@ function runClient() {
         };
 
         window.onkeydown = function (e) {
-            if (spectating) {
+            if (spectating || mobile) {
                 _keys[e.keyCode] = true;
             } else if (keys.indexOf(e.keyCode) > -1) {
                 socket.emit('msg input', { type: 'keydown', key: e.keyCode });
