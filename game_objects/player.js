@@ -7,7 +7,6 @@ var Lazer = require('./lazer');
 
 var GRAVITY = 0.5;
 var MAX_FALL = 15;
-var JETPACK = 1;
 
 var Player = function(id, color) {
 
@@ -19,7 +18,6 @@ var Player = function(id, color) {
     this.y = 0;
     this.w = 16;
     this.h = 16;
-    this.d = 1;
 
     this.kills = 0;
     this.deaths = 0;
@@ -89,12 +87,6 @@ _.extend(
                 this.vx *= 0.9;
             }
 
-            if (this.vx > 0) {
-                this.d = 1;
-            } else if (this.vx < 0) {
-                this.d = -1;
-            }
-
             if (this._standing > 0) {
                 if (this._keysDown[constants.keys.JUMP]) {
                     this._standing = 0;
@@ -110,23 +102,40 @@ _.extend(
             }
 
             this.vy += GRAVITY;
+
+            if (this.vy > MAX_FALL) {
+                this.vy = MAX_FALL;
+            }
+        },
+
+        _moveX: function (turnx, accx, decayx, maxx) {
+            if (this._keysDown[constants.keys.MOVE_LEFT]) {
+                this.vx += this.vx > 0 ? -turnx : -accx;
+            } else if (this._keysDown[constants.keys.MOVE_RIGHT]) {
+                this.vx += this.vx < 0 ? turnx : accx;
+            } else {
+                this.vx *= decayx;
+            }
+            if (this.vx > maxx) {
+                this.vx = maxx;
+            } else if (this.vx < -maxx) {
+                this.vx = -maxx;
+            }
         },
 
         moveSelf_future: function(state) {
+            var JET_UP = 1;
+            var JET_SAVE = 1.5;
+
             if (this._standing) {
-                if (this._keysDown[constants.keys.MOVE_LEFT]) {
-                    this.vx += -1.1;
-                } else if (this._keysDown[constants.keys.MOVE_RIGHT]) {
-                    this.vx += 1.1;
-                } else {
-                    this.vx += this.vx < 0 ? 1: -1;
-                    if (Math.abs(this.vx) < 1) this.vx = 0;
-                }
+                this._moveX( 2, 0.5, 0.8, 4 );// Ground
+            } else {
+                this._moveX( 0.5, 0.3, 1, 8 );// Air
             }
 
             if (this._keysDown[constants.keys.JUMP]) {
                 this._standing = 0;
-                this.vy -= JETPACK;
+                this.vy -= this.vy >= 0 ? JET_SAVE : JET_UP;
             }
             this.vy += GRAVITY;
 
@@ -135,12 +144,6 @@ _.extend(
             }
             else if (this.vy < -MAX_FALL) {
                 this.vy = -MAX_FALL;
-            }
-
-            if (this.vx > 10) {
-                this.d = 10;
-            } else if (this.vx < -10) {
-                this.d = -10;
             }
         },
 

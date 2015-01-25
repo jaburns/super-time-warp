@@ -10,7 +10,7 @@ var State = function() {
     this.era = constants.eras.FUTURE;
     this.maps = {};
     this.objects = [];
-    this.countDownToNextEra = 60;
+    this.countDownToNextEra = 6000;
 
     var self = this;
 
