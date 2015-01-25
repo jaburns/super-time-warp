@@ -24,7 +24,8 @@ AnimatedSprite.prototype.setAnimation = function(name, frames)
 
 AnimatedSprite.prototype.clearAnimation = function()
 {
-    this.setTexture.fromFrame(this.animations['idle']);
+    var texture = PIXI.Texture.fromFrame(this.animations['idle']);
+    this.setTexture(texture);
     this.currentAnimation = 'idle';
     this.playing = false;
     this.delay = this.speed;

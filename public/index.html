@@ -132,9 +132,8 @@
 
     // This array holds filepaths to all json files with sprite information
     var assetsToLoad = [
-        'assets/bg_jungle.png',
         'assets/projectiles.json',
-        'assets/tiles.json', 
+        'assets/tiles.json',
         'assets/ui.json'
     ];
 
@@ -158,9 +157,26 @@
         initSocket();
     }
 
-    var backgroundImages = [
-        PIXI.Texture.fromImage('assets/bg_jungle.png')
-    ];
+    // Jungle background stuff --------------------
+        var curJungleBackground = 0;
+        var jungleBackgroundUpdateInterval = -1;
+        var jungleBackgrounds = (function() {
+            var ret = [];
+            for (var i = 0; i < 8; ++i) {
+                var x = new PIXI.Sprite(PIXI.Texture.fromImage('assets/Jungle_000'+i+'.png'));
+                x.scale = SCALE;
+                ret.push(x);
+            }
+            return ret;
+        })();
+        function updateJungleBackground() {
+            stage.removeChildAt(0);
+            curJungleBackground++;
+            curJungleBackground %= 8;
+            bg_container = jungleBackgrounds[curJungleBackground];
+            stage.addChildAt(bg_container, 0);
+        }
+    // --------------------------------------------
 
     // Creates the tile_container and adds it to the root_container.  Cleans up old one if it exists.
     function initMap(map) {
@@ -172,9 +188,11 @@
         tile_container = new PIXI.DisplayObjectContainer();
         root_container.addChildAt(tile_container, 0);
 
-        bg_container =  new PIXI.Sprite(backgroundImages[0]);
-        bg_container.scale = SCALE;
+        bg_container = jungleBackgrounds[curJungleBackground];
         stage.addChildAt(bg_container, 0);
+
+        clearInterval (jungleBackgroundUpdateInterval);
+        jungleBackgroundUpdateInterval = setInterval (updateJungleBackground, 40);
 
         var tiles = map.tiles;
         for (var i = 0; i < tiles.length; i++) {
@@ -192,6 +210,7 @@
             }
         }
     }
+
 
     function renderState(state) {
         var liveIds = [];
@@ -211,8 +230,8 @@
                 if(object.type == 'player')
                 {
                     child_sprite = new AnimatedSprite(textures[object.type]);
-                    child_sprite.setAnimation('animation', ['tile_4', 'tile_5', 'tile_6']);
-                    child_sprite.switchAnimation('animation');
+                    child_sprite.setAnimation('right', ['tile_4', 'tile_5', 'tile_6']);
+                    child_sprite.setAnimation('left', ['tile_1', 'tile_15', 'tile_10']);
                 }
                 else
                 {
@@ -250,8 +269,23 @@
             sprite.getChildAt(0).rotation = object.angle;
 
             if (object.type == 'player') {
+
+                if(object.vx > 0)
+                {
+                    sprite.getChildAt(0).switchAnimation('right');
+                }
+                else if(object.vx < 0)
+                {
+                    sprite.getChildAt(0).switchAnimation('left');
+                }
+                else
+                {
+                    sprite.getChildAt(0).clearAnimation();
+                }
+
                 var score = object.kills + ' &middot; ' + object.deaths;
                 sprite.getChildAt(0).animate(); // TODO: CHINGALING
+
                 var li = scores[object.id];
                 if (!li) {
                     li = document.createElement('li');

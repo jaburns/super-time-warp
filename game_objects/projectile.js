@@ -34,7 +34,10 @@ _.extend(
         },
 
         collideWithMap: function(map) {
-            if (map.sampleAtPixel(this.x, this.y - this.h/2)) {
+            if (map.sampleAtPixel(this.x, this.y - this.h)
+             || map.sampleAtPixel(this.x, this.y)
+             || map.sampleAtPixel(this.x - this.w/2, this.y - this.h/2)
+             || map.sampleAtPixel(this.x + this.w/2, this.y - this.h/2)) {
                 this.alive = false;
             }
         }
