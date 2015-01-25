@@ -24,6 +24,8 @@ var Player = function(id, color) {
     this.deaths = 0;
     this.facex = 1;
 
+    this.dead = false;
+
     this.spawnCountdown = SPAWN_COUNTDOWN;
     this.invulnerableCountdown = 0;
 
@@ -50,7 +52,7 @@ _.extend(
 
             if (this.spawnCountdown > 0) {
                 if (--this.spawnCountdown <= 0) {
-                    this.invulnerableCountdown = INVULNERABLE_COUNTDOWN;
+                    this.dead = false;
                     this.moveToSpawnPoint();
                 } else return;
             }
@@ -215,7 +217,9 @@ _.extend(
             var emitter = new ParticleEmitter(this.x, this.y - this.h / 2);
             state.addObject(emitter);
 
+            this.dead = true;
             this.spawnCountdown = SPAWN_COUNTDOWN;
+            this.invulnerableCountdown = INVULNERABLE_COUNTDOWN;
         },
 
         handleInput: function(input) {
