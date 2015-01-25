@@ -232,23 +232,29 @@ _.extend(
         },
 
         collideWithMap: function(map) {
-            if (map.sampleAtPixel(this.x, this.y)) {
+            if (map.sampleAtPixel(this.x - this.w/2, this.y - this.h/2)
+             || map.sampleAtPixel(this.x - this.w/2, this.y - 2)
+             || map.sampleAtPixel(this.x - this.w/2, this.y - this.h + 2)) {
+                this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
+                this.vx = 0;
+            }
+            if (map.sampleAtPixel(this.x + this.w/2, this.y - this.h/2)
+             || map.sampleAtPixel(this.x + this.w/2, this.y - 2)
+             || map.sampleAtPixel(this.x + this.w/2, this.y - this.h + 2)) {
+                this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
+                this.vx = 0;
+            }
+            if (map.sampleAtPixel(this.x + this.w/2 - 2, this.y)
+             || map.sampleAtPixel(this.x - this.w/2 + 2, this.y)) {
                 this.y = constants.TILE_SIZE * Math.floor(this.y / constants.TILE_SIZE);
                 this.vy = 0;
                 this._standing = 2;
             }
-            if (map.sampleAtPixel(this.x, this.y - this.h)) {
+            if (map.sampleAtPixel(this.x + this.w/2 - 2, this.y - this.h)
+             || map.sampleAtPixel(this.x - this.w/2 + 2, this.y - this.h)) {
                 this.y = constants.TILE_SIZE * Math.ceil(this.y / constants.TILE_SIZE);
                 if (this.vy < 0) this.vy = 0;
                 this._roofing = 2;
-            }
-            if (map.sampleAtPixel(this.x - this.w / 2, this.y - this.h / 2)) {
-                this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
-                this.vx = 0;
-            }
-            if (map.sampleAtPixel(this.x + this.w / 2, this.y - this.h / 2)) {
-                this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
-                this.vx = 0;
             }
         }
     }
