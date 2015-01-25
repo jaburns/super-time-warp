@@ -3,13 +3,28 @@ var constants = require('../public/shared/gj_constants');
 
 var GameObject = require('./game_object');
 
-var Projectile = function(owner) {
+var Projectile = function(owner, target) {
     Projectile.superclass.call(this);
 
     this._owner = owner;
 
     this.w = 16;
     this.h = 16;
+
+    this.x = owner.x + owner.vx;
+    this.y = owner.y - (owner.h / 2) + (this.h / 2) + owner.vy;
+
+    var angle = Math.atan2((owner.y - target.y - (owner.h / 2) - (this.h / 2)), (owner.x - target.x));
+    this.angle = angle + (Math.PI / 2);
+
+    var cos = Math.cos(angle);
+    var sin = Math.sin(angle);
+
+    this.vx = -cos * 10;
+    this.vy = -sin * 10;
+
+    this.x -= cos * owner.w;
+    this.y -= sin * owner.w;
 
 };
 
