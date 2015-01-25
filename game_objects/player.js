@@ -19,6 +19,7 @@ var Player = function(id, color) {
 
     this.kills = 0;
     this.deaths = 0;
+    this.facex = 1;
 
     this._spawnCountdown = 30;
 
@@ -47,6 +48,12 @@ _.extend(
                 if (--this._spawnCountdown <= 0) {
                     this.moveToSpawnPoint();
                 } else return;
+            }
+
+            if (this._keysDown[constants.keys.MOVE_LEFT]) {
+                this.facex = -1;
+            } else if (this._keysDown[constants.keys.MOVE_RIGHT]) {
+                this.facex = 1;
             }
 
             if (this._standing > 0) this._standing--;
