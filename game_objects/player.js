@@ -117,12 +117,12 @@ _.extend(
             }
 
             // Integrate velocity in to position and collide with the map.
-            this.x += this.vx/2;
-            this.y += this.vy/2;
-            this.collideWithMap(state.maps[state.era], this.takeDamage.bind(this,null));
-            this.x += this.vx/2;
-            this.y += this.vy/2;
-            this.collideWithMap(state.maps[state.era], this.takeDamage.bind(this,null));
+            this.x += this.vx / 2;
+            this.y += this.vy / 2;
+            this.collideWithMap(state.maps[state.era], this.takeDamage.bind(this, null));
+            this.x += this.vx / 2;
+            this.y += this.vy / 2;
+            this.collideWithMap(state.maps[state.era], this.takeDamage.bind(this, null));
 
             this._prevKeysDown = _.clone(this._keysDown);
             this._mouseClick = false;
@@ -138,7 +138,7 @@ _.extend(
             }
         },
 
-        _moveX: function (turnx, accx, decayx, maxx) {
+        _moveX: function(turnx, accx, decayx, maxx) {
             if (this._keysDown[constants.keys.MOVE_LEFT]) {
                 this.vx += this.vx > 0 ? -turnx : -accx;
             } else if (this._keysDown[constants.keys.MOVE_RIGHT]) {
@@ -216,17 +216,17 @@ _.extend(
         _startKick: function() {
             this.droppingKick = true;
             this.startedPound = true;
-            var theta = Math.atan2(this._mousePos.y - (this.y - this.h/2), this._mousePos.x - this.x);
+            var theta = Math.atan2(this._mousePos.y - (this.y - this.h / 2), this._mousePos.x - this.x);
             if (theta > 0) {
-                if      (theta <   Math.PI/4) theta =   Math.PI/4;
-                else if (theta > 3*Math.PI/4) theta = 3*Math.PI/4;
+                if (theta < Math.PI / 4) theta = Math.PI / 4;
+                else if (theta > 3 * Math.PI / 4) theta = 3 * Math.PI / 4;
             } else {
-                if (theta > -Math.PI/2) theta =   Math.PI/4;
-                else                    theta = 3*Math.PI/4;
+                if (theta > -Math.PI / 2) theta = Math.PI / 4;
+                else                    theta = 3 * Math.PI / 4;
             }
-            this.vx = 15 * Math.cos (theta);
-            this.vy = 15 * Math.sin (theta);
-            this.facex = this.vx > 0 ? 1 : -1 ;
+            this.vx = 15 * Math.cos(theta);
+            this.vy = 15 * Math.sin(theta);
+            this.facex = this.vx > 0 ? 1 : -1;
         },
 
         moveSelf_jungle: function(state) {
@@ -316,7 +316,7 @@ _.extend(
                 if (this.droppingKick) {
                     this.droppingKick = false;
                     this.endedPound = true;
-                    this.vx = Math.abs(this.vx)/2;
+                    this.vx = Math.abs(this.vx) / 2;
                 } else {
                     this.vx = 0;
                 }
@@ -328,7 +328,7 @@ _.extend(
                 if (this.droppingKick) {
                     this.droppingKick = false;
                     this.endedPound = true;
-                    this.vx = -Math.abs(this.vx)/2;
+                    this.vx = -Math.abs(this.vx) / 2;
                 } else {
                     this.vx = 0;
                 }

@@ -142,38 +142,76 @@
             top: 0;
         }
 
+        li > .swatch {
+            width: 32px;
+            height: 16px !important;
+            margin-top: 8px;
+        }
+
         li.red {
             color: #D63633;
+        }
+
+        li.red > .swatch {
+            background-color: #D63633;
         }
 
         li.orange {
             color: #E17113;
         }
 
+        li.orange > .swatch {
+            background-color: #E17113;
+        }
+
         li.yellow {
             color: #FCF503;
+        }
+
+        li.yellow > .swatch {
+            background-color: #FCF503;
         }
 
         li.green {
             color: #97E743;
         }
 
+        li.green > .swatch {
+            background-color: #97E743;
+        }
+
         li.cyan {
             color: #59CDE6;
+        }
+
+        li.cyan > .swatch {
+            background-color: #59CDE6;
         }
 
         li.blue {
             color: #5A6AE4;
         }
 
+        li.blue > .swatch {
+            background-color: #5A6AE4;
+        }
+
         li.purple {
             color: #C35DE8;
+        }
+
+        li.purple > .swatch {
+            background-color: #C35DE8;
         }
 
         li.pink {
             color: #F0B4DD;
         }
 
+        li.pink > .swatch {
+            background-color: #F0B4DD;
+        }
+        
         /*.title-container {
             position: absolute;
             top: 0;
@@ -566,21 +604,24 @@ function runClient() {
                 pointer.position.y = (-sprite.getChildAt(0).height * 1.3) + Math.sin(new Date().getTime() / 200 + pointer.offset);
 
                 var ratio = object.kills - object.deaths;
-                ratio = ratio > 0 ? '+' + ratio : ratio;
-                var score = object.kills + ' | ' + object.deaths + ' (' + ratio + ')';
+                    ratio = ratio > 0 ? '+' + ratio : ratio;
+                var score = object.kills + ' / ' + object.deaths + ' ('+ratio+')';
                 sprite.getChildAt(0).animate(); // TODO: CHINGALING
 
                 var li = scores[object.id];
                 if (!li) {
                     li = document.createElement('li');
                     li.className = object.color;
-                    li.innerHTML = '<span>' + object.color + '</span>' + '<span>' + score + '</span>';
+                    li.innerHTML = '<span class="swatch"></span>' + '<span>' + score + '</span>';
                     li.score = score;
-                    scores_list.appendChild(li);
+                    li.kills = object.kills;
+                    li.deaths = object.deaths;
                     scores[object.id] = li;
                 } else if (score != li.score) {
                     li.innerHTML = '<span>' + object.color + '</span>' + '<span>' + score + '</span>';
                     li.score = score;
+                    li.kills = object.kills;
+                    li.deaths = object.deaths;
                 }
 
                 // Play player sounds
@@ -654,6 +695,23 @@ function runClient() {
                 scores_list.removeChild(scores[k]);
                 delete scores[k];
             }
+        }
+
+        // sort the scores
+        var _scores = [];
+        var keys = Object.keys(scores);
+        for (var i = 0; i < keys.length; i++) {
+            _scores.push(scores[keys[i]]);
+        }
+
+        _scores.sort(function(a, b) {
+            var d = (b.kills - b.deaths) - (a.kills - a.deaths);
+            if (d == 0) d = b.kills - a.kills;
+            return d;
+        });
+
+        for (var i = 0; i < _scores.length; i++) {
+            scores_list.appendChild(_scores[i]);
         }
 
         // check if we're about to TIME WARP!!1!
