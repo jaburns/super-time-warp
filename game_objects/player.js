@@ -6,6 +6,8 @@ var ParticleEmitter = require('./particle_emitter');
 var Axe = require('./axe');
 var Lazer = require('./lazer');
 
+var SPAWN_COUNTDOWN = 30;
+var INVULNERABLE_COUNTDOWN = 30;
 
 var Player = function(id, color) {
 
@@ -13,8 +15,8 @@ var Player = function(id, color) {
 
     this.type = 'player';
     this.color = color;
-    this.x = 0;
-    this.y = 0;
+    this.x = 400;
+    this.y = 320;
     this.w = 16;
     this.h = 24;
 
@@ -22,7 +24,8 @@ var Player = function(id, color) {
     this.deaths = 0;
     this.facex = 1;
 
-    this._spawnCountdown = 30;
+    this.spawnCountdown = SPAWN_COUNTDOWN;
+    this.invulnerableCountdown = 0;
 
     this._keysDown = {};
     this._prevKeysDown = {};
@@ -45,10 +48,15 @@ _.extend(
         update: function(state) {
             this._cachedMap = state.maps[state.era];
 
-            if (this._spawnCountdown > 0) {
-                if (--this._spawnCountdown <= 0) {
+            if (this.spawnCountdown > 0) {
+                if (--this.spawnCountdown <= 0) {
+                    this.invulnerableCountdown = INVULNERABLE_COUNTDOWN;
                     this.moveToSpawnPoint();
                 } else return;
+            }
+
+            if (this.invulnerableCountdown > 0) {
+                --this.invulnerableCountdown;
             }
 
             if (this._keysDown[constants.keys.MOVE_LEFT]) {
@@ -207,7 +215,7 @@ _.extend(
             var emitter = new ParticleEmitter(this.x, this.y - this.h / 2);
             state.addObject(emitter);
 
-            this.moveToSpawnPoint();
+            this.spawnCountdown = SPAWN_COUNTDOWN;
         },
 
         handleInput: function(input) {

@@ -343,9 +343,7 @@
                     child_sprite.setAnimation('jump', ['viking_20']);
                     child_sprite.setAnimation('fall', ['viking_22']);
                     child_sprite.setAnimation('damage', ['viking_24', 'viking_25', 'viking_26', 'viking_27', 'viking_28', 'viking_29', 'viking_30', 'viking_31'])
-                }
-                else
-                {
+                } else {
                     child_sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
                 }
 
@@ -380,6 +378,14 @@
             sprite.getChildAt(0).rotation = object.angle;
 
             if (object.type == 'player') {
+
+                if (object.spawnCountdown > 0) {
+                    sprite.visible = false;
+                } else if (object.invulnerableCountdown > 0) {
+                    sprite.visible = !sprite.visible;
+                } else {
+                    sprite.visible = true;
+                }
 
                 updateAnimation(object, sprite.getChildAt(0));
 
@@ -605,6 +611,11 @@
 
         socket.on('msg state', function(state) {
             latestState = state;
+
+            var mapWidth = state.maps[state.era].tiles[0].length * SCALE_FACTOR * gj_CONSTANTS.TILE_SIZE ;
+            var mapHeight = state.maps[state.era].tiles.length * SCALE_FACTOR * gj_CONSTANTS.TILE_SIZE;
+            centerCamera({ x: mapWidth / 2, y: mapHeight / 2}, state.maps[state.era].tiles[0].length, state.maps[state.era].tiles.length);
+
             initMap(latestState.maps[latestState.era]);
             renderState(latestState);
         });
