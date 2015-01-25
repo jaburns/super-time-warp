@@ -380,6 +380,7 @@
         <audio id="sound-shoot" src="assets/wav/shoot.wav" preload="auto"></audio>
         <audio id="sound-slam" src="assets/wav/slam.wav" preload="auto"></audio>
         <audio id="sound-throw" src="assets/wav/throw.wav" preload="auto"></audio>
+        <audio id="sound-rekt" src="assets/wav/rekt.wav" preload="auto"></audio>
     </div>
 </div>
 </body>
@@ -750,7 +751,12 @@ function runClient() {
 
                 // Play player sounds
                 if (object.id == socket.id) {
-                    if (object.justDied) sm.playSound('sound-die');
+                    if (object.justDied) {
+                        sm.playSound('sound-die');
+                        setTimeout(function() {
+                            sm.playSound('sound-rekt');
+                        }, 200);
+                    }
                     if (object.justKilled) sm.playSound('sound-die');
                     if (object.startedPound) sm.playSound('sound-dash');
                     if (object.jumped) sm.playSound('sound-jump');
@@ -1138,12 +1144,16 @@ function runClient() {
     }
 }
 
+var gameRunning = false;
 function skipVideo() {
-    var videoEl = document.getElementById('intro-cutscene');
-    videoEl.pause();
-    videoEl.parentNode.removeChild(videoEl);
-    runClient();
-    document.getElementById('scores-container').classList.add('in');
+    if(!gameRunning) {
+        gameRunning = true;
+        var videoEl = document.getElementById('intro-cutscene');
+        videoEl.pause();
+        videoEl.parentNode.removeChild(videoEl);
+        runClient();
+        document.getElementById('scores-container').classList.add('in');
+    }
 }
 
 window.onload = function() {
@@ -1152,7 +1162,7 @@ window.onload = function() {
 
     if(window.location.hash != '#no-video') {
         videoEl.addEventListener('ended', function() {
-            runClient();
+            if(!gameRunning) runClient();
             videoEl.classList.add('out');
             timer = setTimeout(function() {
                 videoEl.parentNode.removeChild(videoEl);
