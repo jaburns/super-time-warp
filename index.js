@@ -96,6 +96,7 @@ function mainLoop() {
 }
 
 function prune(object) {
+    if (typeof(object) != 'object' || object === null) return object;
     var keys = Object.keys(object);
     for (var i = 0; i < keys.length; i++) {
         var key = keys[i];

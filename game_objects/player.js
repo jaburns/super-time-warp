@@ -130,9 +130,9 @@ _.extend(
             var JET_SAVE = 1.6;
 
             if (this._standing) {
-                this._moveX( 2, 0.5, 0.8, 4 );// Ground
+                this._moveX(2, 0.5, 0.8, 4);// Ground
             } else {
-                this._moveX( 0.5, 0.3, 1, 6 );// Air
+                this._moveX(0.5, 0.3, 1, 6);// Air
             }
 
             if (this._keysDown[constants.keys.JUMP]) {
@@ -156,9 +156,9 @@ _.extend(
 
         moveSelf_basic: function(state) {
             if (this._standing) {
-                this._moveX( 2, 0.5, 0.8, 6 );// Ground
+                this._moveX(2, 0.5, 0.8, 6);// Ground
             } else {
-                this._moveX( 1, 0.3, 0.9, 6 );// Air
+                this._moveX(1, 0.3, 0.9, 6);// Air
             }
 
             if (this._keysDown[constants.keys.JUMP]) {
@@ -222,7 +222,7 @@ _.extend(
             }
 
             if (projectile) {
-                projectile = new projectile(this, { x: this._mousePos.x, y: this._mousePos.y  });
+                projectile = new projectile(this, { x: this._mousePos.x, y: this._mousePos.y });
 
                 state.addObject(projectile);
             }
@@ -272,12 +272,12 @@ _.extend(
             }
         },
 
-        collideWithMap: function(map,damaged) {
+        collideWithMap: function(map, damaged) {
             map._sampledFatalTile = false;
 
-            if (map.sampleAtPixel(this.x - this.w/2, this.y - this.h/2)
-             || map.sampleAtPixel(this.x - this.w/2, this.y - 2 - (this.vy>0?this.vy:0))
-             || map.sampleAtPixel(this.x - this.w/2, this.y - this.h + 2)) {
+            if (map.sampleAtPixel(this.x - this.w / 2, this.y - this.h / 2)
+                || map.sampleAtPixel(this.x - this.w / 2, this.y - 2 - (this.vy > 0 ? this.vy : 0))
+                || map.sampleAtPixel(this.x - this.w / 2, this.y - this.h + 2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
                 if (this._droppingKick) {
                     this._droppingKick = false;
@@ -286,9 +286,9 @@ _.extend(
                     this.vx = 0;
                 }
             }
-            if (map.sampleAtPixel(this.x + this.w/2, this.y - this.h/2)
-             || map.sampleAtPixel(this.x + this.w/2, this.y - 2 - (this.vy>0?this.vy:0))
-             || map.sampleAtPixel(this.x + this.w/2, this.y - this.h + 2)) {
+            if (map.sampleAtPixel(this.x + this.w / 2, this.y - this.h / 2)
+                || map.sampleAtPixel(this.x + this.w / 2, this.y - 2 - (this.vy > 0 ? this.vy : 0))
+                || map.sampleAtPixel(this.x + this.w / 2, this.y - this.h + 2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
                 if (this._droppingKick) {
                     this._droppingKick = false;
@@ -297,14 +297,14 @@ _.extend(
                     this.vx = 0;
                 }
             }
-            if (map.sampleAtPixel(this.x + this.w/2 - 2, this.y, this.vy>0)
-             || map.sampleAtPixel(this.x - this.w/2 + 2, this.y, this.vy>0)) {
+            if (map.sampleAtPixel(this.x + this.w / 2 - 2, this.y, this.vy > 0)
+                || map.sampleAtPixel(this.x - this.w / 2 + 2, this.y, this.vy > 0)) {
                 this.y = constants.TILE_SIZE * Math.floor(this.y / constants.TILE_SIZE);
                 this.vy = 0;
                 this._standing = 2;
             }
-            if (map.sampleAtPixel(this.x + this.w/2 - 2, this.y - this.h)
-             || map.sampleAtPixel(this.x - this.w/2 + 2, this.y - this.h)) {
+            if (map.sampleAtPixel(this.x + this.w / 2 - 2, this.y - this.h)
+                || map.sampleAtPixel(this.x - this.w / 2 + 2, this.y - this.h)) {
                 this.y = constants.TILE_SIZE * Math.ceil(this.y / constants.TILE_SIZE);
                 if (this.vy < 0) this.vy = 0;
                 this._roofing = 2;

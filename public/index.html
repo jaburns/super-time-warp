@@ -269,6 +269,7 @@
 
     // This array holds filepaths to all json files with sprite information
     var assetsToLoad = [
+        'assets/particles.json',
         'assets/projectiles.json',
         'assets/tiles.json',
         'assets/ui.json',
@@ -471,7 +472,6 @@
                     child_sprite.setAnimation('jump', ['viking_20']);
                     child_sprite.setAnimation('fall', ['viking_22']);
                 } else {
-
                     child_sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
                 }
 
@@ -705,13 +705,13 @@
                 particles: []
             };
 
-            var texture = new PIXI.Texture.fromImage('/assets/' + s.texture);
             var count = s.minCount + (s.maxCount - s.minCount) * Math.random();
             for (var i = 0; i < count; i++) {
                 var v = s.minV + (Math.round(Math.random()) * 2 - 1) * (Math.random() * (s.maxV - s.minV));
                 var a = s.minAngle + (Math.random() * (s.maxAngle - s.minAngle));
+                var tIndex = Math.floor(Math.random() * s.textures.length);
                 var particle = {
-                    sprite: new PIXI.Sprite(texture),
+                    sprite: new PIXI.Sprite.fromFrame(s.textures[tIndex]),
                     vx: v * Math.cos(a) + s.initialVx,
                     vy: v * Math.sin(a) + s.initialVy
                 };

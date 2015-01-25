@@ -3,39 +3,39 @@ var constants = require('../public/shared/gj_constants');
 
 var ParticleEmitter = require('./particle_emitter');
 
-var Bloodsplosion = function(x, y) {
+var Projectilesplosion = function(x, y) {
 
     this.lifetime = 10;
     this._lifetime = 10;
 
     this.particleSettings = {
-        textures: ['gore_1', 'gore_2'],
-        minCount: 100,
-        maxCount: 100,
+        //texture: 'particle.png',
+        minCount: 5,
+        maxCount: 10,
         minV: 0,
-        maxV: 5,
+        maxV: 2,
         initialVx: 0,
-        initialVy: -8,
+        initialVy: 0,
         minScale: 1,
         maxScale: 1,
-        gravity: 2,
+        gravity: 0,
         alphaDecay: 0.1,
         minAngle: 0,
         maxAngle: 2 * Math.PI
     };
 
-    Bloodsplosion.superclass.call(this, x, y);
+    Projectilesplosion.superclass.call(this, x, y);
 
 };
 
-Bloodsplosion.superclass = ParticleEmitter;
+Projectilesplosion.superclass = ParticleEmitter;
 
 _.extend(
-    Bloodsplosion.prototype,
+    Projectilesplosion.prototype,
     ParticleEmitter.prototype,
     {
 
     }
 );
 
-module.exports = Bloodsplosion;
+module.exports = Projectilesplosion;
