@@ -3,6 +3,7 @@ var constants = require('../public/shared/gj_constants');
 
 var GameObject = require('./game_object');
 var Bloodsplosion = require('./bloodsplosion');
+var Projectilesplosion = require('./projectilesplosion');
 var Axe = require('./axe');
 var Lazer = require('./lazer');
 
@@ -123,6 +124,15 @@ _.extend(
             this.x += this.vx / 2;
             this.y += this.vy / 2;
             this.collideWithMap(state.maps[state.era], this.takeDamage.bind(this, null));
+
+            if (this.endedPound) {
+                var emitter = new Projectilesplosion(this.x, this.y);
+                emitter.particleSettings.textures = ['grass', 'dirt'];
+                emitter.particleSettings.maxV = 4;
+                emitter.particleSettings.initialVy = -4;
+                emitter.particleSettings.gravity = 1;
+                state.addObject(emitter);
+            }
 
             this._prevKeysDown = _.clone(this._keysDown);
             this._mouseClick = false;
