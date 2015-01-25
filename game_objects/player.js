@@ -36,7 +36,7 @@ var Player = function(id, color) {
     this.endedPound = false;
     this.justKilled = false;
 
-    this.spawnCountdown = 0;
+    this.spawnCountdown = 1;
     this.invulnerableCountdown = INVULNERABLE_COUNTDOWN;
 
     this._keysDown = {};
@@ -82,6 +82,7 @@ _.extend(
                 if (--this.spawnCountdown <= 0) {
                     this.dead = false;
                     this.moveToSpawnPoint();
+                    this.droppingKick = false;
                 } else return;
             }
 
