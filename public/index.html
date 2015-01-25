@@ -175,42 +175,6 @@
             background-image: url('assets/title.png');
         }
 
-        .time-warp {
-            background-image: url('assets/titles/header_time_warp.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
-        .time-warp-5 {
-            background-image: url('assets/titles/time_warp_5.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
-        .time-warp-4 {
-            background-image: url('assets/titles/time_warp_4.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
-        .time-warp-3 {
-            background-image: url('assets/titles/time_warp_3.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
-        .time-warp-2 {
-            background-image: url('assets/titles/time_warp_2.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
-        .time-warp-1 {
-            background-image: url('assets/titles/time_warp_1.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
         #audio-container {
             position:absolute;
             left:-9001px;
@@ -258,8 +222,6 @@
 
     var scores = {};
     var scores_list = document.getElementById('scores-list');
-
-    var time_warp = document.getElementById('time-warp');
 
     // Drawing ####################################################################
 
@@ -821,6 +783,12 @@
 
         socket.on('msg full', function() {
             spectating = true;
+            var spectating_sprite = new PIXI.Sprite(new PIXI.Texture.fromImage('/assets/titles/spectating.png'));
+            spectating_sprite.anchor.x = spectating_sprite.anchor.y = 0.5;
+            spectating_sprite.scale = SCALE;
+            spectating_sprite.position.x = VIEWPORT.w / 2;
+            spectating_sprite.position.y = VIEWPORT.h - 64;
+            stage.addChild(spectating_sprite);
         });
 
         // Handling inputs and sending them to the server -------------
