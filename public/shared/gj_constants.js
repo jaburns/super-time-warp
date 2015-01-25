@@ -21,6 +21,12 @@ var gj_CONSTANTS = {
         BLUE: 'blue',
         PURPLE: 'purple',
         PINK: 'pink'
+    },
+    tile_types: {
+        NO_COLLISION: 0,
+        SOLID: 1,
+        ONE_WAY: 2,
+        FATAL: 3
     }
 };
 
