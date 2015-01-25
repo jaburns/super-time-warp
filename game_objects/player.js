@@ -40,7 +40,7 @@ var Player = function(id, color) {
     this._prevKeysDown = {};
     this._mousePos = { x: null, y: null };
     this._mouseDown = false;
-    this._mouseWasDown = false;
+    this._mouseClick = false;
     this._standing = 0; // When greater than zero, the player is on the ground.  Counts down every frame. Reset every time a ground collision is detected.
     this._roofing = 0; // same as standing but for roof
     this._droppingKick = false;
@@ -124,6 +124,7 @@ _.extend(
             this.collideWithMap(state.maps[state.era], this.takeDamage.bind(this,null));
 
             this._prevKeysDown = _.clone(this._keysDown);
+            this._mouseClick = false;
         },
 
         collideWithObject: function(other) {
@@ -229,7 +230,7 @@ _.extend(
                     this.endedPound = true;
                 }
                 this._droppingKick = false;
-            } else if (!this._mouseWasDown && this._mouseDown && !this._droppingKick) {
+            } else if (this._mouseClick && !this._droppingKick) {
                 this._startKick();
             }
 
@@ -291,7 +292,7 @@ _.extend(
                     this._mousePos.y = input.y;
                     break;
                 case 'mousedown':
-                    this._mouseWasDown = this._mouseDown;
+                    this._mouseClick = true;
                     this._mouseDown = true;
                     break;
                 case 'mouseup':
