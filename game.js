@@ -37,14 +37,14 @@ Game.prototype.handleInput = function(id, input) {
 Game.prototype.step = function() {
     var self = this;
 
-//    if (--this.state.countDownToNextEra <= 0) {
-//        this.state.countDownToNextEra = ERA_FRAMECOUNT_MIN + (ERA_FRAMECOUNT_MAX-ERA_FRAMECOUNT_MIN)*Math.random();
-//
-//        this.state.era = _.chain(constants.eras)
-//            .filter(function(era) { return era !== self.state.era; })
-//            .sample()
-//            .value();
-//    }
+    if (--this.state.countDownToNextEra <= 0) {
+        this.state.countDownToNextEra = ERA_FRAMECOUNT_MIN + (ERA_FRAMECOUNT_MAX-ERA_FRAMECOUNT_MIN)*Math.random();
+
+        this.state.era = _.chain(constants.eras)
+            .filter(function(era) { return era !== self.state.era; })
+            .sample()
+            .value();
+    }
 
     _.each(this.state.objects, function(object) {
         object.update && object.update(self.state)

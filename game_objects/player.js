@@ -50,6 +50,35 @@ _.extend(
                 } else return;
             }
 
+            switch (state.era) {
+                case constants.eras.JUNGLE:
+                    this.moveSelf_jungle(state);
+                    break;
+                case constants.eras.TUNDRA:
+                    this.moveSelf_tundra(state);
+                    break;
+                case constants.eras.FUTURE:
+                    this.moveSelf_future(state);
+                    break;
+            }
+
+            if (this._mouseDown) {
+                if (!this._lastFireTime || (new Date().getTime() - this._lastFireTime) > this._fireDelay) {
+                    this._lastFireTime = new Date().getTime();
+                    this.fireWeapon(state);
+                }
+            }
+
+            // Integrate velocity in to position.
+            Player.superclass.prototype.update.call(this, state);
+
+            // Collide with the map.
+            this.collideWithMap(state.maps[state.era]);
+
+            this._prevKeysDown = _.clone(this._keysDown);
+        },
+
+        moveSelf_jungle: function(state) {
             if (this._keysDown[constants.keys.MOVE_LEFT]) {
                 this.vx += (-5 - this.vx) / 5;
             } else if (this._keysDown[constants.keys.MOVE_RIGHT]) {
@@ -78,57 +107,51 @@ _.extend(
                 }
             }
 
-            if (this._mouseDown) {
+            this.vy += GRAVITY;
+        },
 
-                if (!this._lastFireTime || (new Date().getTime() - this._lastFireTime) > this._fireDelay) {
+        moveSelf_future: function(state) {
+            this.vx = 0;
+            this.vy = 0;
+        },
 
-                    this._lastFireTime = new Date().getTime();
-                    var projectile;
-                    switch (state.era) {
-                        case constants.eras.TUNDRA:
-                            projectile = Axe;
-                            break;
-                        case constants.eras.FUTURE:
-                            projectile = Lazer;
-                            break;
-                    }
+        moveSelf_tundra: function(state) {
+            this.vx = 0;
+            this.vy = 0;
+        },
 
-                    if (projectile) {
+        fireWeapon: function(state) {
+            var projectile;
 
-                        projectile = new projectile(this);
-
-                        projectile.x = this.x + this.vx;
-                        projectile.y = this.y - (this.h / 2) + (projectile.h / 2) + this.vy;
-
-                        var angle = Math.atan2((this.y - this._mousePos.y - (this.h / 2) - (projectile.h / 2)), (this.x - this._mousePos.x));
-                        projectile.angle = angle + (Math.PI / 2);
-
-                        var cos = Math.cos(angle);
-                        var sin = Math.sin(angle);
-
-                        projectile.vx = -cos * 10;
-                        projectile.vy = -sin * 10;
-
-                        projectile.x -= cos * this.w;
-                        projectile.y -= sin * this.w;
-
-                        state.addObject(projectile);
-
-                    }
-
-                }
-
+            switch (state.era) {
+                case constants.eras.TUNDRA:
+                    projectile = Axe;
+                    break;
+                case constants.eras.FUTURE:
+                    projectile = Lazer;
+                    break;
             }
 
-            this.vy += GRAVITY;
+            if (projectile) {
+                projectile = new projectile(this);
 
-            // Integrate velocity in to position.
-            Player.superclass.prototype.update.call(this, state);
+                projectile.x = this.x + this.vx;
+                projectile.y = this.y - (this.h / 2) + (projectile.h / 2) + this.vy;
 
-            // Collide with the map.
-            this.collideWithMap(state.maps[state.era]);
+                var angle = Math.atan2((this.y - this._mousePos.y - (this.h / 2) - (projectile.h / 2)), (this.x - this._mousePos.x));
+                projectile.angle = angle + (Math.PI / 2);
 
-            this._prevKeysDown = _.clone(this._keysDown);
+                var cos = Math.cos(angle);
+                var sin = Math.sin(angle);
+
+                projectile.vx = -cos * 10;
+                projectile.vy = -sin * 10;
+
+                projectile.x -= cos * this.w;
+                projectile.y -= sin * this.w;
+
+                state.addObject(projectile);
+            }
         },
 
         moveToSpawnPoint: function() {
