@@ -1100,7 +1100,7 @@ function runClient() {
         }
 
         window.onkeyup = function (e) {
-            if (spectating || mobile) {
+            if (spectating || isMobile) {
                 delete _keys[e.keyCode];
             } else if (keys.indexOf(e.keyCode) > -1) {
                 socket.emit('msg input', { type: 'keyup', key: e.keyCode });
@@ -1108,7 +1108,7 @@ function runClient() {
         };
 
         window.onkeydown = function (e) {
-            if (spectating || mobile) {
+            if (spectating || isMobile) {
                 _keys[e.keyCode] = true;
             } else if (keys.indexOf(e.keyCode) > -1) {
                 socket.emit('msg input', { type: 'keydown', key: e.keyCode });
