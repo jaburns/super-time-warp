@@ -145,8 +145,8 @@
                 if(object.type == 'player')
                 {
                     child_sprite = new AnimatedSprite(textures[object.type]);
-                    child_sprite.setAnimation('animation', ['tile_4', 'tile_5', 'tile_6']);
-                    child_sprite.switchAnimation('animation');
+                    child_sprite.setAnimation('right', ['tile_4', 'tile_5', 'tile_6']);
+                    child_sprite.setAnimation('left', ['tile_1', 'tile_15', 'tile_10']);
                 }
                 else
                 {
@@ -185,6 +185,19 @@
 
             if (object.type == 'player') {
 
+                if(object.vx > 0)
+                {
+                    sprite.getChildAt(0).switchAnimation('right');
+                }
+                else if(object.vx < 0)
+                {
+                    sprite.getChildAt(0).switchAnimation('left');
+                }
+                else
+                {
+                    sprite.getChildAt(0).clearAnimation();
+                }
+                
                 sprite.getChildAt(0).animate();
                 var score = object.kills + ' / ' + object.deaths;
                 var li = scores[object.id];
