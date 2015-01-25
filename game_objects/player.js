@@ -2,7 +2,7 @@ var _ = require('lodash');
 var constants = require('../public/shared/gj_constants');
 
 var GameObject = require('./game_object');
-var ParticleEmitter = require('./particle_emitter');
+var Bloodsplosion = require('./bloodsplosion');
 var Axe = require('./axe');
 var Lazer = require('./lazer');
 
@@ -220,7 +220,7 @@ _.extend(
             }
             this.deaths++;
 
-            var emitter = new ParticleEmitter(this.x, this.y - this.h / 2);
+            var emitter = new Bloodsplosion(this.x, this.y - this.h / 2);
             state.addObject(emitter);
 
             this.dead = true;

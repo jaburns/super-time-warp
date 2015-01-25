@@ -694,9 +694,9 @@
     var particle_emitters = {};
     var particle_container = new PIXI.DisplayObjectContainer();
     root_container.addChild(particle_container);
-    var particle_texture = new PIXI.Texture.fromImage('/assets/particle.png');
     function updateParticleEmitter(object) {
 
+        var s = object.particleSettings;
         var emitter = particle_emitters[object.id];
         if (!emitter) {
             emitter = {
@@ -705,13 +705,15 @@
                 particles: []
             };
 
-            for (var i = 0; i < 100; i++) {
-                var v = (Math.round(Math.random()) * 2 - 1) * (Math.random() * 5);
-                var a = Math.random() * 2 * Math.PI;
+            var texture = new PIXI.Texture.fromImage('/assets/' + s.texture);
+            var count = s.minCount + (s.maxCount - s.minCount) * Math.random();
+            for (var i = 0; i < count; i++) {
+                var v = s.minV + (Math.round(Math.random()) * 2 - 1) * (Math.random() * (s.maxV - s.minV));
+                var a = s.minAngle + (Math.random() * (s.maxAngle - s.minAngle));
                 var particle = {
-                    sprite: new PIXI.Sprite(particle_texture),
-                    vx: v * Math.cos(a),
-                    vy: v * Math.sin(a)
+                    sprite: new PIXI.Sprite(texture),
+                    vx: v * Math.cos(a) + s.initialVx,
+                    vy: v * Math.sin(a) + s.initialVy
                 };
 
                 particle.sprite.anchor.x = 0.5;
@@ -720,7 +722,7 @@
                 particle.sprite.position.x = object.x;
                 particle.sprite.position.y = object.y;
 
-                var scale = 1 + (2 * Math.random());
+                var scale = s.minScale + (Math.random() * (s.maxScale - s.minScale));
                 particle.sprite.scale.x = scale;
                 particle.sprite.scale.y = scale;
 
@@ -734,9 +736,10 @@
 
                 for (var i = 0; i < emitter.particles.length; i++) {
                     var particle = emitter.particles[i];
-                    particle.sprite.alpha -= 0.1;
+                    particle.sprite.alpha -= s.alphaDecay;
                     particle.sprite.position.x += particle.vx;
                     particle.sprite.position.y += particle.vy;
+                    particle.vy += s.gravity;
                 }
 
             } else {
