@@ -41,7 +41,7 @@ var soundManager = (function () {
         _soundManager.playLoop = function(sound) {
             this.loopChannel.src = document.getElementById(sound).src;
             this.loopChannel.load();
-            this.loopChannel.currentTime = 35;
+            this.loopChannel.volume = 0.65;
             this.loopChannel.play();
         };
 
