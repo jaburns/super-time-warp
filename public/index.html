@@ -8,14 +8,25 @@
     <script src="animatedSprite.js"></script>
     <script src="soundManager.js"></script>
     <style>
+        @font-face {
+            font-family: 'Silkscreen';
+            src: url('assets/silkscreen.ttf');
+        }
         html, body {
             overflow: hidden;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         body {
+            font-family: 'Silkscreen', sans-serif;
+            text-transform: uppercase;
             padding: 34px;
             background: #141414;
-            font-family: sans-serif;
             color: #9badd7;
         }
 
@@ -53,8 +64,15 @@
             list-style-type: none;
         }
 
+
+        #scores-container h2 {
+            font-size: 100%;
+            margin: 0;
+            margin-bottom: 17px;
+            font-weight: normal;
+        }
+
         #scores-container li {
-            line-height: 1.4em;
             margin: 0;
             overflow: hidden;
             clear: both;
@@ -75,10 +93,12 @@
 
         #scores-container li span:first-child {
             float: left;
-            font-size: 80%;
             text-transform: uppercase;
             letter-spacing: 1px;
             border-radius: 3px;
+            max-width: 38%;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         #scores-container li span:last-child {
@@ -196,6 +216,7 @@
         <div id="title" class="title-container"><div class="title"></div></div>
     </div>
     <div id="scores-container">
+        <h2>Score</h2>
         <ul id="scores-list"></ul>
     </div>
     <div id="audio-container">
@@ -469,7 +490,9 @@
                 var pointer = sprite.getChildAt(1);
                 pointer.position.y = (-sprite.getChildAt(0).height * 1.3) + Math.sin(new Date().getTime() / 200 + pointer.offset);
 
-                var score = object.kills + ' &middot; ' + object.deaths;
+                var ratio = object.kills - object.deaths;
+                    ratio += ratio > 0 ? '+' : ratio < 0 ? '-' : '';
+                var score = object.kills + ' | ' + object.deaths + ' ('+ratio+')';
                 sprite.getChildAt(0).animate(); // TODO: CHINGALING
 
                 var li = scores[object.id];
