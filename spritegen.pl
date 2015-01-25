@@ -7,12 +7,12 @@ use diagnostics;
 my $json = "{ \"frames\": {";
 
 # Configuration
-my $width       = 32; # How many pixels wide is the sheet?
-my $rows        =   1; # How many rows of blocks are there?
-my $tile_width  =  16; # How wide are the tiles?
-my $tile_height =  16;
-my $filepath    = 'projectiles.png';
-my $outfile     = 'public/assets/projectiles.json';
+my $width       = 340; # How many pixels wide is the sheet?
+my $rows        =   4; # How many rows of blocks are there?
+my $tile_width  =  34; # How wide are the tiles?
+my $tile_height =  32;
+my $filepath    = 'viking.png';
+my $outfile     = 'public/assets/viking.json';
 
 my $height = $rows * $tile_height;
 my $index = 1;
@@ -22,13 +22,13 @@ for(my $row = 0; $row < $rows; $row++)
     for(my $column = 0; $column < $width / $tile_width; $column++)
     {
         my $x = $column * $tile_width;
-        my $y = $row * $tile_width;
+        my $y = $row * $tile_height;
 
-        $json .= "\"tile_$index\": {";
-        $json .= "\"frame\": {\"x\": $x, \"y\":$y, \"w\":$tile_width, \"h\":$tile_width},";
+        $json .= "\"viking_$index\": {";
+        $json .= "\"frame\": {\"x\": $x, \"y\":$y, \"w\":$tile_width, \"h\":$tile_height},";
         $json .= "\"rotated\": false, \"trimmed\": false,";
-        $json .= "\"spriteSourceSize\": {\"x\": 0, \"y\":0, \"w\":$tile_width, \"h\":$tile_width},";
-        $json .= "\"sourceSize\": {\"w\":$tile_width, \"h\":$tile_width}";
+        $json .= "\"spriteSourceSize\": {\"x\": 0, \"y\":0, \"w\":$tile_width, \"h\":$tile_height},";
+        $json .= "\"sourceSize\": {\"w\":$tile_width, \"h\":$tile_height}";
         $json .= "},";
 
         $index++;

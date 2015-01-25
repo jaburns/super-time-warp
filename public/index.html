@@ -241,7 +241,8 @@
     var assetsToLoad = [
         'assets/projectiles.json',
         'assets/tiles.json',
-        'assets/ui.json'
+        'assets/ui.json',
+        'assets/viking.json'
     ];
 
     loader = new PIXI.AssetLoader(assetsToLoad);
@@ -366,9 +367,16 @@
                 var child_sprite;
                 if (object.type == 'player') {
                     child_sprite = new AnimatedSprite(textures[object.type]);
-                    child_sprite.setAnimation('right', ['tile_4', 'tile_5', 'tile_6']);
-                    child_sprite.setAnimation('left', ['tile_1', 'tile_15', 'tile_10']);
-                } else {
+                    child_sprite.setAnimation('idle', ['viking_1', 'viking_2', 'viking_3', 'viking_4', 'viking_5', 'viking_6', 'viking_7', 'viking_8', 'viking_9', 'viking_10', 'viking_11'])
+                    //child_sprite.setAnimation('right', ['tile_4', 'tile_5', 'tile_6']);
+                    child_sprite.setAnimation('walk', ['viking_13', 'viking_14','viking_15','viking_16','viking_17','viking_18']);
+                    child_sprite.setAnimation('attack', ['viking1']);
+                    child_sprite.setAnimation('jump', ['viking_20']);
+                    child_sprite.setAnimation('fall', ['viking_22']);
+                    child_sprite.setAnimation('damage', ['viking_24', 'viking_25', 'viking_26', 'viking_27', 'viking_28', 'viking_29', 'viking_30', 'viking_31'])
+                }
+                else
+                {
                     child_sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
                 }
 
@@ -405,13 +413,7 @@
 
             if (object.type == 'player') {
 
-                if (object.vx > 0) {
-                    sprite.getChildAt(0).switchAnimation('right');
-                } else if (object.vx < 0) {
-                    sprite.getChildAt(0).switchAnimation('left');
-                } else {
-                    sprite.getChildAt(0).clearAnimation();
-                }
+                updateAnimation(object, sprite.getChildAt(0));
 
                 var pointer = sprite.getChildAt(1);
                 pointer.position.y = (-object.h * 1.5) + Math.sin(new Date().getTime() / 200 + pointer.offset);
@@ -526,6 +528,38 @@
         crosshairs.x = pos.x;
         crosshairs.y = pos.y;
         socket.emit('msg input', { type: 'mousemove', x: pos.x, y: pos.y });
+    }
+
+    function updateAnimation(object, sprite)
+    {
+        sprite.scale.x = object.vx > 0 ? -1 : 1;
+//        object.attack = Math.random() > 0.9;
+//
+//        if(object.attack)
+//        {
+//            sprite.switchanimation('attack');
+//            return;
+//        }
+
+        if(object.vy == 0) {
+            if(Math.abs(object.vx) > 0.01) {
+                sprite.switchAnimation('walk');
+            }
+            else {
+                sprite.clearAnimation();
+            }
+
+            return;
+        }
+
+        if(object.vy > 0)
+        {
+            sprite.switchAnimation('fall');
+        }
+        else
+        {
+            sprite.switchAnimation('jump');
+        }
     }
 
     // Networking #################################################################
