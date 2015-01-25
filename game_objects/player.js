@@ -120,7 +120,7 @@ _.extend(
         collideWithObject: function(other) {
             if (this._droppingKick && other.takeDamage) {
                 if (this.y > other.y || !other._droppingKick) {
-//                    other.takeDamage(this,this._cachedState);
+                    other.takeDamage(this);
                 }
             }
         },
