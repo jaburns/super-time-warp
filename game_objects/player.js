@@ -29,6 +29,9 @@ var Player = function(id, color) {
     // Sound hooks
     this.jumped = false;
     this.justDied = false;
+    this.startedPound = false;
+    this.endedPound = false;
+    this.justKilled = false;
 
     this.spawnCountdown = SPAWN_COUNTDOWN;
     this.invulnerableCountdown = INVULNERABLE_COUNTDOWN;
@@ -56,7 +59,11 @@ _.extend(
         update: function(state) {
             this._cachedMap = state.maps[state.era];
 
+            // Reset single-frame sound indicator booleans.
             this.jumped = false;
+            this.startedPound = false;
+            this.endedPound = false;
+            this.justKilled = false;
 
             if (this.justDied) {
                 var emitter = new Bloodsplosion(this.x, this.y - this.h / 2);
@@ -123,6 +130,8 @@ _.extend(
             if (this._droppingKick && other.takeDamage) {
                 if (this.y > other.y || !other._droppingKick) {
                     other.takeDamage(this);
+                    this.kills++;
+                    this.justKilled = true;
                 }
             }
         },
@@ -199,6 +208,8 @@ _.extend(
         },
 
         _startKick: function() {
+            this._droppingKick = true;
+            this.startedPound = true;
             var theta = Math.atan2(this._mousePos.y - (this.y - this.h/2), this._mousePos.x - this.x);
             if (theta > 0) {
                 if      (theta <   Math.PI/4) theta =   Math.PI/4;
@@ -214,9 +225,11 @@ _.extend(
 
         moveSelf_jungle: function(state) {
             if (this._standing) {
+                if (this._droppingKick) {
+                    this.endedPound = true;
+                }
                 this._droppingKick = false;
             } else if (!this._mouseWasDown && this._mouseDown && !this._droppingKick) {
-                this._droppingKick = true;
                 this._startKick();
             }
 
@@ -259,6 +272,7 @@ _.extend(
             if (this.justDied || this.dead) return;
             if (other && other._owner) {
                 other._owner.kills++;
+                this.justKilled = true;
             }
             this.deaths++;
             this.justDied = true;
@@ -295,6 +309,7 @@ _.extend(
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
                 if (this._droppingKick) {
                     this._droppingKick = false;
+                    this.endedPound = true;
                     this.vx = Math.abs(this.vx)/2;
                 } else {
                     this.vx = 0;
