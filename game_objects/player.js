@@ -36,7 +36,7 @@ var Player = function(id, color) {
     this.endedPound = false;
     this.justKilled = false;
 
-    this.spawnCountdown = 0;
+    this.spawnCountdown = 1;
     this.invulnerableCountdown = INVULNERABLE_COUNTDOWN;
 
     this._keysDown = {};
