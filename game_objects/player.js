@@ -102,6 +102,14 @@ _.extend(
             this._prevKeysDown = _.clone(this._keysDown);
         },
 
+        collideWithObject: function(other) {
+            if (this._droppingKick && other.takeDamage) {
+                if (this.y > other.y || !other._droppingKick) {
+                    other.takeDamage(this,state);
+                }
+            }
+        },
+
         _moveX: function (turnx, accx, decayx, maxx) {
             if (this._keysDown[constants.keys.MOVE_LEFT]) {
                 this.vx += this.vx > 0 ? -turnx : -accx;
