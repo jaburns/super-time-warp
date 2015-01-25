@@ -25,6 +25,7 @@ var Player = function(id, color) {
     this.facex = 1;
 
     this.dead = false;
+    this.droppingKick = false;
 
     // Sound hooks
     this.jumped = false;
@@ -43,7 +44,6 @@ var Player = function(id, color) {
     this._mouseClick = false;
     this._standing = 0; // When greater than zero, the player is on the ground.  Counts down every frame. Reset every time a ground collision is detected.
     this._roofing = 0; // same as standing but for roof
-    this._droppingKick = false;
 
     this._cachedMap = null;
     this._fireDelay = 400;
@@ -128,8 +128,8 @@ _.extend(
         },
 
         collideWithObject: function(other) {
-            if (this._droppingKick && other.takeDamage) {
-                if (this.y > other.y || !other._droppingKick) {
+            if (this.droppingKick && other.takeDamage) {
+                if (this.y > other.y || !other.droppingKick) {
                     other.takeDamage(this);
                     this.kills++;
                     this.justKilled = true;
@@ -209,7 +209,7 @@ _.extend(
         },
 
         _startKick: function() {
-            this._droppingKick = true;
+            this.droppingKick = true;
             this.startedPound = true;
             var theta = Math.atan2(this._mousePos.y - (this.y - this.h/2), this._mousePos.x - this.x);
             if (theta > 0) {
@@ -226,15 +226,15 @@ _.extend(
 
         moveSelf_jungle: function(state) {
             if (this._standing) {
-                if (this._droppingKick) {
+                if (this.droppingKick) {
                     this.endedPound = true;
                 }
-                this._droppingKick = false;
-            } else if (this._mouseClick && !this._droppingKick) {
+                this.droppingKick = false;
+            } else if (this._mouseClick && !this.droppingKick) {
                 this._startKick();
             }
 
-            if (!this._droppingKick) {
+            if (!this.droppingKick) {
                 this.moveSelf_basic(state);
             }
         },
@@ -308,8 +308,8 @@ _.extend(
                 || map.sampleAtPixel(this.x - this.w / 2, this.y - 2 - (this.vy > 0 ? this.vy : 0))
                 || map.sampleAtPixel(this.x - this.w / 2, this.y - this.h + 2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
-                if (this._droppingKick) {
-                    this._droppingKick = false;
+                if (this.droppingKick) {
+                    this.droppingKick = false;
                     this.endedPound = true;
                     this.vx = Math.abs(this.vx)/2;
                 } else {
@@ -320,8 +320,8 @@ _.extend(
                 || map.sampleAtPixel(this.x + this.w / 2, this.y - 2 - (this.vy > 0 ? this.vy : 0))
                 || map.sampleAtPixel(this.x + this.w / 2, this.y - this.h + 2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
-                if (this._droppingKick) {
-                    this._droppingKick = false;
+                if (this.droppingKick) {
+                    this.droppingKick = false;
                     this.endedPound = true;
                     this.vx = -Math.abs(this.vx)/2;
                 } else {
