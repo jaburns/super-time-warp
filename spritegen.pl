@@ -7,12 +7,12 @@ use diagnostics;
 my $json = "{ \"frames\": {";
 
 # Configuration
-my $width       = 340; # How many pixels wide is the sheet?
-my $rows        =   4; # How many rows of blocks are there?
-my $tile_width  =  34; # How wide are the tiles?
+my $width       = 300; # How many pixels wide is the sheet?
+my $rows        =  12; # How many rows of blocks are there?
+my $tile_width  =  30; # How wide are the tiles?
 my $tile_height =  32;
-my $filepath    = 'viking.png';
-my $outfile     = 'public/assets/viking.json';
+my $filepath    = 'player.png';
+my $outfile     = 'public/assets/player.json';
 
 my $height = $rows * $tile_height;
 my $index = 1;
@@ -24,7 +24,7 @@ for(my $row = 0; $row < $rows; $row++)
         my $x = $column * $tile_width;
         my $y = $row * $tile_height;
 
-        $json .= "\"viking_$index\": {";
+        $json .= "\"player_$index\": {";
         $json .= "\"frame\": {\"x\": $x, \"y\":$y, \"w\":$tile_width, \"h\":$tile_height},";
         $json .= "\"rotated\": false, \"trimmed\": false,";
         $json .= "\"spriteSourceSize\": {\"x\": 0, \"y\":0, \"w\":$tile_width, \"h\":$tile_height},";

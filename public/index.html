@@ -7,6 +7,7 @@
     <script src="pixi.js"></script>
     <script src="animatedSprite.js"></script>
     <script src="soundManager.js"></script>
+    <script src="player.js"></script>
     <style>
         @font-face {
             font-family: 'Silkscreen';
@@ -272,7 +273,7 @@
         'assets/projectiles.json',
         'assets/tiles.json',
         'assets/ui.json',
-        'assets/viking.json'
+        'assets/player.json'
     ];
 
     loader = new PIXI.AssetLoader(assetsToLoad);
@@ -465,10 +466,7 @@
 
                 var child_sprite;
                 if (object.type == 'player') {
-                    child_sprite = new AnimatedSprite(['viking_1', 'viking_2', 'viking_3', 'viking_4', 'viking_5', 'viking_6', 'viking_7', 'viking_8', 'viking_9', 'viking_10', 'viking_11']);
-                    child_sprite.setAnimation('walk', ['viking_13', 'viking_14','viking_15','viking_16','viking_17','viking_18']);
-                    child_sprite.setAnimation('jump', ['viking_20']);
-                    child_sprite.setAnimation('fall', ['viking_22']);
+                    child_sprite = new AnimatedSprite(playerAnimations, gj_CONSTANTS.eras.JUNGLE);
                 } else {
                     child_sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
 
@@ -518,6 +516,7 @@
                     sprite.visible = true;
                 }
 
+                sprite.getChildAt(0).switchState(state.era);
                 updateAnimation(object, sprite.getChildAt(0));
 
                 var pointer = sprite.getChildAt(1);
