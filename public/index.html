@@ -314,6 +314,24 @@
         }
     }
 
+    var rootColorMatrix = [
+        1,0,0,0,
+        0,1,0,0,
+        0,0,1,0,
+        0,0,0,1
+    ];
+
+    var bgColorMatrix = [
+        1,0,0,0,
+        0,1,0,0,
+        0,0,1,0,
+        0,0,0,1
+    ];
+
+    var rootFilter = new PIXI.ColorMatrixFilter();
+    var bgFilter = new PIXI.ColorMatrixFilter();
+    var count = 0;
+
     function renderState(state) {
         var liveIds = [];
 
@@ -453,14 +471,33 @@
             sprite.parent.removeChild(sprite);
             sprite = time_warp_sprites[0];
             stage.addChild(sprite);
+            root_container.filters = [rootFilter];
+            bg_container.filters = [bgFilter];
             setTimeout(function() {
                 sprite.parent.removeChild(sprite);
-            }, 500)
+                root_container.filters = null;
+                bg_container.filters = null;
+            }, 1000)
 
         }
 
+        count++;
+        updateColorMatrix(rootColorMatrix, count);
+        rootFilter.matrix = rootColorMatrix;
+        updateColorMatrix(bgColorMatrix, count + 0.5);
+        bgFilter.matrix = bgColorMatrix;
+
         // render the stage
         renderer.render(stage);
+    }
+
+    function updateColorMatrix(matrix, count) {
+        matrix[1] = Math.sin(count) * 3;
+        matrix[2] = Math.cos(count);
+        matrix[3] = Math.cos(count) * 1.5;
+        matrix[4] = Math.sin(count / 3) * 2;
+        matrix[5] = Math.sin(count / 2);
+        matrix[6] = Math.sin(count / 4);
     }
 
     var mousePos = { x: 0, y: 0 };
