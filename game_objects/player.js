@@ -241,6 +241,7 @@ _.extend(
 
         collideWithMap: function(map,damaged) {
             map.sampledFatalTile = false;
+
             if (map.sampleAtPixel(this.x - this.w/2, this.y - this.h/2)
              || map.sampleAtPixel(this.x - this.w/2, this.y - 2 - (this.vy>0?this.vy:0))
              || map.sampleAtPixel(this.x - this.w/2, this.y - this.h + 2)) {
@@ -267,7 +268,7 @@ _.extend(
             }
 
             // TODO make sure taking damage here doesnt allow double death
-            if (map.sampledFatalTile && damaged) damaged();
+            if (map.sampledFatalTile && damaged && !this.invulnerableCountdown) damaged();
         }
     }
 );
