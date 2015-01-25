@@ -101,7 +101,7 @@ function prune(object) {
         var key = keys[i];
         if (key[0] == '_') delete object[key];
         else if (Array.isArray(object[key])) object[key] = _.map(object[key], function(o) { return prune(o) });
-        else if (typeof(object[key]) == 'object') object[key] = prune(object[key]);
+        else if (typeof(object[key]) == 'object' && object[key] !== null) object[key] = prune(object[key]);
     }
     return object;
 }

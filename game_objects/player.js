@@ -196,7 +196,8 @@ _.extend(
             }
             this.deaths++;
 
-            var emitter = new ParticleEmitter(this.x, this.y);
+            var emitter = new ParticleEmitter(this.x, this.y - this.h / 2);
+            state.addObject(emitter);
 
             this.moveToSpawnPoint();
         },

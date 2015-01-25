@@ -547,11 +547,13 @@
                 particles: []
             };
 
-            for (var i = 0; i < 30; i++) {
+            for (var i = 0; i < 100; i++) {
+                var v = (Math.round(Math.random()) * 2 - 1) * (Math.random() * 5);
+                var a = Math.random() * 2 * Math.PI;
                 var particle = {
                     sprite: new PIXI.Sprite(particle_texture),
-                    vx: 10 * Math.random() * 2 - 1,
-                    vy: 10 * Math.random() * 2 - 1
+                    vx: v * Math.cos(a),
+                    vy: v * Math.sin(a)
                 };
 
                 particle.sprite.anchor.x = 0.5;
@@ -559,6 +561,10 @@
 
                 particle.sprite.position.x = object.x;
                 particle.sprite.position.y = object.y;
+
+                var scale = 1 + (2 * Math.random());
+                particle.sprite.scale.x = scale;
+                particle.sprite.scale.y = scale;
 
                 particle_container.addChild(particle.sprite);
                 emitter.particles.push(particle);
@@ -570,6 +576,7 @@
 
                 for (var i = 0; i < emitter.particles.length; i++) {
                     var particle = emitter.particles[i];
+                    particle.sprite.alpha -= 0.1;
                     particle.sprite.position.x += particle.vx;
                     particle.sprite.position.y += particle.vy;
                 }
