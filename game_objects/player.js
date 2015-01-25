@@ -2,7 +2,8 @@ var _ = require('lodash');
 var constants = require('../public/shared/gj_constants');
 
 var GameObject = require('./game_object');
-var Projectile = require('./projectile');
+var Axe = require('./axe');
+var Lazer = require('./lazer');
 
 var GRAVITY = 0.5;
 
@@ -49,6 +50,35 @@ _.extend(
                 } else return;
             }
 
+            switch (state.era) {
+                case constants.eras.JUNGLE:
+                    this.moveSelf_jungle(state);
+                    break;
+                case constants.eras.TUNDRA:
+                    this.moveSelf_tundra(state);
+                    break;
+                case constants.eras.FUTURE:
+                    this.moveSelf_future(state);
+                    break;
+            }
+
+            if (this._mouseDown) {
+                if (!this._lastFireTime || (new Date().getTime() - this._lastFireTime) > this._fireDelay) {
+                    this._lastFireTime = new Date().getTime();
+                    this.fireWeapon(state);
+                }
+            }
+
+            // Integrate velocity in to position.
+            Player.superclass.prototype.update.call(this, state);
+
+            // Collide with the map.
+            this.collideWithMap(state.maps[state.era]);
+
+            this._prevKeysDown = _.clone(this._keysDown);
+        },
+
+        moveSelf_jungle: function(state) {
             if (this._keysDown[constants.keys.MOVE_LEFT]) {
                 this.vx += (-5 - this.vx) / 5;
             } else if (this._keysDown[constants.keys.MOVE_RIGHT]) {
@@ -77,47 +107,62 @@ _.extend(
                 }
             }
 
-            if (this._mouseDown) {
+            this.vy += GRAVITY;
+        },
 
-                if (!this._lastFireTime || (new Date().getTime() - this._lastFireTime) > this._fireDelay) {
+        moveSelf_future: function(state) {
+            this.vx = 0;
+            this.vy = 0;
+        },
 
-                    this._lastFireTime = new Date().getTime();
-                    var bullet = new Projectile (this);
+        moveSelf_tundra: function(state) {
+            this.vx = 0;
+            this.vy = 0;
+        },
 
-                    bullet.x = this.x;
-                    bullet.y = this.y - (this.h / 2);
+        fireWeapon: function(state) {
+            var projectile;
 
-                    var angle = Math.atan2((this.y - this._mousePos.y - (this.h / 2) - (bullet.h / 2)), (this.x - this._mousePos.x));
-                    bullet.angle = angle - 1.5;
-                    bullet.vx = -Math.cos(angle) * 10;
-                    bullet.vy = -Math.sin(angle) * 10;
-
-                    state.addObject(bullet);
-
-                }
-
+            switch (state.era) {
+                case constants.eras.TUNDRA:
+                    projectile = Axe;
+                    break;
+                case constants.eras.FUTURE:
+                    projectile = Lazer;
+                    break;
             }
 
-            this.vy += GRAVITY;
+            if (projectile) {
+                projectile = new projectile(this);
 
-            // Integrate velocity in to position.
-            Player.superclass.prototype.update.call(this, state);
+                projectile.x = this.x + this.vx;
+                projectile.y = this.y - (this.h / 2) + (projectile.h / 2) + this.vy;
 
-            // Collide with the map.
-            this.collideWithMap(state.maps[state.era]);
+                var angle = Math.atan2((this.y - this._mousePos.y - (this.h / 2) - (projectile.h / 2)), (this.x - this._mousePos.x));
+                projectile.angle = angle + (Math.PI / 2);
 
-            this._prevKeysDown = _.clone(this._keysDown);
+                var cos = Math.cos(angle);
+                var sin = Math.sin(angle);
+
+                projectile.vx = -cos * 10;
+                projectile.vy = -sin * 10;
+
+                projectile.x -= cos * this.w;
+                projectile.y -= sin * this.w;
+
+                state.addObject(projectile);
+            }
         },
 
         moveToSpawnPoint: function() {
             var map = this._cachedMap;
             do {
-                this.x = constants.TILE_SIZE*map.getWidth()*Math.random();
-                this.y = constants.TILE_SIZE*map.getHeight()*Math.random();
+                this.x = constants.TILE_SIZE * map.getWidth() * Math.random();
+                this.y = constants.TILE_SIZE * map.getHeight() * Math.random();
                 if (map.sampleAtPixel(this.x, this.y)) continue;
                 if (map.sampleAtPixel(this.x, this.y - this.h)) continue;
-                if (map.sampleAtPixel(this.x - this.w/2, this.y - this.h/2)) continue;
-                if (map.sampleAtPixel(this.x + this.w/2, this.y - this.h/2)) continue;
+                if (map.sampleAtPixel(this.x - this.w / 2, this.y - this.h / 2)) continue;
+                if (map.sampleAtPixel(this.x + this.w / 2, this.y - this.h / 2)) continue;
                 break;
             }
             while (1);
@@ -125,9 +170,9 @@ _.extend(
 
         takeDamage: function(other) {
             if (other._owner) {
-                other._owner.kills ++;
+                other._owner.kills++;
             }
-            this.deaths ++;
+            this.deaths++;
             this.moveToSpawnPoint();
         },
 
@@ -162,11 +207,11 @@ _.extend(
                 this.y = constants.TILE_SIZE * Math.ceil(this.y / constants.TILE_SIZE);
                 if (this.vy < 0) this.vy = 0;
             }
-            if (map.sampleAtPixel(this.x - this.w/2, this.y - this.h/2)) {
+            if (map.sampleAtPixel(this.x - this.w / 2, this.y - this.h / 2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
                 this.vx = 0;
             }
-            if (map.sampleAtPixel(this.x + this.w/2, this.y - this.h/2)) {
+            if (map.sampleAtPixel(this.x + this.w / 2, this.y - this.h / 2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
                 this.vx = 0;
             }

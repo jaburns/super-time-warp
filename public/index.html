@@ -7,26 +7,86 @@
     <script src="pixi.js"></script>
     <script src="animatedSprite.js"></script>
     <style>
+        html, body {
+            overflow: hidden;
+        }
         body {
-            background: #000;
+            padding: 34px;
+            background: #141414;
+            font-family: sans-serif;
+            color: #9badd7;
+        }
+        .container {
+            margin: 0 auto;
+            width: 1000px;
+            height: 608px;
+            overflow: hidden;
         }
         #canvas-container {
             cursor: none !important;
             width: 800px;
             float: left;
         }
+        canvas {
+            border-radius: 7px 0 0 7px;
+        }
         #scores-container {
+            box-sizing: border-box;
+            padding: 17px;
             float: left;
-            /*background: white;*/
+            background-color: #222034;
             width: 200px;
             height: 608px;
+            border-radius: 0 7px 7px 0;
         }
+        #scores-container ul {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+        #scores-container li {
+            line-height: 1.4em;
+            margin: 0;
+            overflow: hidden;
+            clear: both;
+            height: 32px;
+            line-height: 32px;
+            border-bottom: solid 2px #3f3f74;
+        }
+        #scores-container li span {
+            height: 32px;
+            line-height: 32px;
+            display: inline-block;
+        }
+        #scores-container li:last-child {
+            border-bottom: none;
+        }
+        #scores-container li span:first-child {
+            float: left;
+            font-size: 80%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 3px;
+        }
+        #scores-container li span:last-child {
+            float: right;
+        }
+        li.red    { color: #D63633; }
+        li.orange { color: #E17113; }
+        li.yellow { color: #FCF503; }
+        li.green  { color: #97E743; }
+        li.cyan   { color: #59CDE6; }
+        li.blue   { color: #5A6AE4; }
+        li.purple { color: #C35DE8; }
+        li.pink   { color: #F0B4DD; }
     </style>
 </head>
 <body>
-    <div id="canvas-container"></div>
-    <div id="scores-container">
-        <ul id="scores-list"></ul>
+    <div class="container">
+        <div id="canvas-container"></div>
+        <div id="scores-container">
+            <ul id="scores-list"></ul>
+        </div>
     </div>
 </body>
 <script>
@@ -71,7 +131,11 @@
     var playerUI = {}; // object to hold local UI data
 
     // This array holds filepaths to all json files with sprite information
-    var assetsToLoad = ['assets/tiles.json', 'assets/ui.json', 'assets/bg_jungle.png'];
+    var assetsToLoad = [
+        'assets/projectiles.json',
+        'assets/tiles.json',
+        'assets/ui.json'
+    ];
 
     loader = new PIXI.AssetLoader(assetsToLoad);
 
@@ -85,16 +149,34 @@
         // Textures are loaded, so store them for later. This should become a larger set of maps
         textures = {
             player: 'tile_49',
-            bullet: 'tile_33'
+            axe: 'axe',
+            lazer: 'lazer'
         };
 
         // Perform socket setup to start the game
         initSocket();
     }
 
-    var backgroundImages = [
-        PIXI.Texture.fromImage('assets/bg_jungle.png')
-    ];
+    // Jungle background stuff --------------------
+        var curJungleBackground = 0;
+        var jungleBackgroundUpdateInterval = -1;
+        var jungleBackgrounds = (function() {
+            var ret = [];
+            for (var i = 0; i < 8; ++i) {
+                var x = new PIXI.Sprite(PIXI.Texture.fromImage('assets/Jungle_000'+i+'.png'));
+                x.scale = SCALE;
+                ret.push(x);
+            }
+            return ret;
+        })();
+        function updateJungleBackground() {
+            stage.removeChildAt(0);
+            curJungleBackground++;
+            curJungleBackground %= 8;
+            bg_container = jungleBackgrounds[curJungleBackground];
+            stage.addChildAt(bg_container, 0);
+        }
+    // --------------------------------------------
 
     // Creates the tile_container and adds it to the root_container.  Cleans up old one if it exists.
     function initMap(map) {
@@ -106,9 +188,11 @@
         tile_container = new PIXI.DisplayObjectContainer();
         root_container.addChildAt(tile_container, 0);
 
-        bg_container =  new PIXI.Sprite(backgroundImages[0]);
-        bg_container.scale = SCALE;
+        bg_container = jungleBackgrounds[curJungleBackground];
         stage.addChildAt(bg_container, 0);
+
+        clearInterval (jungleBackgroundUpdateInterval);
+        jungleBackgroundUpdateInterval = setInterval (updateJungleBackground, 40);
 
         var tiles = map.tiles;
         for (var i = 0; i < tiles.length; i++) {
@@ -126,6 +210,7 @@
             }
         }
     }
+
 
     function renderState(state) {
         var liveIds = [];
@@ -184,7 +269,6 @@
             sprite.getChildAt(0).rotation = object.angle;
 
             if (object.type == 'player') {
-
                 if(object.vx > 0)
                 {
                     sprite.getChildAt(0).switchAnimation('right');
@@ -197,19 +281,20 @@
                 {
                     sprite.getChildAt(0).clearAnimation();
                 }
-                
-                sprite.getChildAt(0).animate();
-                var score = object.kills + ' / ' + object.deaths;
+
+                var score = object.kills + ' &middot; ' + object.deaths;
+                sprite.getChildAt(0).animate(); // TODO: CHINGALING
+
                 var li = scores[object.id];
                 if (!li) {
                     li = document.createElement('li');
-                    li.style.color = object.color;
-                    li.innerHTML = object.color + ' : ' + score;
+                    li.className = object.color;
+                    li.innerHTML = '<span>'+object.color+'</span>'+'<span>'+score+'</span>';
                     li.score = score;
                     scores_list.appendChild(li);
                     scores[object.id] = li;
                 } else if (score != li.score) {
-                    li.innerHTML = object.color + ' : ' + score;
+                    li.innerHTML = '<span>'+object.color+'</span>'+'<span>'+score+'</span>';
                     li.score = score;
                 }
             }

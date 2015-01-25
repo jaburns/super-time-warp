@@ -7,12 +7,12 @@ use diagnostics;
 my $json = "{ \"frames\": {";
 
 # Configuration
-my $width       = 256; # How many pixels wide is the sheet?
-my $rows        =   8; # How many rows of blocks are there?
+my $width       = 32; # How many pixels wide is the sheet?
+my $rows        =   1; # How many rows of blocks are there?
 my $tile_width  =  16; # How wide are the tiles?
 my $tile_height =  16;
-my $filepath    = 'tiles.png';
-my $outfile     = 'public/assets/tiles.json';
+my $filepath    = 'projectiles.png';
+my $outfile     = 'public/assets/projectiles.json';
 
 my $height = $rows * $tile_height;
 my $index = 1;

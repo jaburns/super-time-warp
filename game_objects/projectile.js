@@ -2,16 +2,14 @@ var _ = require('lodash');
 var constants = require('../public/shared/gj_constants');
 
 var GameObject = require('./game_object');
-var Player = require('./player');
 
 var Projectile = function(owner) {
     Projectile.superclass.call(this);
 
     this._owner = owner;
-    this.type = 'bullet';
-    
-    this.w = 4;
-    this.h = 4;
+
+    this.w = 16;
+    this.h = 16;
 
 };
 

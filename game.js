@@ -40,7 +40,6 @@ Game.prototype.step = function() {
     if (--this.state.countDownToNextEra <= 0) {
         this.state.countDownToNextEra = ERA_FRAMECOUNT_MIN + (ERA_FRAMECOUNT_MAX-ERA_FRAMECOUNT_MIN)*Math.random();
 
-        var self = this;
         this.state.era = _.chain(constants.eras)
             .filter(function(era) { return era !== self.state.era; })
             .sample()
