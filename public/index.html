@@ -543,6 +543,7 @@
 
                 // Play player sounds
                 if(object.id == socket.id) {
+                    if(object.justDied) sm.playSound('sound-die');
                     if(object.justKilled) sm.playSound('sound-die');
                     if(object.startedPound) sm.playSound('sound-dash');
                     if(object.jumped) sm.playSound('sound-jump');
@@ -550,10 +551,10 @@
                         // TODO: jetpack
                     }
                     if(object.endedPound) sm.playSound('sound-slam');
-                    //if(object) sm.playSound('sound-kill-point');
+                    if(object.justKilled) sm.playSound('sound-kill-point');
                 }
                 else {
-                    if(object.justKilled) sm.playSound('sound-hit');
+                    if(object.justDied) sm.playSound('sound-hit');
                 }
             }
 
