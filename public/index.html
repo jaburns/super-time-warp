@@ -971,7 +971,9 @@ function runClient() {
     function onMouseMove(pos) {
         crosshairs.x = pos.x;
         crosshairs.y = pos.y;
-        socket.emit('msg input', { type: 'mousemove', x: pos.x, y: pos.y });
+        if (!spectating) {
+            socket.emit('msg input', { type: 'mousemove', x: pos.x, y: pos.y });
+        }
     }
 
     function updateAnimation(object, sprite) {
@@ -1122,11 +1124,15 @@ function runClient() {
         };
 
         renderer.view.onmousedown = function (e) {
-            socket.emit('msg input', { type: 'mousedown' });
+            if (!spectating) {
+                socket.emit('msg input', { type: 'mousedown' });
+            }
         };
 
         renderer.view.onmouseup = function (e) {
-            socket.emit('msg input', { type: 'mouseup' });
+            if (!spectating) {
+                socket.emit('msg input', { type: 'mouseup' });
+            }
         };
 
     }
