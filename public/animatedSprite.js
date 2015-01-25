@@ -3,15 +3,17 @@
  */
 
 function AnimatedSprite(idleFrame, animationSpeed) {
+    console.log("new animated sprite");
     var texture = PIXI.Texture.fromFrame(idleFrame);
-    PIXI.Sprite.call(this, texture, 16, 16);
+    PIXI.Sprite.call(this, texture, 34, 32);
 
     this.animations = {'idle': [idleFrame]};
     this.currentAnimation = 'idle';
     this.playing = false;
-    this.speed = animationSpeed || 10;
+    this.speed = animationSpeed || 3;
     this.delay = this.speed;
     this.animationIndex = 0;
+    this.invulnerable = false;
 }
 
 AnimatedSprite.constructor = AnimatedSprite;
@@ -24,11 +26,12 @@ AnimatedSprite.prototype.setAnimation = function(name, frames)
 
 AnimatedSprite.prototype.clearAnimation = function()
 {
-    var texture = PIXI.Texture.fromFrame(this.animations['idle']);
-    this.setTexture(texture);
-    this.currentAnimation = 'idle';
-    this.playing = false;
-    this.delay = this.speed;
+    this.switchAnimation('idle');
+    //var texture = PIXI.Texture.fromFrame(this.animations['idle']);
+    //this.setTexture(texture);
+    //this.currentAnimation = 'idle';
+    //this.playing = false;
+    //this.delay = this.speed;
 };
 
 AnimatedSprite.prototype.switchAnimation = function(name)
@@ -46,6 +49,8 @@ AnimatedSprite.prototype.switchAnimation = function(name)
 
     this.currentAnimation = name;
     this.playing = true;
+    this.animationIndex = 0;
+    this.delay = 0;
 };
 
 AnimatedSprite.prototype.animate = function()
@@ -65,11 +70,12 @@ AnimatedSprite.prototype.animate = function()
 
     this.animationIndex++;
 
-    console.log("changing animation to "+this.animationIndex);
     if(this.animations[this.currentAnimation].length == this.animationIndex)
     {
         this.animationIndex = 0;
     }
+
+    //this.visible = this.invulnerable ? !this.visible : true;
 
     var texture = PIXI.Texture.fromFrame(this.animations[this.currentAnimation][this.animationIndex]);
     this.setTexture(texture);

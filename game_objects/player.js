@@ -15,8 +15,8 @@ var Player = function(id, color) {
     this.color = color;
     this.x = 0;
     this.y = 0;
-    this.w = 16;
-    this.h = 16;
+    this.w = 34;
+    this.h = 32;
     this.d = 1;
 
     this.kills = 0;
