@@ -88,27 +88,6 @@ _.extend(
             this._prevKeysDown = _.clone(this._keysDown);
         },
 
-        moveSelf_jungle: function(state) {
-            if (this._keysDown[constants.keys.MOVE_LEFT]) {
-                this.vx += (-5 - this.vx) / 5;
-            } else if (this._keysDown[constants.keys.MOVE_RIGHT]) {
-                this.vx += (5 - this.vx) / 5;
-            } else {
-                this.vx *= 0.9;
-            }
-
-            if (this._standing > 0 && this._keysDown[constants.keys.JUMP]) {
-                this._standing = 0;
-                this.vy = -10;
-            }
-
-            this.vy += 0.5;
-
-            if (this.vy > 15) {
-                this.vy = 15;
-            }
-        },
-
         _moveX: function (turnx, accx, decayx, maxx) {
             if (this._keysDown[constants.keys.MOVE_LEFT]) {
                 this.vx += this.vx > 0 ? -turnx : -accx;
@@ -153,8 +132,37 @@ _.extend(
             }
         },
 
+        moveSelf_basic: function(state) {
+            if (this._standing) {
+                this._moveX( 2, 0.5, 0.8, 6 );// Ground
+            } else {
+                this._moveX( 1, 0.3, 0.9, 6 );// Air
+            }
+
+            if (this._keysDown[constants.keys.JUMP]) {
+                if (this._standing > 0) {
+                    this._standing = 0;
+                    this.vy = -10;
+                }
+                if (this.vy < 0) {
+                    this.vy -= 0.5;
+                    this.y -= 0.3;
+                }
+            }
+
+            this.vy += 1.0;
+
+            if (this.vy > 12) {
+                this.vy = 12;
+            }
+        },
+
+        moveSelf_jungle: function(state) {
+            this.moveSelf_basic(state);
+        },
+
         moveSelf_tundra: function(state) {
-            this.moveSelf_jungle(state);
+            this.moveSelf_basic(state);
         },
 
         fireWeapon: function(state) {
