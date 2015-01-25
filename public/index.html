@@ -415,6 +415,8 @@
     var bgFilter = new PIXI.ColorMatrixFilter();
     var count = 0;
 
+    var plusOnes = [];
+
     function renderState(state) {
         var liveIds = [];
 
@@ -564,6 +566,29 @@
                     if (!wrecked_sprite.parent) stage.addChild(wrecked_sprite);
                 } else {
                     if (wrecked_sprite.parent) wrecked_sprite.parent.removeChild(wrecked_sprite);
+                }
+
+                if (object.justKilled) {
+                    console.log('just killed');
+                    var _sprite = new PIXI.Sprite.fromFrame('plus_one');
+                    _sprite.anchor.x = _sprite.anchor.y = 0.5;
+                    _sprite.position.x = object.x;
+                    _sprite.position.y = object.y - sprite.getChildAt(0).height - 5;
+                    root_container.addChild(_sprite);
+                    plusOnes.push({
+                        lifetime: 10,
+                        sprite: _sprite
+                    });
+                }
+
+                for (var j = plusOnes.length - 1; j >= 0; j--) {
+                    var plusOne = plusOnes[j];
+                    if (--plusOne.lifetime <= 0) {
+                        plusOne.sprite.parent.removeChild(plusOne.sprite);
+                        plusOnes.splice(j, 1);
+                    } else {
+                        plusOne.sprite.position.y -= 1;
+                    }
                 }
 
                 centerCamera(object, state.maps[state.era].tiles[0].length, state.maps[state.era].tiles.length);

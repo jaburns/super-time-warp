@@ -272,7 +272,7 @@ _.extend(
             if (this.justDied || this.dead) return;
             if (other && other._owner) {
                 other._owner.kills++;
-                this.justKilled = true;
+                other._owner.justKilled = true;
             }
             this.deaths++;
             this.justDied = true;
