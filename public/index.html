@@ -41,6 +41,7 @@
         #canvas-container {
             cursor: none !important;
             width: 1000px;
+            height: 600px;
             float: left;
             position: relative;
         }
@@ -57,6 +58,23 @@
             -ms-interpolation-mode: nearest-neighbor;
         }
 
+        #intro-cutscene {
+            opacity: 1;
+            transition: opacity 300ms ease-in-out;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1000px;
+            height: 600px;
+            border-radius: 7px 0 0 7px;
+            background-color: #222034;
+            -webkit-mask-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC');
+        }
+
+        #intro-cutscene.out {
+            opacity: 0;
+        }
+
         #scores-container {
             position: relative;
             box-sizing: border-box;
@@ -66,6 +84,15 @@
             width: 200px;
             height: 600px;
             border-radius: 0 7px 7px 0;
+        }
+
+        #scores-container > * {
+            opacity: 0;
+            transition: opacity 300ms ease-in-out;
+        }
+
+        #scores-container.in > * {
+            opacity: 1;
         }
 
         #scores-container ul {
@@ -147,7 +174,7 @@
             color: #F0B4DD;
         }
 
-        .title-container {
+        /*.title-container {
             position: absolute;
             top: 0;
             left: 0;
@@ -174,7 +201,7 @@
 
         .title {
             background-image: url('assets/title.png');
-        }
+        }*/
 
         #audio-container {
             position:absolute;
@@ -193,7 +220,10 @@
 <body>
 <div class="container">
     <div id="canvas-container">
-        <div id="title" class="title-container"><div class="title"></div></div>
+        <video width="1000" height="600" id="intro-cutscene">
+            <source src="assets/intro.mp4" type="video/mp4 "/>
+        </video>
+        <!--<div id="title" class="title-container"><div class="title"></div></div>-->
     </div>
     <div id="scores-container">
         <canvas id="minimap" width="50" height="40"></canvas>
@@ -218,6 +248,7 @@
 <script src="minimap.js"></script>
 <script>
 
+function runClient() {
     var socket;
 
     var scores = {};
@@ -295,46 +326,52 @@
         initSocket();
 
         sm = soundManager.getInstance();
-        if(window.location.hash !== '#no-music') {
+        if (window.location.hash !== '#no-music') {
             sm.playLoop('loop-main');
         }
 
         // hide title
-        setTimeout(function() {
+        /*setTimeout(function () {
             var title = document.getElementById('title');
             title.classList.add('out');
-            setTimeout(function() {
+            setTimeout(function () {
                 title.parentNode.removeChild(title);
             }, 301);
-        }, 1300);
+        }, 1300);*/
     }
 
     // Jungle background stuff --------------------
-        var curBackgroundFrame = 0;
-        var backgroundUpdateInterval = -1;
-        var backgroundFrames = (function() {
-            var ret = [[],[],[]];
-            var eraNames = ["Jungle","Tundra","City"];
-            for (var j = 0; j < 3; ++j) {
-                for (var i = 0; i < 8; ++i) {
-                    var x = new PIXI.Sprite(PIXI.Texture.fromImage('assets/'+eraNames[j]+'_000'+i+'.png'));
-                    x.scale = SCALE;
-                    ret[j].push(x);
-                }
+    var curBackgroundFrame = 0;
+    var backgroundUpdateInterval = -1;
+    var backgroundFrames = (function () {
+        var ret = [
+            [],
+            [],
+            []
+        ];
+        var eraNames = ["Jungle", "Tundra", "City"];
+        for (var j = 0; j < 3; ++j) {
+            for (var i = 0; i < 8; ++i) {
+                var x = new PIXI.Sprite(PIXI.Texture.fromImage('assets/' + eraNames[j] + '_000' + i + '.png'));
+                x.scale = SCALE;
+                ret[j].push(x);
             }
-            return ret;
-        })();
-        function updateBackground(era) {
-            __bg_container.removeChildAt(0);
-            curBackgroundFrame++;
-            curBackgroundFrame %= 8;
-            bg_container = backgroundFrames[era][curBackgroundFrame];
-            __bg_container.addChildAt(bg_container, 0);
         }
+        return ret;
+    })();
+
+    function updateBackground(era) {
+        __bg_container.removeChildAt(0);
+        curBackgroundFrame++;
+        curBackgroundFrame %= 8;
+        bg_container = backgroundFrames[era][curBackgroundFrame];
+        __bg_container.addChildAt(bg_container, 0);
+    }
+
     // --------------------------------------------
 
     // Creates the tile_container and adds it to the root_container.  Cleans up old one if it exists.
-    function initMap(era,map) {
+    function initMap(era, map) {
         if (tile_container) {
             root_container.removeChild(tile_container);
             __bg_container.removeChild(bg_container);
@@ -347,7 +384,7 @@
         __bg_container.addChildAt(bg_container, 0);
 
         clearInterval(backgroundUpdateInterval);
-        backgroundUpdateInterval = setInterval(updateBackground.bind(null,era), 40);
+        backgroundUpdateInterval = setInterval(updateBackground.bind(null, era), 40);
 
         var tiles = map.tiles;
         for (var i = 0; i < tiles.length; i++) {
@@ -398,17 +435,17 @@
     wrecked_sprite.position.y = VIEWPORT.h / 2;
 
     var rootColorMatrix = [
-        1,0,0,0,
-        0,1,0,0,
-        0,0,1,0,
-        0,0,0,1
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
     ];
 
     var bgColorMatrix = [
-        1,0,0,0,
-        0,1,0,0,
-        0,0,1,0,
-        0,0,0,1
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
     ];
 
     var rootFilter = new PIXI.ColorMatrixFilter();
@@ -425,19 +462,19 @@
             var x = root_container.position.x;
             var y = root_container.position.y;
             //up
-            if(_keys[87] || _keys[38]) {
+            if (_keys[87] || _keys[38]) {
                 y += step;
             }
             //left
-            if(_keys[65] || _keys[37]) {
+            if (_keys[65] || _keys[37]) {
                 x += step;
             }
             //down
-            if(_keys[83] || _keys[40]) {
+            if (_keys[83] || _keys[40]) {
                 y -= step;
             }
             //right
-            if(_keys[68] || _keys[39]) {
+            if (_keys[68] || _keys[39]) {
                 x -= step;
             }
 
@@ -472,9 +509,13 @@
                 } else {
                     child_sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
 
-                    switch(object.type) {
-                        case 'lazer': sm.playSound('sound-shoot'); break;
-                        case 'axe': sm.playSound('sound-throw'); break;
+                    switch (object.type) {
+                        case 'lazer':
+                            sm.playSound('sound-shoot');
+                            break;
+                        case 'axe':
+                            sm.playSound('sound-throw');
+                            break;
                     }
                 }
 
@@ -525,8 +566,8 @@
                 pointer.position.y = (-sprite.getChildAt(0).height * 1.3) + Math.sin(new Date().getTime() / 200 + pointer.offset);
 
                 var ratio = object.kills - object.deaths;
-                    ratio = ratio > 0 ? '+' + ratio : ratio;
-                var score = object.kills + ' | ' + object.deaths + ' ('+ratio+')';
+                ratio = ratio > 0 ? '+' + ratio : ratio;
+                var score = object.kills + ' | ' + object.deaths + ' (' + ratio + ')';
                 sprite.getChildAt(0).animate(); // TODO: CHINGALING
 
                 var li = scores[object.id];
@@ -543,19 +584,19 @@
                 }
 
                 // Play player sounds
-                if(object.id == socket.id) {
-                    if(object.justDied) sm.playSound('sound-die');
-                    if(object.justKilled) sm.playSound('sound-die');
-                    if(object.startedPound) sm.playSound('sound-dash');
-                    if(object.jumped) sm.playSound('sound-jump');
-                    if(state.era == 2) {
+                if (object.id == socket.id) {
+                    if (object.justDied) sm.playSound('sound-die');
+                    if (object.justKilled) sm.playSound('sound-die');
+                    if (object.startedPound) sm.playSound('sound-dash');
+                    if (object.jumped) sm.playSound('sound-jump');
+                    if (state.era == 2) {
                         // TODO: jetpack
                     }
-                    if(object.endedPound) sm.playSound('sound-slam');
-                    if(object.justKilled) sm.playSound('sound-kill-point');
+                    if (object.endedPound) sm.playSound('sound-slam');
+                    if (object.justKilled) sm.playSound('sound-kill-point');
                 }
                 else {
-                    if(object.justDied) sm.playSound('sound-hit');
+                    if (object.justDied) sm.playSound('sound-hit');
                 }
             }
 
@@ -646,7 +687,7 @@
             __root_container.addChild(sprite);
             root_container.filters = [rootFilter];
             __bg_container.filters = [bgFilter];
-            setTimeout(function() {
+            setTimeout(function () {
                 sprite.parent.removeChild(sprite);
                 root_container.filters = null;
                 __bg_container.filters = null;
@@ -713,14 +754,13 @@
         socket.emit('msg input', { type: 'mousemove', x: pos.x, y: pos.y });
     }
 
-    function updateAnimation(object, sprite)
-    {
+    function updateAnimation(object, sprite) {
         if (object.facex) {
             sprite.scale.x = object.facex > 0 ? -1 : 1;
         }
 
-        if(object.vy == 0) {
-            if(Math.abs(object.vx) > 0.01) {
+        if (object.vy == 0) {
+            if (Math.abs(object.vx) > 0.01) {
                 sprite.switchAnimation('walk');
             }
             else {
@@ -730,12 +770,10 @@
             return;
         }
 
-        if(object.vy > 0)
-        {
+        if (object.vy > 0) {
             sprite.switchAnimation('fall');
         }
-        else
-        {
+        else {
             sprite.switchAnimation('jump');
         }
     }
@@ -811,33 +849,34 @@
 
     var _keys = {};
     var spectating = false;
+
     function initSocket() {
         var latestState;
         socket = io();
 
         // Receiving state messages from the server -------------------
 
-        socket.on('msg state', function(state) {
+        socket.on('msg state', function (state) {
             latestState = state;
 
-            var mapWidth = state.maps[state.era].tiles[0].length * SCALE_FACTOR * gj_CONSTANTS.TILE_SIZE ;
+            var mapWidth = state.maps[state.era].tiles[0].length * SCALE_FACTOR * gj_CONSTANTS.TILE_SIZE;
             var mapHeight = state.maps[state.era].tiles.length * SCALE_FACTOR * gj_CONSTANTS.TILE_SIZE;
             centerCamera({ x: mapWidth / 2, y: mapHeight / 2}, state.maps[state.era].tiles[0].length, state.maps[state.era].tiles.length);
 
-            initMap(latestState.era,latestState.maps[latestState.era]);
+            initMap(latestState.era, latestState.maps[latestState.era]);
             renderState(latestState);
         });
 
-        socket.on('msg diff', function(diff) {
+        socket.on('msg diff', function (diff) {
             var newState = gj_JSON.applyDiff(latestState, diff);
             if (newState.era !== latestState.era) {
-                initMap(newState.era,newState.maps[newState.era]);
+                initMap(newState.era, newState.maps[newState.era]);
             }
             latestState = newState;
             renderState(latestState);
         });
 
-        socket.on('msg full', function() {
+        socket.on('msg full', function () {
             spectating = true;
             var spectating_sprite = new PIXI.Sprite(new PIXI.Texture.fromImage('/assets/titles/spectating.png'));
             spectating_sprite.anchor.x = spectating_sprite.anchor.y = 0.5;
@@ -854,7 +893,7 @@
             keys.push(gj_CONSTANTS.keys[key]);
         }
 
-        window.onkeyup = function(e) {
+        window.onkeyup = function (e) {
             if (spectating) {
                 delete _keys[e.keyCode];
             } else if (keys.indexOf(e.keyCode) > -1) {
@@ -862,7 +901,7 @@
             }
         };
 
-        window.onkeydown = function(e) {
+        window.onkeydown = function (e) {
             if (spectating) {
                 _keys[e.keyCode] = true;
             } else if (keys.indexOf(e.keyCode) > -1) {
@@ -870,21 +909,35 @@
             }
         };
 
-        renderer.view.onmousemove = function(e) {
+        renderer.view.onmousemove = function (e) {
             mousePos = { x: e.layerX, y: e.layerY };
             worldPos = screenPosToWorldCoordinates(mousePos);
             onMouseMove(worldPos);
         };
 
-        renderer.view.onmousedown = function(e) {
+        renderer.view.onmousedown = function (e) {
             socket.emit('msg input', { type: 'mousedown' });
         };
 
-        renderer.view.onmouseup = function(e) {
+        renderer.view.onmouseup = function (e) {
             socket.emit('msg input', { type: 'mouseup' });
         };
 
     }
+}
+
+window.onload = function() {
+    var videoEl = document.getElementById('intro-cutscene');
+    videoEl.addEventListener('ended', function() {
+        runClient();
+        videoEl.classList.add('out');
+        setTimeout(function() {
+            videoEl.parentNode.removeChild(videoEl);
+        }, 301);
+        document.getElementById('scores-container').classList.add('in');
+    });
+    videoEl.play();
+};
 
 </script>
 </html>
