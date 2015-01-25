@@ -161,7 +161,7 @@ _.extend(
                 this._moveX(0.5, 0.3, 1, 6);// Air
             }
 
-            if (this._keysDown[constants.keys.JUMP]) {
+            if (this._keysDown[constants.keys.JUMP] || this._keysDown[constants.keys.JUMP2]) {
                 if (this._standing) this.jumped = true;
                 this._standing = 0;
                 this.vy -= this.vy >= 0 ? JET_SAVE : JET_UP;
@@ -188,7 +188,7 @@ _.extend(
                 this._moveX(1, 0.3, 0.9, 6);// Air
             }
 
-            if (this._keysDown[constants.keys.JUMP]) {
+            if (this._keysDown[constants.keys.JUMP] || this._keysDown[constants.keys.JUMP2]) {
                 if (this._standing > 0) {
                     this._standing = 0;
                     this.vy = -10;

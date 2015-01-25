@@ -4,6 +4,7 @@ var gj_CONSTANTS = {
     TILE_SIZE: 16,
     keys: {
         JUMP: 32,
+        JUMP2: 87,
         MOVE_LEFT: 65,
         MOVE_RIGHT: 68
     },
