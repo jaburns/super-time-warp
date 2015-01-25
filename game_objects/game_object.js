@@ -10,11 +10,11 @@ var GameObject = function(id) {
 
     this.alive = true;
 
-    this.x = null;
-    this.y = null;
+    this.x = this.x || null;
+    this.y = this.y || null;
 
-    this.w = null;
-    this.h = null;
+    this.w = this.w || null;
+    this.h = this.h || null;
 
     this.vx = 0;
     this.vy = 0;

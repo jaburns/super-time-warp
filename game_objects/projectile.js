@@ -8,8 +8,10 @@ var Projectile = function(owner, target) {
 
     this._owner = owner;
 
-    this.w = 16;
-    this.h = 16;
+    this.MAX_V = this.MAX_V || 10;
+
+    this.w = this.w || 16;
+    this.h = this.h || 16;
 
     this.x = owner.x + owner.vx;
     this.y = owner.y - (owner.h / 2) + (this.h / 2) + owner.vy;
@@ -20,8 +22,8 @@ var Projectile = function(owner, target) {
     var cos = Math.cos(angle);
     var sin = Math.sin(angle);
 
-    this.vx = -cos * 10;
-    this.vy = -sin * 10;
+    this.vx = -cos * this.MAX_V;
+    this.vy = -sin * this.MAX_V;
 
     this.x -= cos * owner.w;
     this.y -= sin * owner.w;

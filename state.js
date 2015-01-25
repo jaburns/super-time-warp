@@ -7,7 +7,7 @@ var loadTMX = require('./loadTMX');
 var State = function() {
     // initial state
 
-    this.era = constants.eras.TUNDRA;
+    this.era = constants.eras.FUTURE;
     this.maps = {};
     this.objects = [];
     this.countDownToNextEra = 60;
