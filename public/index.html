@@ -295,7 +295,9 @@
 
         var sm = soundManager.getInstance();
         sm.playSound('sound-kill-point');
-        sm.playLoop('loop-main');
+        if(window.location.hash !== '#no-music') {
+            sm.playLoop('loop-main');
+        }
 
         // hide title
         setTimeout(function() {

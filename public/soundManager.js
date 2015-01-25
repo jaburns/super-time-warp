@@ -15,7 +15,6 @@ var soundManager = (function () {
             this.currentTime = 0;
             this.play();
         }, false);
-        this.loopChannel.play();
 
         for (var a = 0; a < this.channel_max; a++) {
             this.audioChannels[a] = new Audio();					// expected end time for this channel
@@ -42,6 +41,7 @@ var soundManager = (function () {
         _soundManager.playLoop = function(sound) {
             this.loopChannel.src = document.getElementById(sound).src;
             this.loopChannel.load();
+            this.loopChannel.currentTime = 35;
             this.loopChannel.play();
         };
 
