@@ -14,13 +14,13 @@ var gj_CONSTANTS = {
     },
     player_colors: {
         RED: 'red',
-        ORANGE: 'orange',
+        CYAN: 'cyan',
+        PINK: 'pink',
         YELLOW: 'yellow',
         GREEN: 'green',
-        CYAN: 'cyan',
+        ORANGE: 'orange',
         BLUE: 'blue',
-        PURPLE: 'purple',
-        PINK: 'pink'
+        PURPLE: 'purple'
     },
     tile_types: {
         NO_COLLISION: 0,
