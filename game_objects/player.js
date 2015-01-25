@@ -39,6 +39,7 @@ var Player = function(id, color) {
     this._droppingKick = false;
 
     this._cachedMap = null;
+    this._cachedState = null;
     this._fireDelay = 400;
     this._lastFireTime = null;
 };
@@ -50,6 +51,7 @@ _.extend(
     GameObject.prototype,
     {
         update: function(state) {
+            this._cachedState = state;
             this._cachedMap = state.maps[state.era];
 
             if (this.spawnCountdown > 0) {
@@ -105,7 +107,7 @@ _.extend(
         collideWithObject: function(other) {
             if (this._droppingKick && other.takeDamage) {
                 if (this.y > other.y || !other._droppingKick) {
-                    other.takeDamage(this,state);
+                    other.takeDamage(this,this._cachedState);
                 }
             }
         },
