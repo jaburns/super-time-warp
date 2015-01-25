@@ -34,10 +34,10 @@ function Client(socket) {
     this.alive = true;
     if (game.addPlayer(this.socket.id)) {
         socket.on('msg input', this.receiveInput.bind(this));
-        socket.emit('msg state', game.state.getState());
     } else {
         socket.emit('msg full');
     }
+    socket.emit('msg state', game.state.getState());
     console.log('Client connected with ID: ' + this.socket.id);
 }
 

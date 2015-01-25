@@ -452,6 +452,36 @@
     function renderState(state) {
         var liveIds = [];
 
+        if (spectating) {
+            var step = 20;
+            var x = root_container.position.x;
+            var y = root_container.position.y;
+            //up
+            if(_keys[87] || _keys[38]) {
+                y += step;
+            }
+            //left
+            if(_keys[65] || _keys[37]) {
+                x += step;
+            }
+            //down
+            if(_keys[83] || _keys[40]) {
+                y -= step;
+            }
+            //right
+            if(_keys[68] || _keys[39]) {
+                x -= step;
+            }
+
+            var mapWidth = state.maps[state.era].tiles[0].length;
+            var mapHeight = state.maps[state.era].tiles.length;
+            var minx = -SCALE_FACTOR * mapWidth * gj_CONSTANTS.TILE_SIZE + VIEWPORT.w;
+            var miny = -SCALE_FACTOR * mapHeight * gj_CONSTANTS.TILE_SIZE + VIEWPORT.h;
+
+            root_container.position.x = Math.max(minx, Math.min(x, 0));
+            root_container.position.y = Math.max(miny, Math.min(y, 0));
+        }
+
         for (var i = 0; i < state.objects.length; i++) {
             var object = state.objects[i];
 
@@ -760,6 +790,9 @@
 
     // Networking #################################################################
 
+
+    var _keys = {};
+    var spectating = false;
     function initSocket() {
         var latestState;
         socket = io();
@@ -786,6 +819,10 @@
             renderState(latestState);
         });
 
+        socket.on('msg full', function() {
+            spectating = true;
+        });
+
         // Handling inputs and sending them to the server -------------
 
         var keys = [];
@@ -794,13 +831,17 @@
         }
 
         window.onkeyup = function(e) {
-            if (keys.indexOf(e.keyCode) > -1) {
+            if (spectating) {
+                delete _keys[e.keyCode];
+            } else if (keys.indexOf(e.keyCode) > -1) {
                 socket.emit('msg input', { type: 'keyup', key: e.keyCode });
             }
         };
 
         window.onkeydown = function(e) {
-            if (keys.indexOf(e.keyCode) > -1) {
+            if (spectating) {
+                _keys[e.keyCode] = true;
+            } else if (keys.indexOf(e.keyCode) > -1) {
                 socket.emit('msg input', { type: 'keydown', key: e.keyCode });
             }
         };

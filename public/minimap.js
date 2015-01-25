@@ -193,10 +193,6 @@ var MiniMap = (function() {
             this.image = scaledCtx.canvas;
             //this.image = context.canvas;
 
-            var img = context.canvas.toDataURL();
-            var css = "font-size:100px;line-height:100px;height:100px;width:200px;background-image:url('"+img+"');background-size:50px 40px;background-repeat:no-repeat";
-            console.log("%c  ", css)
-
         },
 
 
@@ -226,7 +222,7 @@ var MiniMap = (function() {
             this.canvas.width = this.w*this.scale;
             this.canvas.height = this.h*this.scale;
 
-            var focus;
+            var focus = {};
             for(var i = 0; i < state.objects.length; i++) {
                 if(state.objects[i].id == playerId) {
                     focus = state.objects[i];
