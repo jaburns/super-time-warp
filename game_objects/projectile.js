@@ -37,9 +37,17 @@ _.extend(
     GameObject.prototype,
     {
         update: function(state) {
-            Projectile.superclass.prototype.update.call(this, state);
+            if (!this.alive) return;
+            this.angle += this.va;
 
+            this.x += this.vx / 2;
+            this.y += this.vy / 2;
             this.collideWithMap(state.maps[state.era]);
+            if (this.alive) {
+                this.x += this.vx / 2;
+                this.y += this.vy / 2;
+                this.collideWithMap(state.maps[state.era]);
+            }
         },
 
         collideWithObject: function(object, state) {
@@ -51,7 +59,7 @@ _.extend(
         },
 
         collideWithMap: function(map) {
-            if (map.sampleAtPixel(this.x, this.y - this.h, this.vy>0)
+            if (map.sampleAtPixel(this.x, this.y - this.h)
              || map.sampleAtPixel(this.x, this.y)
              || map.sampleAtPixel(this.x - this.w/2, this.y - this.h/2)
              || map.sampleAtPixel(this.x + this.w/2, this.y - this.h/2)) {
