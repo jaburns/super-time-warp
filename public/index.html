@@ -356,7 +356,7 @@
 
                 sprite = new PIXI.DisplayObjectContainer();
                 sprite.addChild(child_sprite);
-                child_sprite.y = -object.h / 2;
+                child_sprite.y = -child_sprite.height;
 
                 if (object.type == 'player') {
 
@@ -366,7 +366,6 @@
                     pointer_sprite.anchor.x = 0.5;
                     pointer_sprite.anchor.y = 0.5;
 
-                    pointer_sprite.position.y = -object.h * 1.5;
                     pointer_sprite.offset = Math.random() * 10;
                     sprite.addChild(pointer_sprite);
                 }
@@ -385,7 +384,7 @@
                 updateAnimation(object, sprite.getChildAt(0));
 
                 var pointer = sprite.getChildAt(1);
-                pointer.position.y = (-object.h * 1.5) + Math.sin(new Date().getTime() / 200 + pointer.offset);
+                pointer.position.y = (-sprite.getChildAt(0).height * 1.3) + Math.sin(new Date().getTime() / 200 + pointer.offset);
 
                 var score = object.kills + ' &middot; ' + object.deaths;
                 sprite.getChildAt(0).animate(); // TODO: CHINGALING
