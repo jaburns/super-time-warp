@@ -38,10 +38,10 @@ _.extend(
                 this.countDownToNextEra = ERA_FRAMECOUNT_MIN + (ERA_FRAMECOUNT_MAX-ERA_FRAMECOUNT_MIN)*Math.random();
 
                 var self = this;
-                //this.era = _.chain(constants.eras)
-                //    .filter(function(era) { return era !== self.era; })
-                //    .sample()
-                //    .value();
+                this.era = _.chain(constants.eras)
+                    .filter(function(era) { return era !== self.era; })
+                    .sample()
+                    .value();
             }
         },
 
