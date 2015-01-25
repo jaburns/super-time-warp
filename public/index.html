@@ -6,26 +6,86 @@
     <script src="/shared/gj_json.js"></script>
     <script src="pixi.js"></script>
     <style>
+        html, body {
+            overflow: hidden;
+        }
         body {
-            background: #000;
+            padding: 34px;
+            background: #141414;
+            font-family: sans-serif;
+            color: #9badd7;
+        }
+        .container {
+            margin: 0 auto;
+            width: 1000px;
+            height: 608px;
+            overflow: hidden;
         }
         #canvas-container {
             cursor: none !important;
             width: 800px;
             float: left;
         }
+        canvas {
+            border-radius: 7px 0 0 7px;
+        }
         #scores-container {
+            box-sizing: border-box;
+            padding: 17px;
             float: left;
-            /*background: white;*/
+            background-color: #222034;
             width: 200px;
             height: 608px;
+            border-radius: 0 7px 7px 0;
         }
+        #scores-container ul {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+        #scores-container li {
+            line-height: 1.4em;
+            margin: 0;
+            overflow: hidden;
+            clear: both;
+            height: 32px;
+            line-height: 32px;
+            border-bottom: solid 2px #3f3f74;
+        }
+        #scores-container li span {
+            height: 32px;
+            line-height: 32px;
+            display: inline-block;
+        }
+        #scores-container li:last-child {
+            border-bottom: none;
+        }
+        #scores-container li span:first-child {
+            float: left;
+            font-size: 80%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 3px;
+        }
+        #scores-container li span:last-child {
+            float: right;
+        }
+        li.red    { color: #D63633; }
+        li.orange { color: #E17113; }
+        li.yellow { color: #FCF503; }
+        li.green  { color: #97E743; }
+        li.cyan   { color: #59CDE6; }
+        li.blue   { color: #5A6AE4; }
+        li.purple { color: #C35DE8; }
+        li.pink   { color: #F0B4DD; }
     </style>
 </head>
 <body>
-    <div id="canvas-container"></div>
-    <div id="scores-container">
-        <ul id="scores-list"></ul>
+    <div class="container">
+        <div id="canvas-container"></div>
+        <div id="scores-container">
+            <ul id="scores-list"></ul>
+        </div>
     </div>
 </body>
 <script>
@@ -167,17 +227,17 @@
             sprite.getChildAt(0).rotation = object.angle;
 
             if (object.type == 'player') {
-                var score = object.kills + ' / ' + object.deaths;
+                var score = object.kills + ' &middot; ' + object.deaths;
                 var li = scores[object.id];
                 if (!li) {
                     li = document.createElement('li');
-                    li.style.color = object.color;
-                    li.innerHTML = object.color + ' : ' + score;
+                    li.className = object.color;
+                    li.innerHTML = '<span>'+object.color+'</span>'+'<span>'+score+'</span>';
                     li.score = score;
                     scores_list.appendChild(li);
                     scores[object.id] = li;
                 } else if (score != li.score) {
-                    li.innerHTML = object.color + ' : ' + score;
+                    li.innerHTML = '<span>'+object.color+'</span>'+'<span>'+score+'</span>';
                     li.score = score;
                 }
             }
