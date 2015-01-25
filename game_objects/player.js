@@ -18,7 +18,8 @@ var Player = function(id, color) {
     this.h = 16;
     this.d = 1;
 
-    this.score = 0;
+    this.kills = 0;
+    this.deaths = 0;
 
     this._spawnCountdown = 30;
 
@@ -124,8 +125,9 @@ _.extend(
 
         takeDamage: function(other) {
             if (other._owner) {
-                other._owner.score ++;
+                other._owner.kills ++;
             }
+            this.deaths ++;
             this.moveToSpawnPoint();
         },
 

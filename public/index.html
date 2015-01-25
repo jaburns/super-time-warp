@@ -16,7 +16,7 @@
         }
         #scores-container {
             float: left;
-            background: white;
+            /*background: white;*/
             width: 200px;
             height: 608px;
         }
@@ -166,17 +166,18 @@
             sprite.getChildAt(0).rotation = object.angle;
 
             if (object.type == 'player') {
+                var score = object.kills + ' / ' + object.deaths;
                 var li = scores[object.id];
                 if (!li) {
                     li = document.createElement('li');
                     li.style.color = object.color;
-                    li.innerHTML = object.color + ' : ' + object.score;
-                    li.score = object.score;
+                    li.innerHTML = object.color + ' : ' + score;
+                    li.score = score;
                     scores_list.appendChild(li);
                     scores[object.id] = li;
-                } else if (object.score != li.score) {
-                    li.innerHTML = object.color + ' : ' + object.score;
-                    li.score = object.score;
+                } else if (score != li.score) {
+                    li.innerHTML = object.color + ' : ' + score;
+                    li.score = score;
                 }
             }
 
