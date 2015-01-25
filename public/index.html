@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;">
     <meta name="description" content="8 player arena shooter made in 48 hours for Global Game Jam 2015.">
+    <link rel="shortcut icon" href="assets/favicon.png">
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/shared/gj_constants.js"></script>
@@ -30,7 +31,7 @@
             100% { opacity: 1; }
         }
 
-        .player, .click-to-skip {
+        .click-to-skip {
             -webkit-animation-name: pulse;
             -webkit-animation-duration: 2s;
             -webkit-animation-timing-function: ease-in-out;
@@ -245,6 +246,25 @@
 
         li.pink > .swatch {
             background-color: #F0B4DD;
+        }
+
+        .swatch {
+            position: relative;
+        }
+
+        li.player .swatch::after {
+            content: 'YOU';
+            display: block;
+            position: absolute;
+            top: 1px;
+            left: 2px;
+            height: 16px;
+            right: 0;
+            color: #222034;
+            text-align: left;
+            line-height: 16px;
+            letter-spacing: -1px;
+            font-size: 80%;
         }
         
         /*.title-container {
