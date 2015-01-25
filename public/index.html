@@ -776,11 +776,13 @@ function runClient() {
             return;
         }
 
-        if (object.vy > 0) {
-            sprite.switchAnimation('fall');
-        }
-        else {
+        if(object.jumping)
+        {
             sprite.switchAnimation('jump');
+        }
+        else
+        {
+            sprite.switchAnimation('fall');
         }
     }
 
