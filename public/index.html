@@ -58,7 +58,7 @@
     var playerUI = {}; // object to hold local UI data
 
     // This array holds filepaths to all json files with sprite information
-    var assetsToLoad = ['assets/tiles.json'];
+    var assetsToLoad = ['assets/tiles.json', 'assets/ui.json'];
 
     loader = new PIXI.AssetLoader(assetsToLoad);
 
@@ -132,9 +132,10 @@
                 sprite.addChild(child_sprite);
                 child_sprite.y = -object.h / 2;
 
-                if (object.id === socket.id)
-                {
-                    var pointer_sprite = new PIXI.Sprite.fromFrame('tile_37');
+                if (object.type == 'player') {
+
+                    var texture = (object.id === socket.id ? 'arrow_big_' : 'arrow_') + object.color;
+                    var pointer_sprite = new PIXI.Sprite.fromFrame(texture);
 
                     pointer_sprite.anchor.x = 0.5;
                     pointer_sprite.anchor.y = 0.5;
@@ -153,10 +154,9 @@
             sprite.getChildAt(0).rotation = object.angle;
 
             if (object.type == 'player') {
-
                 var score = scores[object.id];
                 if (!score) {
-                    var fill = object.id == socket.id ? 'white' : 'black';
+                    var fill = object.color;
                     score = new PIXI.Text(object.id + ':' + object.score, { font: '16px Arial', fill: fill, align: 'left' });
                     score.score = object.score;
                     score.position.x = 0;

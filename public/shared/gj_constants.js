@@ -11,6 +11,16 @@ var gj_CONSTANTS = {
         JUNGLE: 0,
         TUNDRA: 1,
         FUTURE: 2
+    },
+    player_colors: {
+        RED: 'red',
+        ORANGE: 'orange',
+        YELLOW: 'yellow',
+        GREEN: 'green',
+        CYAN: 'cyan',
+        BLUE: 'blue',
+        PURPLE: 'purple',
+        PINK: 'pink'
     }
 };
 

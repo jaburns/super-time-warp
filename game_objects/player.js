@@ -6,11 +6,12 @@ var Projectile = require('./projectile');
 
 var GRAVITY = 0.5;
 
-var Player = function(id) {
+var Player = function(id, color) {
 
     Player.superclass.call(this, id);
 
     this.type = 'player';
+    this.color = color;
     this.x = 0;
     this.y = 0;
     this.w = 16;
