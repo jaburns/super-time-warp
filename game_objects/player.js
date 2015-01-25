@@ -153,10 +153,10 @@ _.extend(
             }
 
             if (this._keysDown[constants.keys.JUMP]) {
+                if (this._standing) this.jumped = true;
                 this._standing = 0;
                 this.vy -= this.vy >= 0 ? JET_SAVE : JET_UP;
                 this.vy -= 0.3;
-                this.jumped = true;
             }
             this.vy += 0.8;
 
