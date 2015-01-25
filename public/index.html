@@ -297,29 +297,31 @@
     }
 
     // Jungle background stuff --------------------
-        var curJungleBackground = 0;
-        var jungleBackgroundUpdateInterval = -1;
-        var jungleBackgrounds = (function() {
-            var ret = [];
-            for (var i = 0; i < 8; ++i) {
-                var x = new PIXI.Sprite(PIXI.Texture.fromImage('assets/City_000'+i+'.png'));
-                x.scale = SCALE;
-                //x.scale = new PIXI.Point(SCALE_FACTOR*(10/8), SCALE_FACTOR);
-                ret.push(x);
+        var curBackgroundFrame = 0;
+        var backgroundUpdateInterval = -1;
+        var backgroundFrames = (function() {
+            var ret = [[],[],[]];
+            var eraNames = ["Jungle","Tundra","City"];
+            for (var j = 0; j < 3; ++j) {
+                for (var i = 0; i < 8; ++i) {
+                    var x = new PIXI.Sprite(PIXI.Texture.fromImage('assets/'+eraNames[j]+'_000'+i+'.png'));
+                    x.scale = SCALE;
+                    ret[j].push(x);
+                }
             }
             return ret;
         })();
-        function updateJungleBackground() {
+        function updateBackground(era) {
             stage.removeChildAt(0);
-            curJungleBackground++;
-            curJungleBackground %= 8;
-            bg_container = jungleBackgrounds[curJungleBackground];
+            curBackgroundFrame++;
+            curBackgroundFrame %= 8;
+            bg_container = backgroundFrames[era][curBackgroundFrame];
             stage.addChildAt(bg_container, 0);
         }
     // --------------------------------------------
 
     // Creates the tile_container and adds it to the root_container.  Cleans up old one if it exists.
-    function initMap(map) {
+    function initMap(era,map) {
         if (tile_container) {
             root_container.removeChild(tile_container);
             stage.removeChild(bg_container);
@@ -328,11 +330,11 @@
         tile_container = new PIXI.DisplayObjectContainer();
         root_container.addChildAt(tile_container, 0);
 
-        bg_container = jungleBackgrounds[curJungleBackground];
+        bg_container = backgroundFrames[era][curBackgroundFrame];
         stage.addChildAt(bg_container, 0);
 
-        clearInterval(jungleBackgroundUpdateInterval);
-        jungleBackgroundUpdateInterval = setInterval(updateJungleBackground, 40);
+        clearInterval(backgroundUpdateInterval);
+        backgroundUpdateInterval = setInterval(updateBackground.bind(null,era), 40);
 
         var tiles = map.tiles;
         for (var i = 0; i < tiles.length; i++) {
@@ -703,14 +705,14 @@
             var mapHeight = state.maps[state.era].tiles.length * SCALE_FACTOR * gj_CONSTANTS.TILE_SIZE;
             centerCamera({ x: mapWidth / 2, y: mapHeight / 2}, state.maps[state.era].tiles[0].length, state.maps[state.era].tiles.length);
 
-            initMap(latestState.maps[latestState.era]);
+            initMap(latestState.era,latestState.maps[latestState.era]);
             renderState(latestState);
         });
 
         socket.on('msg diff', function(diff) {
             var newState = gj_JSON.applyDiff(latestState, diff);
             if (newState.era !== latestState.era) {
-                initMap(newState.maps[newState.era]);
+                initMap(newState.era,newState.maps[newState.era]);
             }
             latestState = newState;
             renderState(latestState);
