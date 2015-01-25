@@ -10,6 +10,10 @@ var Player = require('./game_objects/player.js');
 var gj_CONSTANTS = require('./public/shared/gj_constants.js');
 var gj_JSON = require('./public/shared/gj_json.js');
 
+function lawg (msg) {
+    console.log ((new Date).toString() + ' -- ' + msg);
+}
+
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', function(req, res) {
@@ -17,7 +21,7 @@ app.get('/', function(req, res) {
 });
 
 http.listen(port, function() {
-    console.log('listening on ' + port);
+    lawg('listening on ' + port);
 });
 
 // Setup socket.io to manage connections with clients ########################
@@ -29,6 +33,7 @@ var gameRunning = false;
 var gameInterval = -1;
 var someClientJustDied = false;
 
+
 function Client(socket) {
     this.socket = socket;
     this.alive = true;
@@ -38,7 +43,7 @@ function Client(socket) {
         socket.emit('msg full');
     }
     socket.emit('msg state', game.state.getState());
-    console.log('Client connected with ID: ' + this.socket.id);
+    lawg('Client connected with ID: ' + this.socket.id);
 }
 
 Client.prototype.receiveInput = function(input) {
@@ -46,7 +51,7 @@ Client.prototype.receiveInput = function(input) {
 };
 
 Client.prototype.dispose = function() {
-    console.log('Client disconnected with ID: ' + this.socket.id);
+    lawg('Client disconnected with ID: ' + this.socket.id);
     game.removePlayer(this.socket.id);
     someClientJustDied = true;
     this.alive = false;
@@ -63,10 +68,10 @@ function setGameRunning(running) {
     if (gameRunning === running) return;
     gameRunning = running;
     if (gameRunning) {
-        console.log ("STARTING GAME SESSION");
+        lawg ("STARTING GAME SESSION");
         gameInterval = setInterval (mainLoop, gj_CONSTANTS.DELTA_TIME);
     } else {
-        console.log ("ENDING GAME SESSION");
+        lawg ("ENDING GAME SESSION");
         clearInterval (gameInterval);
     }
 }
