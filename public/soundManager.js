@@ -25,7 +25,11 @@ var soundManager = (function () {
         var _soundManager = new initSoundManager();
 
         _soundManager.playSound = function(sound) {
-            this.nextChannel = this.nextChannel == this.audioChannels-1 ? 0 : this.nextChannel++;
+            this.nextChannel++;
+            if(this.nextChannel == this.channel_max)
+            {
+                this.nextChannel = 0;
+            }
 
             this.audioChannels[this.nextChannel].src = document.getElementById(sound).src;
             this.audioChannels[this.nextChannel].load();
@@ -34,7 +38,7 @@ var soundManager = (function () {
 
         _soundManager.stopAllSounds = function() {
             for (var a = 0; a < this.audioChannels.length;a++) {
-                this.audioChannels[a]['channel'].stop();
+                this.audioChannels[a].stop();
             }
         };
 
