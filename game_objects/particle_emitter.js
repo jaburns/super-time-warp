@@ -9,7 +9,7 @@ var ParticleEmitter = function(x, y) {
     this.x = x;
     this.y = y;
     this.lifetime = this.lifetime || 10;
-    this._lifetime = this.lifetime;
+    this._lifetime = 1;
 
     ParticleEmitter.superclass.call(this);
 

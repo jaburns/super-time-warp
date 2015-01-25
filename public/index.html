@@ -742,7 +742,6 @@ function runClient() {
                 }
 
                 if (object.justKilled) {
-                    console.log('just killed');
                     var _sprite = new PIXI.Sprite.fromFrame('plus_one');
                     _sprite.anchor.x = _sprite.anchor.y = 0.5;
                     _sprite.position.x = object.x;
@@ -777,6 +776,32 @@ function runClient() {
             if (liveIds.indexOf(k) < 0) {
                 object_container.removeChild(sprites[k]);
                 delete sprites[k];
+            }
+        }
+
+        // update particle emitters
+        for (var i in particle_emitters) {
+            var emitter = particle_emitters[i];
+            var s = emitter.settings;
+            if (--emitter.lifetime > 0) {
+
+                for (var j = 0; j < emitter.particles.length; j++) {
+                    var particle = emitter.particles[j];
+                    particle.sprite.alpha -= s.alphaDecay;
+                    particle.sprite.position.x += particle.vx;
+                    particle.sprite.position.y += particle.vy;
+                    particle.vy += s.gravity;
+                }
+
+            } else {
+
+                for (var j = 0; i < emitter.particles.length; j++) {
+                    var particle = emitter.particles[j];
+                    particle.sprite.parent.removeChild(particle.sprite);
+                }
+
+                delete particle_emitters[emitter.id];
+
             }
         }
 
@@ -959,6 +984,7 @@ function runClient() {
             emitter = {
                 id: object.id,
                 lifetime: object.lifetime,
+                settings: s,
                 particles: []
             };
 
@@ -987,29 +1013,6 @@ function runClient() {
                 emitter.particles.push(particle);
             }
             particle_emitters[object.id] = emitter;
-        } else {
-
-            if (--emitter.lifetime > 0) {
-
-                for (var i = 0; i < emitter.particles.length; i++) {
-                    var particle = emitter.particles[i];
-                    particle.sprite.alpha -= s.alphaDecay;
-                    particle.sprite.position.x += particle.vx;
-                    particle.sprite.position.y += particle.vy;
-                    particle.vy += s.gravity;
-                }
-
-            } else {
-
-                for (var i = 0; i < emitter.particles.length; i++) {
-                    var particle = emitter.particles[i];
-                    particle.sprite.parent.removeChild(particle.sprite);
-                }
-
-                delete particle_emitters[emitter.id];
-
-            }
-
         }
 
     }

@@ -6,7 +6,6 @@ var ParticleEmitter = require('./particle_emitter');
 var Projectilesplosion = function(x, y) {
 
     this.lifetime = 50;
-    this._lifetime = 50;
 
     this.particleSettings = {
         //texture: 'particle.png',

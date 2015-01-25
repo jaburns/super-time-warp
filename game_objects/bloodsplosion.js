@@ -6,7 +6,6 @@ var ParticleEmitter = require('./particle_emitter');
 var Bloodsplosion = function(x, y) {
 
     this.lifetime = 100;
-    this._lifetime = 100;
 
     this.particleSettings = {
         textures: ['gore_1', 'gore_2'],
