@@ -145,49 +145,12 @@
             background-image: url('assets/title.png');
         }
 
-        .time-warp {
-            background-image: url('assets/titles/header_time_warp.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
-        .time-warp-5 {
-            background-image: url('assets/titles/time_warp_5.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
-        .time-warp-4 {
-            background-image: url('assets/titles/time_warp_4.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
-        .time-warp-3 {
-            background-image: url('assets/titles/time_warp_3.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
-        .time-warp-2 {
-            background-image: url('assets/titles/time_warp_2.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
-        .time-warp-1 {
-            background-image: url('assets/titles/time_warp_1.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-
     </style>
 </head>
 <body>
 <div class="container">
     <div id="canvas-container">
         <div id="title" class="title-container"><div class="title"></div></div>
-        <div id="time-warp" class="title-container out"><div class="time-warp"></div></div>
     </div>
     <div id="scores-container">
         <ul id="scores-list"></ul>
@@ -361,8 +324,13 @@
             if (!object) continue;
 
             liveIds.push(object.id);
-            var sprite = sprites[object.id];
 
+            if (object.type == 'particle_emitter') {
+                updateParticleEmitter(object);
+                continue;
+            }
+
+            var sprite = sprites[object.id];
             if (!sprite) {
 
                 var child_sprite;
@@ -470,7 +438,6 @@
             if (!sprite.parent) stage.addChild(sprite);
 
             var scale = (SCALE_FACTOR * 2) - ((seconds - state.timeToTimeWarp) * 3);
-            console.log(scale);
             sprite.scale = { x: scale, y: scale };
 
         } else if (isTimeWarp) {
@@ -564,6 +531,62 @@
         {
             sprite.switchAnimation('jump');
         }
+    }
+
+    var particle_emitters = {};
+    var particle_container = new PIXI.DisplayObjectContainer();
+    root_container.addChild(particle_container);
+    var particle_texture = new PIXI.Texture.fromImage('/assets/particle.png');
+    function updateParticleEmitter(object) {
+
+        var emitter = particle_emitters[object.id];
+        if (!emitter) {
+            emitter = {
+                id: object.id,
+                lifetime: object.lifetime,
+                particles: []
+            };
+
+            for (var i = 0; i < 30; i++) {
+                var particle = {
+                    sprite: new PIXI.Sprite(particle_texture),
+                    vx: 10 * Math.random() * 2 - 1,
+                    vy: 10 * Math.random() * 2 - 1
+                };
+
+                particle.sprite.anchor.x = 0.5;
+                particle.sprite.anchor.y = 0.5;
+
+                particle.sprite.position.x = object.x;
+                particle.sprite.position.y = object.y;
+
+                particle_container.addChild(particle.sprite);
+                emitter.particles.push(particle);
+            }
+            particle_emitters[object.id] = emitter;
+        } else {
+
+            if (--emitter.lifetime > 0) {
+
+                for (var i = 0; i < emitter.particles.length; i++) {
+                    var particle = emitter.particles[i];
+                    particle.sprite.position.x += particle.vx;
+                    particle.sprite.position.y += particle.vy;
+                }
+
+            } else {
+
+                for (var i = 0; i < emitter.particles.length; i++) {
+                    var particle = emitter.particles[i];
+                    particle.sprite.parent.removeChild(particle.sprite);
+                }
+
+                delete particle_emitters[emitter.id];
+
+            }
+
+        }
+
     }
 
     // Networking #################################################################

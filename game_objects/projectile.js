@@ -42,10 +42,10 @@ _.extend(
             this.collideWithMap(state.maps[state.era]);
         },
 
-        collideWithObject: function(object) {
+        collideWithObject: function(object, state) {
             if (object === this._owner) return;
             if (object.takeDamage) {
-                object.takeDamage(this);
+                object.takeDamage(this, state);
                 this.alive = false;
             }
         },

@@ -42,7 +42,7 @@ Game.prototype.step = function() {
 
     for (var i = 0; i < this.state.objects.length - 1; ++i) {
         for (var j = i + 1; j < this.state.objects.length; ++j) {
-            _checkOverlapAndCollide(this.state.objects[i], this.state.objects[j]);
+            _checkOverlapAndCollide(this.state.objects[i], this.state.objects[j], this.state);
         }
     }
 
@@ -51,12 +51,12 @@ Game.prototype.step = function() {
     });
 };
 
-function _checkOverlapAndCollide(obj0, obj1) {
+function _checkOverlapAndCollide(obj0, obj1, state) {
     if (Math.abs(obj0.x - obj1.x) > (obj0.w + obj1.w) / 2) return;
     if (obj0.y - obj0.h > obj1.y) return;
     if (obj1.y - obj1.h > obj0.y) return;
-    obj0.collideWithObject && obj0.collideWithObject(obj1);
-    obj1.collideWithObject && obj1.collideWithObject(obj0);
+    obj0.collideWithObject && obj0.collideWithObject(obj1, state);
+    obj1.collideWithObject && obj1.collideWithObject(obj0, state);
 }
 
 module.exports = Game;

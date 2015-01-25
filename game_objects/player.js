@@ -2,6 +2,7 @@ var _ = require('lodash');
 var constants = require('../public/shared/gj_constants');
 
 var GameObject = require('./game_object');
+var ParticleEmitter = require('./particle_emitter');
 var Axe = require('./axe');
 var Lazer = require('./lazer');
 
@@ -189,11 +190,14 @@ _.extend(
             while (1);
         },
 
-        takeDamage: function(other) {
+        takeDamage: function(other, state) {
             if (other._owner) {
                 other._owner.kills++;
             }
             this.deaths++;
+
+            var emitter = new ParticleEmitter(this.x, this.y);
+
             this.moveToSpawnPoint();
         },
 
