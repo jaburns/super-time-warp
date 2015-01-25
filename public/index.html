@@ -993,16 +993,24 @@ function runClient() {
 }
 
 window.onload = function() {
-    var videoEl = document.getElementById('intro-cutscene');
-    videoEl.addEventListener('ended', function() {
+    if(window.location.hash != '#no-video') {
+        var videoEl = document.getElementById('intro-cutscene');
+        videoEl.addEventListener('ended', function() {
+            runClient();
+            videoEl.classList.add('out');
+            setTimeout(function() {
+                videoEl.parentNode.removeChild(videoEl);
+            }, 301);
+            document.getElementById('scores-container').classList.add('in');
+        });
+        videoEl.play();
+    }
+    else {
+        var videoEl = document.getElementById('intro-cutscene');
+        videoEl.parentNode.removeChild(videoEl);
         runClient();
-        videoEl.classList.add('out');
-        setTimeout(function() {
-            videoEl.parentNode.removeChild(videoEl);
-        }, 301);
         document.getElementById('scores-container').classList.add('in');
-    });
-    videoEl.play();
+    }
 };
 
 </script>

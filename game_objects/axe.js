@@ -38,7 +38,7 @@ _.extend(
                 emitter.particleSettings.textures = ['axe_1', 'axe_2'];
                 emitter.particleSettings.maxV = 4;
                 emitter.particleSettings.initialVy = -4;
-                emitter.particleSettings.gravity = 2;
+                emitter.particleSettings.gravity = 1;
                 state.addObject(emitter);
             }
 

@@ -5,21 +5,21 @@ var ParticleEmitter = require('./particle_emitter');
 
 var Projectilesplosion = function(x, y) {
 
-    this.lifetime = 10;
-    this._lifetime = 10;
+    this.lifetime = 50;
+    this._lifetime = 50;
 
     this.particleSettings = {
         //texture: 'particle.png',
         minCount: 5,
         maxCount: 10,
-        minV: 0,
-        maxV: 2,
-        initialVx: 0,
-        initialVy: 0,
+        minV: 2,
+        maxV: 10,
+        initialVx: 2,
+        initialVy: 2,
         minScale: 1,
         maxScale: 1,
         gravity: 0,
-        alphaDecay: 0.1,
+        alphaDecay: 0.05,
         minAngle: 0,
         maxAngle: 2 * Math.PI
     };
