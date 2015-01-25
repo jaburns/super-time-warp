@@ -1,9 +1,6 @@
 var _ = require('lodash');
 var constants = require('../public/shared/gj_constants');
 
-var MAX_VELOCITY = 1234;
-var DELTA_VELOCITY = 1234;
-
 var GameObject = function(id) {
 
     this.id = id || Math.random().toString().substr(2);
