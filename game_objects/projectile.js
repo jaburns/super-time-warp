@@ -51,7 +51,7 @@ _.extend(
         },
 
         collideWithMap: function(map) {
-            if (map.sampleAtPixel(this.x, this.y - this.h)
+            if (map.sampleAtPixel(this.x, this.y - this.h, this.vy>0)
              || map.sampleAtPixel(this.x, this.y)
              || map.sampleAtPixel(this.x - this.w/2, this.y - this.h/2)
              || map.sampleAtPixel(this.x + this.w/2, this.y - this.h/2)) {

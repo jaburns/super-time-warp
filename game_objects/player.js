@@ -91,7 +91,7 @@ _.extend(
             Player.superclass.prototype.update.call(this, state);
 
             // Collide with the map.
-            this.collideWithMap(state.maps[state.era]);
+            this.collideWithMap(state.maps[state.era], this.takeDamage.bind(this,null,state));
 
             this._prevKeysDown = _.clone(this._keysDown);
         },
@@ -207,7 +207,7 @@ _.extend(
         },
 
         takeDamage: function(other, state) {
-            if (other._owner) {
+            if (other && other._owner) {
                 other._owner.kills++;
             }
             this.deaths++;
@@ -239,21 +239,22 @@ _.extend(
             }
         },
 
-        collideWithMap: function(map) {
+        collideWithMap: function(map,damaged) {
+            map.sampledFatalTile = false;
             if (map.sampleAtPixel(this.x - this.w/2, this.y - this.h/2)
-             || map.sampleAtPixel(this.x - this.w/2, this.y - 2)
+             || map.sampleAtPixel(this.x - this.w/2, this.y - 2 - (this.vy>0?this.vy:0))
              || map.sampleAtPixel(this.x - this.w/2, this.y - this.h + 2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
                 this.vx = 0;
             }
             if (map.sampleAtPixel(this.x + this.w/2, this.y - this.h/2)
-             || map.sampleAtPixel(this.x + this.w/2, this.y - 2)
+             || map.sampleAtPixel(this.x + this.w/2, this.y - 2 - (this.vy>0?this.vy:0))
              || map.sampleAtPixel(this.x + this.w/2, this.y - this.h + 2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
                 this.vx = 0;
             }
-            if (map.sampleAtPixel(this.x + this.w/2 - 2, this.y)
-             || map.sampleAtPixel(this.x - this.w/2 + 2, this.y)) {
+            if (map.sampleAtPixel(this.x + this.w/2 - 2, this.y, this.vy>0)
+             || map.sampleAtPixel(this.x - this.w/2 + 2, this.y, this.vy>0)) {
                 this.y = constants.TILE_SIZE * Math.floor(this.y / constants.TILE_SIZE);
                 this.vy = 0;
                 this._standing = 2;
@@ -264,6 +265,9 @@ _.extend(
                 if (this.vy < 0) this.vy = 0;
                 this._roofing = 2;
             }
+
+            // TODO make sure taking damage here doesnt allow double death
+            if (map.sampledFatalTile && damaged) damaged();
         }
     }
 );

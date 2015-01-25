@@ -1,9 +1,12 @@
 var _ = require('lodash');
+var tile_types = require('./public/shared/gj_constants').tile_types;
+var tilemap = require('./tile_map');
 
 var TILE_SIZE = 16;
 
 function Map(tiles) {
     this.tiles = tiles;
+    this.sampledFatalTile = false;
 }
 
 _.extend(
@@ -12,7 +15,7 @@ _.extend(
         getWidth: function() { return this.tiles[0].length; },
         getHeight: function() { return this.tiles.length; },
 
-        sampleAtPixel: function(px, py) {
+        sampleAtPixel: function(px, py, oneway) {
             var x = Math.floor(px/TILE_SIZE);
             var y = Math.floor(py/TILE_SIZE);
 
@@ -21,7 +24,15 @@ _.extend(
             if (x < 0) x = 0;
             if (x >= this.tiles[0].length) x = this.tiles.length[0] - 1;
 
-            return this.tiles[y][x];
+            var type = tilemap[this.tiles[y][x]];
+
+            switch (type) {
+                case tile_types.FATAL: this.sampledFatalTile = true;
+                case tile_types.SOLID: return true;
+                case tile_types.ONE_WAY: return !!oneway;
+            }
+            // tile_types.NO_COLLISION:
+            return false;
         }
     }
 );
