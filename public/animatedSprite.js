@@ -2,14 +2,11 @@
  * Created by jordan on 23/01/15.
  */
 
+function AnimatedSprite(idleFrame, animationSpeed) {
+    var texture = PIXI.Texture.fromFrame(idleFrame);
+    PIXI.Sprite.call(this, texture, 16, 16);
 
-
-AnimatedSprite.prototype = Object.create( PIXI.Sprite.prototype );
-AnimatedSprite.prototype.constructor = AnimatedSprite;
-
-function AnimatedSprite(idleFrame, animationSpeed)
-{
-    this.idleFrame = idleFrame;
+    this.animations = {'idle': [idleFrame]};
     this.currentAnimation = 'idle';
     this.playing = false;
     this.speed = animationSpeed || 10;
@@ -17,16 +14,17 @@ function AnimatedSprite(idleFrame, animationSpeed)
     this.animationIndex = 0;
 }
 
-AnimatedSprite.prototype.animations = {};
+AnimatedSprite.constructor = AnimatedSprite;
+AnimatedSprite.prototype = Object.create(PIXI.Sprite.prototype);
 
 AnimatedSprite.prototype.setAnimation = function(name, frames)
 {
-    animations[name] = frames;
+    this.animations[name] = frames;
 };
 
 AnimatedSprite.prototype.clearAnimation = function()
 {
-    this.setTexture.fromFrame(this.idleFrame);
+    this.setTexture.fromFrame(this.animations['idle']);
     this.currentAnimation = 'idle';
     this.playing = false;
     this.delay = this.speed;
@@ -46,6 +44,7 @@ AnimatedSprite.prototype.switchAnimation = function(name)
     }
 
     this.currentAnimation = name;
+    this.playing = true;
 };
 
 AnimatedSprite.prototype.animate = function()
@@ -61,12 +60,17 @@ AnimatedSprite.prototype.animate = function()
         return;
     }
 
+    this.delay = this.speed;
+
     this.animationIndex++;
 
+    console.log("changing animation to "+this.animationIndex);
     if(this.animations[this.currentAnimation].length == this.animationIndex)
     {
         this.animationIndex = 0;
     }
 
-    this.setTexture.fromFrame(this.animations[this.currentAnimation][this.animationIndex]);
+    var texture = PIXI.Texture.fromFrame(this.animations[this.currentAnimation][this.animationIndex]);
+    this.setTexture(texture);
 };
+
