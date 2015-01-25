@@ -9,6 +9,32 @@
     <script src="soundManager.js"></script>
     <script src="player.js"></script>
     <style>
+
+        /* Chrome, Safari, Opera */
+        @-webkit-keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: .35; }
+            100% { opacity: 1; }
+        }
+
+        /* Standard syntax */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: .35; }
+            100% { opacity: 1; }
+        }
+
+        .player {
+            -webkit-animation-name: pulse;
+            -webkit-animation-duration: 2s;
+            -webkit-animation-timing-function: ease-in-out;
+            -webkit-animation-iteration-count: infinite;
+            animation-name: pulse;
+            animation-duration: 2s;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+        }
+
         @font-face {
             font-family: 'Silkscreen';
             src: url('assets/silkscreen.ttf');
@@ -142,10 +168,6 @@
             top: 0;
         }
 
-        li.player {
-            background-color: white;
-        }
-
         li > .swatch {
             width: 32px;
             height: 16px !important;
@@ -257,6 +279,24 @@
             display: block;
         }
 
+        .caption {
+            position: absolute;
+            bottom: 17px;
+            left: 17px;
+            right: 17px;
+            text-align: center;
+        }
+
+        a {
+            color: #6260A6;
+            transition: color 150ms ease-in-out;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #DB5661
+        }
+
     </style>
 </head>
 <body>
@@ -271,6 +311,9 @@
         <canvas id="minimap" width="50" height="40"></canvas>
         <h2>Score</h2>
         <ul id="scores-list"></ul>
+        <div class="caption">
+            <a href="https://github.com/jaburns/super-time-warp" target="_blank">Made in 48 hrs for #ggj2015</a>
+        </div>
     </div>
     <div id="audio-container">
         <audio id="loop-main" src="assets/loop.ogg" preload="auto"></audio>
@@ -615,9 +658,8 @@ function runClient() {
                 var li = scores[object.id];
                 if (!li) {
                     li = document.createElement('li');
-                    var className = object.color;
-                    if (object.id == socket.id) className += ' player';
-                    li.className = className;
+                    li.className = object.color;
+                    if (object.id == socket.id) li.className += ' player';
                     scores[object.id] = li;
                 }
 
