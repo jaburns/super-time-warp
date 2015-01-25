@@ -15,7 +15,7 @@ var Lazer = function(owner, target) {
 
     Lazer.superclass.call(this, owner, target);
 
-    this.y += 6;
+    //this.y += 6;
 
 };
 
