@@ -26,6 +26,7 @@ var Player = function(id, color) {
 
     this.dead = false;
     this.droppingKick = false;
+    this.jumping = false; // used by client to display correct animation frame
 
     // Sound hooks
     this.jumped = false;
@@ -162,12 +163,14 @@ _.extend(
                 this._moveX(0.5, 0.3, 1, 6);// Air
             }
 
-            if (this._keysDown[constants.keys.JUMP] || this._keysDown[constants.keys.JUMP2]) {
+            this.jumping = this._keysDown[constants.keys.JUMP] || this._keysDown[constants.keys.JUMP2];
+            if (this.jumping) {
                 if (this._standing) this.jumped = true;
                 this._standing = 0;
                 this.vy -= this.vy >= 0 ? JET_SAVE : JET_UP;
                 this.vy -= 0.3;
             }
+
             this.vy += 0.8;
 
             if (this._roofing > 0) {
@@ -206,6 +209,8 @@ _.extend(
             if (this.vy > 12) {
                 this.vy = 12;
             }
+
+            this.jumping = !this._standing && this.vy < 0;
         },
 
         _startKick: function() {
