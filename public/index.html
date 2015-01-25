@@ -24,7 +24,7 @@
             100% { opacity: 1; }
         }
 
-        .player {
+        .player, .click-to-skip {
             -webkit-animation-name: pulse;
             -webkit-animation-duration: 2s;
             -webkit-animation-timing-function: ease-in-out;
@@ -297,6 +297,27 @@
             color: #DB5661
         }
 
+        .click-to-skip {
+            padding: 11px;
+            border-radius: 5px;
+            border: solid 2px #9badd7;
+            box-shadow:
+            0 2px 0 #221F34,
+            0 2px 0 #221F34 inset;
+            position: absolute;
+            bottom: 34px;
+            width: 160px;
+            left: 50%;
+            margin-left: -80px;
+            display: none;
+            text-align: center;
+            text-shadow: 0 2px 0 #221F34;
+        }
+
+        video + .click-to-skip {
+            display: block;
+        }
+
     </style>
 </head>
 <body>
@@ -305,6 +326,7 @@
         <video width="1000" height="600" id="intro-cutscene">
             <source src="assets/intro.mp4" type="video/mp4 "/>
         </video>
+        <div class="click-to-skip">Click to Skip</div>
         <!--<div id="title" class="title-container"><div class="title"></div></div>-->
     </div>
     <div id="scores-container">
@@ -1074,13 +1096,23 @@ function runClient() {
     }
 }
 
+function skipVideo() {
+    var videoEl = document.getElementById('intro-cutscene');
+    videoEl.pause();
+    videoEl.parentNode.removeChild(videoEl);
+    runClient();
+    document.getElementById('scores-container').classList.add('in');
+}
+
 window.onload = function() {
+    var videoEl = document.getElementById('intro-cutscene');
+    var timer;
+
     if(window.location.hash != '#no-video') {
-        var videoEl = document.getElementById('intro-cutscene');
         videoEl.addEventListener('ended', function() {
             runClient();
             videoEl.classList.add('out');
-            setTimeout(function() {
+            timer = setTimeout(function() {
                 videoEl.parentNode.removeChild(videoEl);
             }, 301);
             document.getElementById('scores-container').classList.add('in');
@@ -1088,11 +1120,13 @@ window.onload = function() {
         videoEl.play();
     }
     else {
-        var videoEl = document.getElementById('intro-cutscene');
-        videoEl.parentNode.removeChild(videoEl);
-        runClient();
-        document.getElementById('scores-container').classList.add('in');
+        skipVideo();
     }
+
+    videoEl.addEventListener('click', function() {
+        clearTimeout(timer);
+        skipVideo();
+    });
 };
 
 </script>
