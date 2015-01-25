@@ -4,4 +4,8 @@ js_lines="$(find . -iname '*.js' | grep -v node_modules | grep -v pixi | xargs c
 pl_lines="$(find . -iname '*.pl' | grep -v node_modules | xargs cat | wc -l)"
 html_lines="$(find . -iname '*.html' | grep -v node_modules | xargs cat | wc -l)"
 
+find . -iname '*.js' | grep -v node_modules | grep -v pixi
+find . -iname '*.pl' | grep -v node_modules
+find . -iname '*.html' | grep -v node_modules
+
 expr $js_lines + $html_lines + $pl_lines
