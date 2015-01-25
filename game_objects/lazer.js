@@ -11,9 +11,11 @@ var Lazer = function(owner, target) {
 
     this.MAX_V = 15;
 
-    target.y -= 5;
+    //target.y += 5;
 
     Lazer.superclass.call(this, owner, target);
+
+    this.y += 6;
 
 };
 
