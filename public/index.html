@@ -99,14 +99,15 @@
     function initMap(map) {
         if (tile_container) {
             root_container.removeChild(tile_container);
+            stage.removeChild(bg_container);
         }
 
         tile_container = new PIXI.DisplayObjectContainer();
         root_container.addChildAt(tile_container, 0);
 
-        var bg = new PIXI.Sprite(backgroundImages[0]);
-        bg.scale = SCALE;
-        stage.addChildAt(bg, 0);
+        bg_container =  new PIXI.Sprite(backgroundImages[0]);
+        bg_container.scale = SCALE;
+        stage.addChildAt(bg_container, 0);
 
         var tiles = map.tiles;
         for (var i = 0; i < tiles.length; i++) {
