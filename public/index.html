@@ -5,6 +5,7 @@
     <script src="/shared/gj_constants.js"></script>
     <script src="/shared/gj_json.js"></script>
     <script src="pixi.js"></script>
+    <script src="animatedSprite.js"></script>
     <style>
         body {
             background: #000;
@@ -122,7 +123,18 @@
 
             if (!sprite) {
 
-                var child_sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
+                var child_sprite;
+                if(object.type == 'player')
+                {
+                    child_sprite = new AnimatedSprite(textures[object.type]);
+                    child_sprite.setAnimation('animation', ['tile_4', 'tile_5', 'tile_6']);
+                    child_sprite.switchAnimation('animation');
+                }
+                else
+                {
+                    child_sprite = new PIXI.Sprite.fromFrame(textures[object.type]);
+                }
+
 
                 // center the sprites anchor point
                 child_sprite.anchor.x = 0.5;
@@ -153,6 +165,8 @@
             sprite.getChildAt(0).rotation = object.angle;
 
             if (object.type == 'player') {
+
+                sprite.getChildAt(0).animate();
 
                 var score = scores[object.id];
                 if (!score) {
