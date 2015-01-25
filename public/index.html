@@ -142,6 +142,10 @@
             top: 0;
         }
 
+        li.player {
+            background-color: white;
+        }
+
         li > .swatch {
             width: 32px;
             height: 16px !important;
@@ -611,14 +615,14 @@ function runClient() {
                 var li = scores[object.id];
                 if (!li) {
                     li = document.createElement('li');
-                    li.className = object.color;
-                    li.innerHTML = '<span class="swatch"></span>' + '<span>' + score + '</span>';
-                    li.score = score;
-                    li.kills = object.kills;
-                    li.deaths = object.deaths;
+                    var className = object.color;
+                    if (object.id == socket.id) className += ' player';
+                    li.className = className;
                     scores[object.id] = li;
-                } else if (score != li.score) {
-                    li.innerHTML = '<span>' + object.color + '</span>' + '<span>' + score + '</span>';
+                }
+
+                if (score != li.score) {
+                    li.innerHTML = '<span class="swatch"></span><span>' + score + '</span>';
                     li.score = score;
                     li.kills = object.kills;
                     li.deaths = object.deaths;
