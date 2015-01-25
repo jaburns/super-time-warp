@@ -169,17 +169,28 @@ _.extend(
             }
         },
 
+        _startKick: function() {
+            var theta = Math.atan2(this._mousePos.y - (this.y - this.h/2), this._mousePos.x - this.x);
+            if (theta > 0) {
+                if      (theta <   Math.PI/4) theta =   Math.PI/4;
+                else if (theta > 3*Math.PI/4) theta = 3*Math.PI/4;
+            } else {
+                if (theta > -Math.PI/2) theta =   Math.PI/4;
+                else                    theta = 3*Math.PI/4;
+            }
+            this.vx = 15 * Math.cos (theta);
+            this.vy = 15 * Math.sin (theta);
+        },
+
         moveSelf_jungle: function(state) {
             if (this._standing) {
                 this._droppingKick = false;
             } else if (!this._mouseWasDown && this._mouseDown && !this._droppingKick) {
                 this._droppingKick = true;
+                this._startKick();
             }
 
-            if (this._droppingKick) {
-                this.vx = 2;
-                this.vy = 2;
-            } else {
+            if (!this._droppingKick) {
                 this.moveSelf_basic(state);
             }
         },
@@ -258,13 +269,23 @@ _.extend(
              || map.sampleAtPixel(this.x - this.w/2, this.y - 2 - (this.vy>0?this.vy:0))
              || map.sampleAtPixel(this.x - this.w/2, this.y - this.h + 2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
-                this.vx = 0;
+                if (this._droppingKick) {
+                    this._droppingKick = false;
+                    this.vx = Math.abs(this.vx)/2;
+                } else {
+                    this.vx = 0;
+                }
             }
             if (map.sampleAtPixel(this.x + this.w/2, this.y - this.h/2)
              || map.sampleAtPixel(this.x + this.w/2, this.y - 2 - (this.vy>0?this.vy:0))
              || map.sampleAtPixel(this.x + this.w/2, this.y - this.h + 2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
-                this.vx = 0;
+                if (this._droppingKick) {
+                    this._droppingKick = false;
+                    this.vx = -Math.abs(this.vx)/2;
+                } else {
+                    this.vx = 0;
+                }
             }
             if (map.sampleAtPixel(this.x + this.w/2 - 2, this.y, this.vy>0)
              || map.sampleAtPixel(this.x - this.w/2 + 2, this.y, this.vy>0)) {
