@@ -6,7 +6,21 @@ var TILE_SIZE = 16;
 
 function Map(tiles) {
     this.tiles = tiles;
-    this.sampledFatalTile = false;
+    this._sampledFatalTile = false;
+    this._spawnPoints = [
+        [6, 14],
+        [17, 5],
+        [46, 7],
+        [35, 9],
+        [30, 16],
+        [10, 18],
+        [7, 31],
+        [16, 27],
+        [20, 32],
+        [31, 32],
+        [43, 27],
+        [25, 22]
+    ];
 }
 
 _.extend(
@@ -27,7 +41,7 @@ _.extend(
             var type = tilemap[this.tiles[y][x]];
 
             switch (type) {
-                case tile_types.FATAL: this.sampledFatalTile = true;
+                case tile_types.FATAL: this._sampledFatalTile = true;
                 case tile_types.SOLID: return true;
                 case tile_types.ONE_WAY: return !!oneway;
             }

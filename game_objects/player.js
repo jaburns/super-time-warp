@@ -27,7 +27,7 @@ var Player = function(id, color) {
     this.dead = false;
 
     this.spawnCountdown = SPAWN_COUNTDOWN;
-    this.invulnerableCountdown = 0;
+    this.invulnerableCountdown = INVULNERABLE_COUNTDOWN;
 
     this._keysDown = {};
     this._prevKeysDown = {};
@@ -196,16 +196,9 @@ _.extend(
 
         moveToSpawnPoint: function() {
             var map = this._cachedMap;
-            do {
-                this.x = constants.TILE_SIZE * map.getWidth() * Math.random();
-                this.y = constants.TILE_SIZE * map.getHeight() * Math.random();
-                if (map.sampleAtPixel(this.x, this.y)) continue;
-                if (map.sampleAtPixel(this.x, this.y - this.h)) continue;
-                if (map.sampleAtPixel(this.x - this.w / 2, this.y - this.h / 2)) continue;
-                if (map.sampleAtPixel(this.x + this.w / 2, this.y - this.h / 2)) continue;
-                break;
-            }
-            while (1);
+            var spawnPoint = _.sample(map._spawnPoints);
+            this.x = constants.TILE_SIZE * spawnPoint[0];
+            this.y = constants.TILE_SIZE * spawnPoint[1];
         },
 
         takeDamage: function(other, state) {
@@ -218,6 +211,7 @@ _.extend(
             state.addObject(emitter);
 
             this.dead = true;
+            this.vx = this.vy = 0;
             this.spawnCountdown = SPAWN_COUNTDOWN;
             this.invulnerableCountdown = INVULNERABLE_COUNTDOWN;
         },
@@ -244,7 +238,7 @@ _.extend(
         },
 
         collideWithMap: function(map,damaged) {
-            map.sampledFatalTile = false;
+            map._sampledFatalTile = false;
 
             if (map.sampleAtPixel(this.x - this.w/2, this.y - this.h/2)
              || map.sampleAtPixel(this.x - this.w/2, this.y - 2 - (this.vy>0?this.vy:0))
@@ -272,7 +266,7 @@ _.extend(
             }
 
             // TODO make sure taking damage here doesnt allow double death
-            if (map.sampledFatalTile && damaged && !this.invulnerableCountdown) damaged();
+            if (map._sampledFatalTile && damaged && !this.invulnerableCountdown) damaged();
         }
     }
 );
