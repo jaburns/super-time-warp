@@ -5,8 +5,6 @@ var GameObject = require('./game_object');
 var Axe = require('./axe');
 var Lazer = require('./lazer');
 
-var GRAVITY = 0.5;
-var MAX_FALL = 15;
 
 var Player = function(id, color) {
 
@@ -101,10 +99,10 @@ _.extend(
                 }
             }
 
-            this.vy += GRAVITY;
+            this.vy += 0.5;
 
-            if (this.vy > MAX_FALL) {
-                this.vy = MAX_FALL;
+            if (this.vy > 15) {
+                this.vy = 15;
             }
         },
 
@@ -124,26 +122,27 @@ _.extend(
         },
 
         moveSelf_future: function(state) {
-            var JET_UP = 1;
-            var JET_SAVE = 1.5;
+            var JET_UP = 1.2;
+            var JET_SAVE = 1.6;
 
             if (this._standing) {
                 this._moveX( 2, 0.5, 0.8, 4 );// Ground
             } else {
-                this._moveX( 0.5, 0.3, 1, 8 );// Air
+                this._moveX( 0.5, 0.3, 1, 6 );// Air
             }
 
             if (this._keysDown[constants.keys.JUMP]) {
                 this._standing = 0;
                 this.vy -= this.vy >= 0 ? JET_SAVE : JET_UP;
+                this.vy -= 0.3;
             }
-            this.vy += GRAVITY;
+            this.vy += 0.8;
 
-            if (this.vy > MAX_FALL) {
-                this.vy = MAX_FALL;
+            if (this.vy > 12) {
+                this.vy = 12;
             }
-            else if (this.vy < -MAX_FALL) {
-                this.vy = -MAX_FALL;
+            else if (this.vy < -6) {
+                this.vy = -6;
             }
         },
 
