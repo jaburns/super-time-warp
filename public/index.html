@@ -29,6 +29,7 @@
             cursor: none !important;
             width: 1000px;
             float: left;
+            position: relative;
         }
 
         canvas {
@@ -114,11 +115,39 @@
         li.pink {
             color: #F0B4DD;
         }
+
+        .title-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.65);
+            opacity: 1;
+            transition: opacity 300ms ease-in-out;
+        }
+
+        .title-container.out {
+            opacity: 0;
+        }
+
+        .title {
+            width: 621px;
+            height: 221px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-left: -310px;
+            margin-top: -110px;
+            background-image: url('assets/title.png');
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <div id="canvas-container"></div>
+    <div id="canvas-container">
+        <div id="title" class="title-container"><div class="title"></div></div>
+    </div>
     <div id="scores-container">
         <ul id="scores-list"></ul>
     </div>
@@ -189,6 +218,15 @@
 
         // Perform socket setup to start the game
         initSocket();
+
+        // hide title
+        setTimeout(function() {
+            var title = document.getElementById('title');
+            title.classList.add('out');
+            setTimeout(function() {
+                title.parentNode.removeChild(title);
+            }, 301);
+        }, 1300);
     }
 
     // Jungle background stuff --------------------
