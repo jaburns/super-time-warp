@@ -25,6 +25,7 @@ var Player = function(id, color) {
     this.facex = 1;
 
     this.dead = false;
+    this.jumped = false;
 
     this.spawnCountdown = SPAWN_COUNTDOWN;
     this.invulnerableCountdown = INVULNERABLE_COUNTDOWN;
@@ -53,6 +54,8 @@ _.extend(
         update: function(state) {
             this._cachedState = state;
             this._cachedMap = state.maps[state.era];
+
+            this.jumped = false;
 
             if (this.spawnCountdown > 0) {
                 if (--this.spawnCountdown <= 0) {
@@ -141,6 +144,7 @@ _.extend(
                 this._standing = 0;
                 this.vy -= this.vy >= 0 ? JET_SAVE : JET_UP;
                 this.vy -= 0.3;
+                this.jumped = true;
             }
             this.vy += 0.8;
 
@@ -167,6 +171,7 @@ _.extend(
                 if (this._standing > 0) {
                     this._standing = 0;
                     this.vy = -10;
+                    this.jumped = true;
                 }
                 if (this.vy < 0) {
                     this.vy -= 0.5;

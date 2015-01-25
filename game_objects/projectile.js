@@ -6,6 +6,7 @@ var GameObject = require('./game_object');
 var Projectile = function(owner, target) {
     Projectile.superclass.call(this);
 
+    this.owner = owner.id;
     this._owner = owner;
 
     this.MAX_V = this.MAX_V || 10;
