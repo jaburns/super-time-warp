@@ -6,6 +6,8 @@ var Axe = require('./axe');
 var Lazer = require('./lazer');
 
 var GRAVITY = 0.5;
+var MAX_FALL = 15;
+var JETPACK = 1;
 
 var Player = function(id, color) {
 
@@ -111,7 +113,35 @@ _.extend(
         },
 
         moveSelf_future: function(state) {
-            this.moveSelf_jungle(state);
+            if (this._standing) {
+                if (this._keysDown[constants.keys.MOVE_LEFT]) {
+                    this.vx += -1.1;
+                } else if (this._keysDown[constants.keys.MOVE_RIGHT]) {
+                    this.vx += 1.1;
+                } else {
+                    this.vx += this.vx < 0 ? 1: -1;
+                    if (Math.abs(this.vx) < 1) this.vx = 0;
+                }
+            }
+
+            if (this._keysDown[constants.keys.JUMP]) {
+                this._standing = 0;
+                this.vy -= JETPACK;
+            }
+            this.vy += GRAVITY;
+
+            if (this.vy > MAX_FALL) {
+                this.vy = MAX_FALL;
+            }
+            else if (this.vy < -MAX_FALL) {
+                this.vy = -MAX_FALL;
+            }
+
+            if (this.vx > 10) {
+                this.d = 10;
+            } else if (this.vx < -10) {
+                this.d = -10;
+            }
         },
 
         moveSelf_tundra: function(state) {

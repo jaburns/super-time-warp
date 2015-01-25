@@ -3,8 +3,8 @@ var State = require('./state');
 var Player = require('./game_objects/player');
 var constants = require('./public/shared/gj_constants');
 
-var ERA_FRAMECOUNT_MIN = 60;
-var ERA_FRAMECOUNT_MAX = 90;
+var ERA_FRAMECOUNT_MIN = 6000;
+var ERA_FRAMECOUNT_MAX = 9000;
 
 function Game() {
     this.player_colors = _.values(constants.player_colors);
