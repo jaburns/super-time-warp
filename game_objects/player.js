@@ -111,13 +111,11 @@ _.extend(
         },
 
         moveSelf_future: function(state) {
-            this.vx = 0;
-            this.vy = 0;
+            this.moveSelf_jungle(state);
         },
 
         moveSelf_tundra: function(state) {
-            this.vx = 0;
-            this.vy = 0;
+            this.moveSelf_jungle(state);
         },
 
         fireWeapon: function(state) {
