@@ -27,6 +27,7 @@ var Player = function(id, color) {
     this._mousePos = { x: null, y: null };
     this._mouseDown = false;
     this._standing = 0; // When greater than zero, the player is on the ground.  Counts down every frame. Reset every time a ground collision is detected.
+    this._roofing = 0; // same as standing but for roof
 
     this._cachedMap = null;
     this._fireDelay = 500;
@@ -47,6 +48,9 @@ _.extend(
                     this.moveToSpawnPoint();
                 } else return;
             }
+
+            if (this._standing > 0) this._standing--;
+            if (this._roofing > 0) this._roofing--;
 
             switch (state.era) {
                 case constants.eras.JUNGLE:
@@ -85,18 +89,9 @@ _.extend(
                 this.vx *= 0.9;
             }
 
-            if (this._standing > 0) {
-                if (this._keysDown[constants.keys.JUMP]) {
-                    this._standing = 0;
-                    this.vy = -10;
-                } else {
-                    this._standing--;
-                }
-            } else if (this._standing > -1 && state.era == constants.eras.FUTURE) {
-                if (this._keysDown[constants.keys.JUMP] && !this._prevKeysDown[constants.keys.JUMP]) {
-                    this._standing--;
-                    this.vy = -10;
-                }
+            if (this._standing > 0 && this._keysDown[constants.keys.JUMP]) {
+                this._standing = 0;
+                this.vy = -10;
             }
 
             this.vy += 0.5;
@@ -137,6 +132,10 @@ _.extend(
                 this.vy -= 0.3;
             }
             this.vy += 0.8;
+
+            if (this._roofing > 0) {
+                this.vy = 4;
+            }
 
             if (this.vy > 12) {
                 this.vy = 12;
@@ -221,6 +220,7 @@ _.extend(
             if (map.sampleAtPixel(this.x, this.y - this.h)) {
                 this.y = constants.TILE_SIZE * Math.ceil(this.y / constants.TILE_SIZE);
                 if (this.vy < 0) this.vy = 0;
+                this._roofing = 2;
             }
             if (map.sampleAtPixel(this.x - this.w / 2, this.y - this.h / 2)) {
                 this.x = constants.TILE_SIZE / 2 + constants.TILE_SIZE * Math.floor(this.x / constants.TILE_SIZE);
