@@ -131,22 +131,7 @@ _.extend(
             }
 
             if (projectile) {
-                projectile = new projectile(this);
-
-                projectile.x = this.x + this.vx;
-                projectile.y = this.y - (this.h / 2) + (projectile.h / 2) + this.vy;
-
-                var angle = Math.atan2((this.y - this._mousePos.y - (this.h / 2) - (projectile.h / 2)), (this.x - this._mousePos.x));
-                projectile.angle = angle + (Math.PI / 2);
-
-                var cos = Math.cos(angle);
-                var sin = Math.sin(angle);
-
-                projectile.vx = -cos * 10;
-                projectile.vy = -sin * 10;
-
-                projectile.x -= cos * this.w;
-                projectile.y -= sin * this.w;
+                projectile = new projectile(this, { x: this._mousePos.x, y: this._mousePos.y  });
 
                 state.addObject(projectile);
             }

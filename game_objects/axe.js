@@ -5,24 +5,16 @@ var Projectile = require('./projectile');
 
 var GRAVITY = 0.5;
 
-var Axe = function(owner) {
-    Axe.superclass.call(this, owner);
+var Axe = function(owner, target) {
+
 
     this.type = 'axe';
-    this._vx = null;
 
-    Object.defineProperty(this, 'vx', {
-        enumerable: true,
-        configurable: true,
-        get: function() {
-            return this._vx;
-        },
-        set: function(value) {
-            this.va = 0.1 * value;
-            this._vx = value;
-        }
+    target.y -= 32;
 
-    });
+    Axe.superclass.call(this, owner, target);
+
+    this.va = 0.1 * this.vx;
 
 };
 
