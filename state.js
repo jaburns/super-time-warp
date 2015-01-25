@@ -4,8 +4,8 @@ var constants = require('./public/shared/gj_constants');
 var Map = require('./map');
 var loadTMX = require('./loadTMX');
 
-var ERA_FRAMECOUNT_MIN = 200;
-var ERA_FRAMECOUNT_MAX = 200;
+var ERA_FRAMECOUNT_MIN =  600;
+var ERA_FRAMECOUNT_MAX = 1000;
 
 var State = function() {
     // initial state
