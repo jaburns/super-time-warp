@@ -91,10 +91,12 @@ _.extend(
                 }
             }
 
-            // Integrate velocity in to position.
-            Player.superclass.prototype.update.call(this, state);
-
-            // Collide with the map.
+            // Integrate velocity in to position and collide with the map.
+            this.x += this.vx/2;
+            this.y += this.vy/2;
+            this.collideWithMap(state.maps[state.era], this.takeDamage.bind(this,null,state));
+            this.x += this.vx/2;
+            this.y += this.vy/2;
             this.collideWithMap(state.maps[state.era], this.takeDamage.bind(this,null,state));
 
             this._prevKeysDown = _.clone(this._keysDown);
