@@ -530,11 +530,11 @@
             sprite = time_warp_sprites[0];
             stage.addChild(sprite);
             root_container.filters = [rootFilter];
-            bg_container.filters = [bgFilter];
+            //bg_container.filters = [bgFilter];
             setTimeout(function() {
                 sprite.parent.removeChild(sprite);
                 root_container.filters = null;
-                bg_container.filters = null;
+                //bg_container.filters = null;
             }, 1000)
 
         }
