@@ -9,16 +9,32 @@
     <style>
         body {
             background: #000;
+        }
+        #canvas-container {
             cursor: none !important;
+            width: 800px;
+            float: left;
+        }
+        #scores-container {
+            float: left;
+            /*background: white;*/
+            width: 200px;
+            height: 608px;
         }
     </style>
 </head>
 <body>
-
+    <div id="canvas-container"></div>
+    <div id="scores-container">
+        <ul id="scores-list"></ul>
+    </div>
 </body>
 <script>
 
     var socket;
+
+    var scores = {};
+    var scores_list = document.getElementById('scores-list');
 
     // Drawing ####################################################################
 
@@ -34,14 +50,10 @@
     root_container.scale = SCALE;
     stage.addChild(root_container);
 
-    var tile_container = null;
+    var tile_container = null, bg_container = null;
 
     var object_container = new PIXI.DisplayObjectContainer();
     root_container.addChild(object_container);
-
-    var scores = {};
-    var scores_container = new PIXI.DisplayObjectContainer();
-    stage.addChild(scores_container);
 
     var crosshairs = new PIXI.Sprite(PIXI.Texture.fromImage('assets/crosshairs.png'));
     crosshairs.anchor.x = 0.5;
@@ -52,14 +64,14 @@
     var renderer = PIXI.autoDetectRenderer(VIEWPORT.w, VIEWPORT.h);
 
     // add the renderer view element to the DOM
-    document.body.appendChild(renderer.view);
+    document.getElementById('canvas-container').appendChild(renderer.view);
 
     var textures = {};
     var sprites = {};
     var playerUI = {}; // object to hold local UI data
 
     // This array holds filepaths to all json files with sprite information
-    var assetsToLoad = ['assets/tiles.json'];
+    var assetsToLoad = ['assets/tiles.json', 'assets/ui.json', 'assets/bg_jungle.png'];
 
     loader = new PIXI.AssetLoader(assetsToLoad);
 
@@ -80,17 +92,23 @@
         initSocket();
     }
 
-    function initSprites(state) {
-
-    }
+    var backgroundImages = [
+        PIXI.Texture.fromImage('assets/bg_jungle.png')
+    ];
 
     // Creates the tile_container and adds it to the root_container.  Cleans up old one if it exists.
     function initMap(map) {
         if (tile_container) {
             root_container.removeChild(tile_container);
+            stage.removeChild(bg_container);
         }
+
         tile_container = new PIXI.DisplayObjectContainer();
         root_container.addChildAt(tile_container, 0);
+
+        bg_container =  new PIXI.Sprite(backgroundImages[0]);
+        bg_container.scale = SCALE;
+        stage.addChildAt(bg_container, 0);
 
         var tiles = map.tiles;
         for (var i = 0; i < tiles.length; i++) {
@@ -144,9 +162,10 @@
                 sprite.addChild(child_sprite);
                 child_sprite.y = -object.h / 2;
 
-                if (object.id === socket.id)
-                {
-                    var pointer_sprite = new PIXI.Sprite.fromFrame('tile_37');
+                if (object.type == 'player') {
+
+                    var texture = (object.id === socket.id ? 'arrow_big_' : 'arrow_') + object.color;
+                    var pointer_sprite = new PIXI.Sprite.fromFrame(texture);
 
                     pointer_sprite.anchor.x = 0.5;
                     pointer_sprite.anchor.y = 0.5;
@@ -167,19 +186,18 @@
             if (object.type == 'player') {
 
                 sprite.getChildAt(0).animate();
-
-                var score = scores[object.id];
-                if (!score) {
-                    var fill = object.id == socket.id ? 'white' : 'black';
-                    score = new PIXI.Text(object.id + ':' + object.score, { font: '16px Arial', fill: fill, align: 'left' });
-                    score.score = object.score;
-                    score.position.x = 0;
-                    score.position.y = 16 * (Object.keys(scores).length);
-                    scores_container.addChild(score);
-                    scores[object.id] = score;
-                } else if (object.score != score.score) {
-                    score.setText(object.id + ':' + object.score);
-                    score.score = object.score;
+                var score = object.kills + ' / ' + object.deaths;
+                var li = scores[object.id];
+                if (!li) {
+                    li = document.createElement('li');
+                    li.style.color = object.color;
+                    li.innerHTML = object.color + ' : ' + score;
+                    li.score = score;
+                    scores_list.appendChild(li);
+                    scores[object.id] = li;
+                } else if (score != li.score) {
+                    li.innerHTML = object.color + ' : ' + score;
+                    li.score = score;
                 }
             }
 
@@ -198,14 +216,10 @@
         }
 
         // Remove scores of players that have left
-        var _offset = 0;
         for (var k in scores) {
             if (liveIds.indexOf(k) < 0) {
-                scores_container.removeChild(scores[k]);
+                scores_list.removeChild(scores[k]);
                 delete scores[k];
-                _offset++;
-            } else if (_offset) {
-                scores[k].position.y -= (16 * _offset);
             }
         }
 
@@ -263,7 +277,6 @@
 
         socket.on('msg state', function(state) {
             latestState = state;
-            initSprites(latestState);
             initMap(latestState.maps[latestState.era]);
             renderState(latestState);
         });
@@ -302,11 +315,11 @@
             onMouseMove(worldPos);
         };
 
-        window.onmousedown = function(e) {
+        renderer.view.onmousedown = function(e) {
             socket.emit('msg input', { type: 'mousedown' });
         };
 
-        window.onmouseup = function(e) {
+        renderer.view.onmouseup = function(e) {
             socket.emit('msg input', { type: 'mouseup' });
         };
 

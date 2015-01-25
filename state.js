@@ -40,6 +40,15 @@ _.extend(
             this.objects.push(object);
         },
 
+        getObjectById: function(id) {
+            for (var i = 0; i < this.objects.length; i++) {
+                var object = this.objects[i];
+                if (object.id == id) {
+                    return object;
+                }
+            }
+        },
+
         removeObject: function(object) {
             var index = this.objects.indexOf(object);
             if (index > -1) this.objects.splice(index, 1);

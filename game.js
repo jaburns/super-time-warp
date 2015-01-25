@@ -7,15 +7,24 @@ var ERA_FRAMECOUNT_MIN = 60;
 var ERA_FRAMECOUNT_MAX = 90;
 
 function Game() {
+    this.player_colors = _.values(constants.player_colors);
     this.state = new State();
 }
 
 Game.prototype.addPlayer = function(id) {
-    this.state.addObject(new Player(id));
+    var color = this.player_colors.shift();
+    if (color) {
+        this.state.addObject(new Player(id, color));
+    }
+    return !!color;
 };
 
 Game.prototype.removePlayer = function(id) {
-    this.state.removeObjectById(id);
+    var player = this.state.getObjectById(id);
+    if (player) {
+        this.player_colors.push(player.color);
+        this.state.removeObject(player);
+    }
 };
 
 Game.prototype.handleInput = function(id, input) {
