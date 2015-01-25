@@ -71,7 +71,12 @@
     var playerUI = {}; // object to hold local UI data
 
     // This array holds filepaths to all json files with sprite information
-    var assetsToLoad = ['assets/tiles.json', 'assets/ui.json', 'assets/bg_jungle.png'];
+    var assetsToLoad = [
+        'assets/bg_jungle.png',
+        'assets/projectiles.json',
+        'assets/tiles.json', 
+        'assets/ui.json'
+    ];
 
     loader = new PIXI.AssetLoader(assetsToLoad);
 
@@ -85,7 +90,8 @@
         // Textures are loaded, so store them for later. This should become a larger set of maps
         textures = {
             player: 'tile_49',
-            bullet: 'tile_33'
+            axe: 'axe',
+            lazer: 'lazer'
         };
 
         // Perform socket setup to start the game
