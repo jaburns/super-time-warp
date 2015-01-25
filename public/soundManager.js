@@ -34,6 +34,12 @@ var soundManager = (function () {
             this.audioChannels[this.nextChannel].src = document.getElementById(sound).src;
             this.audioChannels[this.nextChannel].load();
             this.audioChannels[this.nextChannel].play();
+
+            if (sound === 'sound-rekt') {
+                this.audioChannels[this.nextChannel].volume = 3;
+            } else {
+                this.audioChannels[this.nextChannel].volume = 1;
+            }
         };
 
         _soundManager.stopAllSounds = function() {
