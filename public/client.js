@@ -46,7 +46,7 @@ function runClient() {
     var sprites = {};
     var playerUI = {}; // object to hold local UI data TODO is this used?
     var miniMapEl = document.getElementById('minimap');
-    var miniMap = new MiniMap(50, 40, miniMapEl);
+    var miniMap = new MiniMap(50, 45, miniMapEl);
     var sm = null;
 
     // This array holds filepaths to all json files with sprite information
