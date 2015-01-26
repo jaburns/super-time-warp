@@ -245,7 +245,7 @@ var MiniMap = (function() {
             context.drawImage(this.image, 0, 0);
 
             // blinking
-            if(this.flashTimer > 40) {
+            if(this.flashTimer > 5) {
                 this.flashTimer = 0;
                 this.flash = !this.flash;
             }
