@@ -44,7 +44,7 @@ function runClient() {
 
     var textures = {};
     var sprites = {};
-    var playerUI = {}; // object to hold local UI data
+    var playerUI = {}; // object to hold local UI data TODO is this used?
     var miniMapEl = document.getElementById('minimap');
     var miniMap = new MiniMap(50, 40, miniMapEl);
     var sm = null;
@@ -80,15 +80,6 @@ function runClient() {
         if (window.location.hash !== '#no-music') {
             sm.playLoop('loop-main');
         }
-
-        // hide title
-        /*setTimeout(function () {
-         var title = document.getElementById('title');
-         title.classList.add('out');
-         setTimeout(function () {
-         title.parentNode.removeChild(title);
-         }, 301);
-         }, 1300);*/
     }
 
     // Jungle background stuff --------------------
