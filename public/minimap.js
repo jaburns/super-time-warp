@@ -134,6 +134,8 @@ var MiniMap = (function() {
 
         this.focus = null;
         this.focusPos = { x: 0, y: 0 };
+        this.flashTimer = 0;
+        this.flash = false;
     }
 
     MiniMap.prototype = {
@@ -224,7 +226,7 @@ var MiniMap = (function() {
 
             var focus = {};
             for(var i = 0; i < state.objects.length; i++) {
-                if(state.objects[i].id == playerId) {
+                if(state.objects[i] && state.objects[i].id == playerId) {
                     focus = state.objects[i];
                     break;
                 }
@@ -242,8 +244,14 @@ var MiniMap = (function() {
             context.save();
             context.drawImage(this.image, 0, 0);
 
+            // blinking
+            if(this.flashTimer > 40) {
+                this.flashTimer = 0;
+                this.flash = !this.flash;
+            }
+            this.flashTimer++;
+
             // draw game objects
-            var flash = new Date().getTime() % 40 < 20;
             var object, color, isInvulnerable;
             for (var i = 0; i < state.objects.length; i++) {
                 object = state.objects[i];
@@ -257,7 +265,7 @@ var MiniMap = (function() {
 
                     object = state.objects[i];
                     color = isInvulnerable ? '#595652' : getPlayerColor(object.color);
-                    context.fillStyle = flash && object.id === playerId ? '#cadafd' : color;
+                    context.fillStyle = this.flash && object.id === playerId ? '#cadafd' : color;
                     context.fillRect(x*this.scale, (y-1)*this.scale, this.scale, this.scale);
                 }
             }
