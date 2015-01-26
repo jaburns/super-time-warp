@@ -10,7 +10,7 @@ var ERA_FRAMECOUNT_MAX = 1000;
 var State = function() {
     // initial state
 
-    this.era = constants.eras.FUTURE;
+    this.era = (Math.random() * 3) << 0;
     this.maps = {};
     this.objects = [];
     this.countDownToNextEra = ERA_FRAMECOUNT_MIN + (ERA_FRAMECOUNT_MAX - ERA_FRAMECOUNT_MIN) * Math.random();
