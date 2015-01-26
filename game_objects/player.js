@@ -52,6 +52,10 @@ var Player = function(id, color) {
     this._lastFireTime = null;
 };
 
+function lawg (msg) {
+    console.log ((new Date).toString() + ' -- ' + msg);
+}
+
 Player.superclass = GameObject;
 
 _.extend(
@@ -142,6 +146,7 @@ _.extend(
         collideWithObject: function(other) {
             if (this.droppingKick && other.takeDamage) {
                 if (this.y > other.y || !other.droppingKick) {
+                    lawg (this.id+' --kills--> '+other.id);
                     other.takeDamage(this);
                     this.kills++;
                     this.justKilled = true;
@@ -287,6 +292,7 @@ _.extend(
             if (other && other._owner) {
                 other._owner.kills++;
                 other._owner.justKilled = true;
+                lawg (this.id+' --kills--> '+other._owner.id);
             }
             this.deaths++;
             this.justDied = true;
