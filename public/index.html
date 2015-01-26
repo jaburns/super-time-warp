@@ -347,28 +347,6 @@
             display: block;
         }
 
-        @media only screen
-        and (max-width : 480px) {
-            body {
-                padding: 0;
-            }
-            *:not(.click-to-skip) {
-                border-radius: 0 !important;
-            }
-            #canvas-container {
-                width: 480px;
-                height: 320px;
-            }
-            #scores-container {
-                display: none;
-            }
-            #canvas-container canvas,
-            video {
-                width: 480px !important;
-                height: 320px !important;
-            }
-        }
-
     </style>
 </head>
 <body>
@@ -406,8 +384,6 @@
 </body>
 <script src="minimap.js"></script>
 <script>
-
-var isMobile = navigator.userAgent.match(/iPhone/i) != null;
 
 function runClient() {
     var socket;
@@ -619,7 +595,7 @@ function runClient() {
     function renderState(state) {
         var liveIds = [];
 
-        if (spectating || isMobile) {
+        if (spectating) {
             var step = 20;
             var x = root_container.position.x;
             var y = root_container.position.y;
@@ -1128,7 +1104,7 @@ function runClient() {
         }
 
         window.onkeyup = function (e) {
-            if (spectating || isMobile) {
+            if (spectating) {
                 delete _keys[e.keyCode];
             } else if (keys.indexOf(e.keyCode) > -1) {
                 socket.emit('msg input', { type: 'keyup', key: e.keyCode });
@@ -1136,7 +1112,7 @@ function runClient() {
         };
 
         window.onkeydown = function (e) {
-            if (spectating || isMobile) {
+            if (spectating) {
                 _keys[e.keyCode] = true;
             } else if (keys.indexOf(e.keyCode) > -1) {
                 socket.emit('msg input', { type: 'keydown', key: e.keyCode });
