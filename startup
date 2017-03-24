@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
 
-if [[ ! -z "$IO_URL" ]]; then
-    echo "window.IO_URL = '$IO_URL';" > /usr/src/app/public/io_url.js
-fi
+ENV_JS='/usr/src/app/public/env.js'
+
+set_env() {
+    if [[ ! -z "$2" ]]; then
+        echo "window.$1 = $3;" >> "$ENV_JS"
+    else
+        echo "window.$1 = $4;" >> "$ENV_JS"
+    fi
+}
+
+echo '' > "$ENV_JS"
+set_env IO_URL "$IO_URL" "'$IO_URL'" null
+set_env USE_SMOOTHING "$USE_SMOOTHING" true false
 
 node .

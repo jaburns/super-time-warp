@@ -1,6 +1,4 @@
 
-var ENABLE_SMOOTH = false;
-
 function lerpXY(a, b, t) {
     b = _.cloneDeep(b);
     for (var k in b) {
@@ -716,7 +714,7 @@ function runClient() {
             initMap(latestState.era, latestState.maps[latestState.era]);
             renderState(latestState);
 
-            if (ENABLE_SMOOTH) {
+            if (window.USE_SMOOTHING) {
                 window.requestAnimationFrame(_animFrameFunc);
             }
         });
@@ -727,7 +725,7 @@ function runClient() {
                 initMap(newState.era, newState.maps[newState.era]);
             }
             latestState = newState;
-            if (ENABLE_SMOOTH) {
+            if (window.USE_SMOOTHING) {
                 _rendar = renderState;
                 _state0 = _state1;
                 _state1 = latestState;
