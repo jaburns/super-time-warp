@@ -698,7 +698,7 @@ function runClient() {
 
     function initSocket() {
         var latestState;
-        socket = io();
+        socket = io(IO_URL);
 
         // Receiving state messages from the server -------------------
 
