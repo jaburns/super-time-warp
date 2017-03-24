@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var express = require('express');
 var app = express();
+var request = require('request');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
@@ -68,9 +69,15 @@ function setGameRunning(running) {
     if (gameRunning === running) return;
     gameRunning = running;
     if (gameRunning) {
+        if (typeof process.env.STATUS_URL === 'string') {
+            request({url: process.env.STATUS_URL+'?status=up'});
+        }
         lawg ("STARTING GAME SESSION");
         gameInterval = setInterval (mainLoop, gj_CONSTANTS.DELTA_TIME);
     } else {
+        if (typeof process.env.STATUS_URL === 'string') {
+            request({url: process.env.STATUS_URL+'?status=down'});
+        }
         lawg ("ENDING GAME SESSION");
         clearInterval (gameInterval);
     }
