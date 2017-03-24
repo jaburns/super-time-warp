@@ -43,7 +43,6 @@ function Client(socket) {
         socket.emit('msg full');
     }
     socket.emit('msg state', game.state.getState());
-    lawg('Client connected with ID: ' + this.socket.id);
 }
 
 Client.prototype.receiveInput = function(input) {
@@ -62,6 +61,7 @@ io.on('connection', function(socket) {
     clients.push(client);
     socket.on('disconnect', client.dispose.bind(client));
     setGameRunning (true);
+    lawg('Client connected with ID: ' + this.socket.id);
 });
 
 function setGameRunning(running) {
