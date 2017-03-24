@@ -1,4 +1,35 @@
 
+var ENABLE_SMOOTH = false;
+
+function lerpXY(a, b, t) {
+    b = _.cloneDeep(b);
+    for (var k in b) {
+        if (typeof a[k] !== 'undefined' && a[k] !== null) {
+            if(typeof b[k] === 'object') {
+                b[k] = lerpXY(a[k], b[k], t);
+            } else if(k === 'x' || k === 'y') {
+                b[k] = a[k] + t*(b[k] - a[k]);
+            }
+        }
+    }
+    return b;
+}
+
+var _state0 = null;
+var _state1 = null;
+var _stateArriveTime = null;
+var _rendar = function(){};
+
+function _animFrameFunc () {
+    if (_state0 && _state1) {
+        var t = (window.performance.now() - _stateArriveTime) / 35;
+        _rendar(lerpXY(_state0, _state1, t));
+    }
+    window.requestAnimationFrame(_animFrameFunc);
+}
+
+
+
 function runClient() {
     var socket;
 
@@ -680,6 +711,10 @@ function runClient() {
 
             initMap(latestState.era, latestState.maps[latestState.era]);
             renderState(latestState);
+
+            if (ENABLE_SMOOTH) {
+                window.requestAnimationFrame(_animFrameFunc);
+            }
         });
 
         socket.on('msg diff', function (diff) {
@@ -688,7 +723,14 @@ function runClient() {
                 initMap(newState.era, newState.maps[newState.era]);
             }
             latestState = newState;
-            renderState(latestState);
+            if (ENABLE_SMOOTH) {
+                _rendar = renderState;
+                _state0 = _state1;
+                _state1 = latestState;
+                _stateArriveTime = window.performance.now();
+            } else {
+                renderState(latestState);
+            }
         });
 
         socket.on('msg full', function () {
