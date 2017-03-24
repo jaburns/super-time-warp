@@ -61,7 +61,7 @@ io.on('connection', function(socket) {
     clients.push(client);
     socket.on('disconnect', client.dispose.bind(client));
     setGameRunning (true);
-    lawg('Client connected with ID: ' + this.socket.id);
+    lawg('Client connected with ID: ' + socket.id);
 });
 
 function setGameRunning(running) {

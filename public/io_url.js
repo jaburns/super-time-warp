@@ -1,1 +1,1 @@
-var IO_URL = (void)0;
+window.IO_URL = null;
