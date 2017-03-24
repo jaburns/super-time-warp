@@ -12,11 +12,10 @@ open localhost:3000
 
 Using Docker:
 ```
-docker build -t timewarp .
 docker run -it \
-    -p 3000:80                     # The game runs on port 80 inside of the docker container
+    -p 3000:80                   \ # The game runs on port 80 inside of the docker container
     -e USE_SMOOTHING=true        \ # Set this to render at 60 FPS and lerp between frames. Has sound and particle issues.
     -e IO_URL=http://host:port   \ # Force a specific URL for the socket client to connect to. Useful to dodge nginx overhead.
     -e STATUS_URL=http://url     \ # Send a GET request with ?status=up or =down here when a game starts or finishes.
-    timewarp
+    jaburns/super-time-warp
 ```
