@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if [[ ! -z "$IO_URL" ]]; then
+    echo "window.IO_URL = '$IO_URL';" > /usr/src/app/public/io_url.js
+fi
+
+node .
