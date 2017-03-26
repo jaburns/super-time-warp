@@ -8,7 +8,7 @@ RUN npm install
 
 COPY . /usr/src/app
 
-ENV PORT 80
-EXPOSE 80
+ENV PORT 1337
+EXPOSE 1337
 
 CMD ["./startup"]
