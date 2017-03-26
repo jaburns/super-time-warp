@@ -65,19 +65,23 @@ io.on('connection', function(socket) {
     lawg('Client connected with ID: ' + socket.id);
 });
 
+function sendStatus(status) {
+    if (typeof process.env.STATUS_URL === 'string') {
+        try {
+            request({url: process.env.STATUS_URL+'?status='+status});
+        } catch (e) {}
+    }
+}
+
 function setGameRunning(running) {
     if (gameRunning === running) return;
     gameRunning = running;
     if (gameRunning) {
-        if (typeof process.env.STATUS_URL === 'string') {
-            request({url: process.env.STATUS_URL+'?status=up'});
-        }
+        sendStatus('up');
         lawg ("STARTING GAME SESSION");
         gameInterval = setInterval (mainLoop, gj_CONSTANTS.DELTA_TIME);
     } else {
-        if (typeof process.env.STATUS_URL === 'string') {
-            request({url: process.env.STATUS_URL+'?status=down'});
-        }
+        sendStatus('down');
         lawg ("ENDING GAME SESSION");
         clearInterval (gameInterval);
     }
