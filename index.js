@@ -67,9 +67,7 @@ io.on('connection', function(socket) {
 
 function sendStatus(status) {
     if (typeof process.env.STATUS_URL === 'string') {
-        try {
-            request({url: process.env.STATUS_URL+'?status='+status});
-        } catch (e) {}
+        request(process.env.STATUS_URL+'?status='+status, function(e,r,b){});
     }
 }
 
